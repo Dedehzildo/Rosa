@@ -298,15 +298,38 @@ setInterval(()=>{
 /* ---------- audio control (works on iPhone: user must click) ---------- */
 const bgMusic = document.getElementById('bgMusic');
 const startMusicBtn = document.getElementById('startMusic');
-startMusicBtn.addEventListener('click', async ()=>{
-  try{
-    await bgMusic.play();
-    startMusicBtn.style.display = 'none';
-  }catch(e){
-    // some browsers block autoplay; keep button visible
-    console.warn('Falha ao tocar áudio', e);
+// toggle play / pause para bgMusic — botão permanece visível
+let musicPlaying = false;
+
+startMusicBtn.addEventListener('click', async () => {
+  try {
+    if (!musicPlaying) {
+      // tentar tocar
+      await bgMusic.play();
+      musicPlaying = true;
+      startMusicBtn.textContent = '⏸ Parar';
+      startMusicBtn.setAttribute('aria-pressed', 'true');
+    } else {
+      // pausar
+      bgMusic.pause();
+      musicPlaying = false;
+      startMusicBtn.textContent = '▶ Música';
+      startMusicBtn.setAttribute('aria-pressed', 'false');
+    }
+  } catch (err) {
+    console.warn('Falha ao tocar/pausar áudio', err);
+    // em caso de bloqueio, exiba instrução curta (opcional)
+    alert('O navegador bloqueou o áudio — toque novamente ou verifique permissões.');
   }
 });
+
+// quando a música terminar (caso não seja loop), resetar estado
+bgMusic.addEventListener('ended', () => {
+  musicPlaying = false;
+  startMusicBtn.textContent = '▶ Música';
+  startMusicBtn.setAttribute('aria-pressed', 'false');
+});
+
 
 /* ---------- snow effect ---------- */
 const snowCanvas = document.getElementById('snow');
