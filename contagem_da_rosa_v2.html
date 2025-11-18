@@ -1,0 +1,235 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A Contagem da Rosa ✦ V2</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Quicksand:wght@400;600&display=swap');
+
+  body {
+    margin: 0;
+    background: radial-gradient(circle at bottom, #0a0a10, #000);
+    color: #f7f0ff;
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+  }
+
+  canvas#stars {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+  }
+
+  h1 {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    margin-top: 2rem;
+    letter-spacing: 2px;
+    color: #f3eaff;
+  }
+
+  #countdown {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #e0d0ff;
+    margin-bottom: 1.5rem;
+  }
+
+  .calendar {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1rem 2rem;
+    max-width: 900px;
+    margin: auto;
+  }
+
+  .day {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 12px;
+    text-align: center;
+    padding: 1.5rem 1rem;
+    font-family: 'Cinzel', serif;
+    font-size: 1rem;
+    color: #f0eaff;
+    transition: all 0.4s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    animation: fadeIn 1s forwards;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .day.unlocked:hover {
+    background: rgba(255, 180, 255, 0.2);
+    border-color: #ffb0ff;
+    cursor: pointer;
+    box-shadow: 0 0 12px rgba(255, 180, 255, 0.3);
+  }
+
+  .day.locked {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(10, 10, 20, 0.9);
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+  }
+
+  .modal-content {
+    background: linear-gradient(145deg, rgba(25,25,40,0.95), rgba(40,30,60,0.95));
+    border: 1px solid #ff7ee9;
+    box-shadow: 0 0 12px #ff7ee9;
+    border-radius: 16px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 500px;
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1.6;
+    animation: modalFade 0.6s ease;
+  }
+
+  @keyframes modalFade {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .close-btn {
+    margin-top: 1rem;
+    background: transparent;
+    color: #ffb5ef;
+    border: 1px solid #ffb5ef;
+    border-radius: 8px;
+    padding: 0.5rem 1.2rem;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .close-btn:hover {
+    background: #ffb5ef;
+    color: #1a001f;
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<h1>✦ A Contagem da Rosa ✦</h1>
+<div id="countdown"></div>
+
+<div class="calendar" id="calendar"></div>
+
+<div class="modal" id="modal">
+  <div class="modal-content" id="modal-content">
+    <p id="modal-text"></p>
+    <button class="close-btn" onclick="closeModal()">Fechar</button>
+  </div>
+</div>
+
+<script>
+// Fundo animado de estrelas
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let stars = [];
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  stars = Array.from({length: 80}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.2,
+    d: Math.random() * 1
+  }));
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+function animateStars() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = '#fff';
+  stars.forEach(s => {
+    ctx.beginPath();
+    ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+    ctx.fill();
+    s.y += s.d * 0.4;
+    if (s.y > canvas.height) s.y = 0;
+  });
+  requestAnimationFrame(animateStars);
+}
+animateStars();
+
+// Contagem regressiva
+const targetDate = new Date('2025-12-17T00:00:00-03:00');
+const countdownEl = document.getElementById('countdown');
+function updateCountdown() {
+  const now = new Date();
+  const diff = targetDate - now;
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  countdownEl.textContent = `Faltam ${days} dias, ${hours} horas e ${minutes} minutos para o grande dia.`;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
+
+// Dias e textos
+const days = [
+  { date: '2025-11-17', text: 'O primeiro passo da contagem — o mês em que o tempo começa a brilhar diferente.' },
+  { date: '2025-11-18', text: 'Hoje o vento sussurra lembranças, e o céu parece guardar segredos teus.' },
+  { date: '2025-11-19', text: 'Toda estrela é um pensamento teu — e cada pensamento, uma estrela a mais.' },
+  { date: '2025-11-20', text: 'A contagem continua, e o universo já começa a conspirar em tons de rosa e lilás.' },
+  { date: '2025-11-21', text: 'Nem todos os dias são comuns — alguns são portais disfarçados de amanhecer.' },
+  { date: '2025-11-22', text: 'A calma de hoje esconde o presságio de algo belo que se aproxima.' },
+  { date: '2025-11-23', text: 'Às vezes o destino se escreve em silêncio, uma página por vez.' }
+];
+
+const calendar = document.getElementById('calendar');
+const today = new Date();
+
+days.forEach((d, i) => {
+  const div = document.createElement('div');
+  const unlockDate = new Date(d.date);
+  div.classList.add('day');
+  if (today >= unlockDate) {
+    div.classList.add('unlocked');
+    div.addEventListener('click', () => openModal(d.text));
+  } else {
+    div.classList.add('locked');
+    div.addEventListener('click', () => openModal('O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.'));
+  }
+  div.innerHTML = `<strong>${i+1}</strong><span>${unlockDate.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>`;
+  calendar.appendChild(div);
+});
+
+// Modal
+const modal = document.getElementById('modal');
+const modalText = document.getElementById('modal-text');
+function openModal(text) {
+  modal.style.display = 'flex';
+  modalText.textContent = text;
+}
+function closeModal() {
+  modal.style.display = 'none';
+}
+</script>
+</body>
+</html>
