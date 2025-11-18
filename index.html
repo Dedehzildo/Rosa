@@ -369,6 +369,18 @@ main.grid{
     <div id="modalBody">
       <p id="modalText">carregando...</p>
     </div>
+<div id="extraMusicBox" style="display:none; margin-top:16px;">
+  <button id="playAltMusic" 
+          class="btn ghost"
+          style="width:100%; text-align:center;">
+    ▶ Tocar música deste dia
+  </button>
+</div>
+<button id="backToMainMusic"
+        class="btn ghost"
+        style="width:100%; text-align:center; margin-top:10px; display:none;">
+  ⏪ Voltar para a música principal
+</button>
 
     <div class="passwordBox" id="passwordBox">
       <label style="display:block;margin-bottom:6px;opacity:0.8">Senha do dia</label>
@@ -488,14 +500,15 @@ const days = [
   "date": "2025-11-19",
   "label": "19/11",
 
-  "text_before": "35 de 72\n10a frase\nPalavra 4",
+  "text_before": "35 de 72\n10ª frase\nPalavra 4",
 
   "password": "mine",
 
-  "hint": "Grey Cinza",
+  "hint": "Grey — Cinza",
 
-  "text_after": "Acho que começou a entender como as coisas vão acontecer por aqui...\nAlguns dias serão mais difíceis, elaborados...\n Outros serão mais simples e diretos.\n\nQuero explorar aqui todos os lados da sua intensidade.\nCada peça aqui representa uma fração do amor que eu sinto por você\n\n\nAmo muito você, princesa... \nMais do que tudo, mais do que sempre."
-},
+  "text_after": "Começou a perceber como esse lugar funciona, né?\nAqui dentro, cada dia tem um ritmo: alguns vão exigir calma, outros atenção, outros só… sentir.\n\nQuero te mostrar todas as camadas da sua intensidade — e da minha.\nCada pequeno enigma, cada detalhe, cada escolha… é uma parte do que eu sinto por você.\n\nE, princesa…\neu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
+}
+
   {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"p4","hint":"Luz em detalhes."},
   {"index":5,"date":"2025-11-21","label":"21/11","text":"Às vezes o amor não grita — ele sussurra.","password":"p5","hint":"O silêncio fala."},
   {"index":6,"date":"2025-11-22","label":"22/11","text":"Há lugares que só o amor conhece.","password":"p6","hint":"Memórias escondidas."},
@@ -608,6 +621,19 @@ const modal = document.getElementById("modal");
 const modalTitle = document.getElementById("modalTitle");
 const modalText  = document.getElementById("modalText");
 
+// Música adicional por dia
+const extraMusicBox = document.getElementById("extraMusicBox");
+const playAltMusicBtn = document.getElementById("playAltMusic");
+const backToMainMusicBtn = document.getElementById("backToMainMusic");
+const MAIN_MUSIC = "body-on-fire.mp3";
+
+
+// mapa de músicas extras por dia
+const dayExtraMusic = {
+  3: "sleep-token-mine.mp3"  // dia 19
+};
+
+
 const passwordBox = document.getElementById("passwordBox");
 const passwordInput = document.getElementById("passwordInput");
 
@@ -700,11 +726,45 @@ typeText(modalText, d.text_before || d.text, 22);
 
   passwordInput.value = "";
   hintBox.textContent = d.hint || "";
+  // música extra para o dia
+if (dayExtraMusic[i]) {
+  extraMusicBox.style.display = "block";
+} else {
+  extraMusicBox.style.display = "none";
+}
+backToMainMusicBtn.style.display = "none";
+playAltMusicBtn.textContent = "▶ Tocar música deste dia";
+
 
   showModal();
   setTimeout(() => passwordInput.focus(), 200);
 }
 
+playAltMusicBtn.addEventListener("click", () => {
+  const musicSrc = dayExtraMusic[currentIndex];
+  if (!musicSrc) return;
+
+  // troca a música com fade-in suave
+  bgMusic.pause();
+  bgMusic.src = musicSrc;
+  bgMusic.volume = 0;
+  bgMusic.play();
+
+  let vol = 0;
+  const fade = setInterval(() => {
+    vol += 0.03;
+    if (vol >= 0.55) {
+      bgMusic.volume = 0.55;
+      clearInterval(fade);
+    } else {
+      bgMusic.volume = vol;
+    }
+  }, 60);
+
+  // feedback visual
+  playAltMusicBtn.textContent = "🎵 Tocando música deste dia";
+  backToMainMusicBtn.style.display = "block";
+});
 
 /* ============================================================
    MODAL — Confirmar senha
