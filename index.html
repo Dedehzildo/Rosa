@@ -98,7 +98,7 @@ canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:no
   <main class="grid" id="grid" role="list" aria-label="Calendário do Advento"></main>
 
   <div style="max-width:1100px;margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px">
-    Ao subir no Vercel, verifique que o arquivo de áudio <code>body-on-fire.mp3</code> foi enviado para a mesma pasta.
+    Oi, meu bem...
   </div>
 </div>
 
@@ -193,13 +193,36 @@ const modalTitle = document.getElementById('modalTitle');
 const modalContent = document.getElementById('modalContent');
 const closeModal = document.getElementById('closeModal');
 
+// ---------- SENHAS POR DIA ----------
+const dayPasswords = {
+  1: "17121996",   // Dia 31 (índice 31 = 17 de dezembro) exige esta senha
+  // Exemplo de como adicionar mais:
+  // 1: "abc123",
+  // 5: "segredo",
+  // 12: "florazul",
+};
+
 function openModal(i){
   const d = days[i];
+
+  // Se o dia tiver senha configurada:
+  if(dayPasswords[d.index]){
+    const userInput = prompt("Este dia está protegido por uma senha. Digite a senha:");
+
+    if(userInput === null) return; // usuário cancelou
+    if(userInput !== dayPasswords[d.index]){
+      alert("Senha incorreta. Tente novamente.");
+      return;
+    }
+  }
+
+  // Abre normalmente
   modalTitle.textContent = d.label;
   modalContent.textContent = d.text;
   modalBack.classList.add('show');
   modalBack.setAttribute('aria-hidden','false');
 }
+
 closeModal.addEventListener('click', ()=> {
   modalBack.classList.remove('show');
   modalBack.setAttribute('aria-hidden','true');
