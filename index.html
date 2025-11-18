@@ -2,94 +2,138 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>A Contagem da Rosa — Final</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover" />
+<title>A Contagem da Rosa — Cinemática (Optimized iPhone)</title>
 <meta name="color-scheme" content="dark" />
 <style>
+  /* ===== Theme: místico + luxo (Aurora leve) ===== */
   :root{
-    --bg1:#0a0a0c; --bg2:#1c2740; --accent:#e4a7d3; --muted:#f6f5f8;
-    --glass: rgba(255,255,255,0.03);
+    --bg-deep:#06050a;
+    --nebula-1: rgba(91,35,96,0.10);
+    --nebula-2: rgba(134,54,131,0.06);
+    --accent:#cfa3e0;
+    --accent-2:#f6d7b1;
+    --muted:#efeaf2;
+    --card-bg: rgba(255,255,255,0.03);
+    --glass: rgba(255,255,255,0.04);
   }
   *{box-sizing:border-box}
   html,body{height:100%;margin:0;background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(40,26,51,0.35), transparent),
-    linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
-    color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased;
-    -webkit-text-size-adjust:100%;}
-  body{min-height:100vh;display:block;padding-bottom: env(safe-area-inset-bottom);}
-  .container{width:100%;max-width:1100px;padding:20px 18px 110px;margin:0 auto;}
-  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:6px}
-  h1{font-size:20px;margin:0}
-  .tag{color:rgba(246,245,248,0.78);font-size:13px;margin-top:4px}
-  .controls{display:flex;align-items:center;gap:12px}
-  .count{background:var(--glass);padding:10px 12px;border-radius:12px;border:1px solid rgba(228,167,211,0.05);font-size:13px}
+    radial-gradient(1000px 600px at 10% 12%, var(--nebula-1), transparent 18%),
+    radial-gradient(800px 420px at 92% 72%, var(--nebula-2), transparent 12%),
+    linear-gradient(180deg,var(--bg-deep) 0%, #0b0b10 100%);
+    color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial,-apple-system; -webkit-font-smoothing:antialiased;}
+  body{min-height:100vh;padding-bottom:env(safe-area-inset-bottom);-webkit-tap-highlight-color:transparent}
+
+  /* container */
+  .wrap{width:100%;max-width:1100px;margin:0 auto;padding:24px 18px 120px;position:relative;z-index:10}
+  header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .title h1{margin:0;font-size:20px}
+  .subtitle{margin-top:6px;color:rgba(239,234,242,0.78);font-size:13px}
+
+  /* controls */
+  .controls{display:flex;gap:12px;align-items:center}
+  .count{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.04));padding:10px 12px;border-radius:12px;border:1px solid rgba(255,255,255,0.03);font-size:13px;backdrop-filter: blur(4px)}
   .count .num{font-weight:700;color:var(--accent);margin-top:4px}
-  #startMusic{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:700;cursor:pointer}
-  main.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px}
-  .day{aspect-ratio:1;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6);transition:transform .28s,box-shadow .28s;overflow:hidden;position:relative}
-  .day.locked{opacity:.4;filter:grayscale(20%);pointer-events:auto}
-  .day.unlocked{animation:glow 3s ease-in-out infinite}
-  @keyframes glow{0%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}50%{box-shadow:0 14px 30px rgba(228,167,211,0.28)}100%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}}
-  .circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.95), rgba(28,40,64,0.95));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
-  .label{margin-top:8px;font-size:12px;color:rgba(246,245,248,0.9);text-align:center}
-  .day .check {position: absolute;right:8px;top:8px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#000;font-weight:700;box-shadow:0 6px 14px rgba(228,167,211,0.18);transform:scale(0);transition:transform .22s cubic-bezier(.2,.9,.2,1);}
-  .day.checked .check { transform:scale(1); }
-  .modalBack{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.85));z-index:220;padding:18px}
-  .modal{width:100%;max-width:680px;background:linear-gradient(180deg, rgba(18,16,24,0.98), rgba(30,24,42,0.96));border-radius:14px;padding:20px;border:1px solid rgba(228,167,211,0.06);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-  .modal h2{margin:0 0 8px;color:var(--accent)}
-  .modal p{margin:6px 0 12px;line-height:1.4;color:var(--muted)}
-  .passwordBox{margin-top:6px}
+  #startMusic{padding:10px 14px;border-radius:12px;background:linear-gradient(180deg,var(--accent),#a77bb7);border:0;color:#080206;font-weight:700;cursor:pointer}
+
+  /* grid */
+  main.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;touch-action:manipulation}
+  .day{aspect-ratio:1;border-radius:14px;background:linear-gradient(180deg,var(--card-bg), rgba(255,255,255,0.02));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:visible;box-shadow:0 8px 30px rgba(2,6,23,0.55);transform:translateY(12px) scale(.995);opacity:0}
+  .day.enter{animation:cardIn .44s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes cardIn{to{transform:none;opacity:1}}
+  .circle{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(20,12,30,0.95), rgba(28,40,64,0.95));border:1px solid rgba(255,255,255,0.04);color:var(--muted)}
+  .label{margin-top:8px;font-size:12px;color:rgba(239,234,242,0.92);text-align:center;padding:0 6px}
+  .day.locked{filter:grayscale(20%);opacity:.55}
+  .day.unlocked{transition:box-shadow .3s,transform .22s}
+  .day.checked{outline:2px solid rgba(246,215,166,0.05);box-shadow:0 14px 46px rgba(200,140,200,0.06)}
+  .day .check{position:absolute;right:8px;top:8px;width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent-2);color:#000;font-weight:700;transform:scale(0);transition:transform .22s}
+  .day.checked .check{transform:scale(1)}
+  .day:hover{transform:translateY(-6px);box-shadow:0 18px 60px rgba(0,0,0,0.65)}
+
+  /* modal glass */
+  .modalBack{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,3,6,0.6), rgba(2,3,6,0.82));z-index:220;padding:18px}
+  .modal{width:100%;max-width:760px;border-radius:16px;padding:20px;background:linear-gradient(180deg, rgba(8,6,12,0.82), rgba(18,12,25,0.96));border:1px solid rgba(255,255,255,0.03);backdrop-filter: blur(10px);box-shadow:0 30px 80px rgba(0,0,0,0.7);transform:translateY(10px) scale(.98);opacity:0}
+  .modal.show{animation:modalIn .36s cubic-bezier(.2,.9,.2,1) forwards}
+  @keyframes modalIn{to{transform:none;opacity:1}}
+  .modal h2{margin:0;color:var(--accent)}
+  .modal p{color:var(--muted);line-height:1.6;margin:10px 0}
+  .passwordBox{margin-top:8px}
   .passwordBox input{width:100%;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted)}
-  .hintBox{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);color:var(--muted);min-height:72px}
+  .hintBox{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.02);color:var(--muted);min-height:58px}
   .btnRow{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
   .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-  .btn.primary{background:var(--accent);color:#000;font-weight:700}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),#a77bb7);color:#0b0609;font-weight:700}
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-  .toast {position: fixed;left: 50%;transform: translateX(-50%) translateY(20px);bottom: 26px;padding: 10px 14px;border-radius: 12px;background: rgba(0,0,0,0.6);color: var(--muted);z-index: 300;opacity: 0;transition: opacity .24s, transform .24s;backdrop-filter: blur(4px);}
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10;display:block}
-  @media (max-width:720px){ main.grid{grid-template-columns:repeat(3,1fr);gap:10px} .circle{width:50px;height:50px;font-size:16px} .container{padding:18px} }
+
+  /* toast */
+  .toast{position:fixed;left:50%;transform:translateX(-50%) translateY(20px);bottom:28px;padding:10px 14px;border-radius:12px;background:rgba(0,0,0,0.6);color:var(--muted);z-index:400;opacity:0;transition:all .24s}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+  /* typing cursor */
+  .type-cursor{display:inline-block;width:8px;height:18px;background:var(--accent);margin-left:6px;vertical-align:middle;animation:blink 1s steps(2) infinite}
+  @keyframes blink{50%{opacity:0}}
+
+  /* safety for iOS */
+  button, input{ -webkit-appearance: none; }
+  html,body{ -webkit-font-smoothing:antialiased; -webkit-text-size-adjust:100%}
+  main.grid, .day { -webkit-transform: translateZ(0); will-change: transform, opacity; }
+  .wrap{padding-top:calc(env(safe-area-inset-top) + 16px)}
+
+  @media (max-width:720px){
+    main.grid{grid-template-columns:repeat(3,1fr);gap:10px}
+    .circle{width:52px;height:52px}
+    .label{font-size:12px}
+    .modal{padding:16px}
+  }
 </style>
 </head>
 <body>
-  <canvas id="snow"></canvas>
+  <!-- canvases: aurora (light), stars, snow -->
+  <canvas id="aurora" style="position:fixed;left:0;top:0;pointer-events:none;z-index:3"></canvas>
+  <canvas id="stars" style="position:fixed;left:0;top:0;pointer-events:none;z-index:2"></canvas>
+  <canvas id="snow" style="position:fixed;left:0;top:0;pointer-events:none;z-index:4"></canvas>
 
-  <div class="container" role="main">
+  <div class="wrap" role="main">
     <header>
-      <div>
+      <div class="title">
         <h1>🌙 A Contagem da Rosa</h1>
-        <div class="tag">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
+        <div class="subtitle">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
       </div>
-      <div class="controls">
+      <div class="controls" aria-hidden="false">
         <div class="count" aria-live="polite">
-          <div style="font-size:12px;color:rgba(246,245,248,0.68)">contagem até 17 de Dezembro</div>
+          <div style="font-size:12px;color:rgba(239,234,242,0.68)">contagem até 17 de dezembro</div>
           <div class="num" id="cdText">-- dias --</div>
         </div>
-        <button id="startMusic" aria-label="Iniciar música">▶ Música</button>
+        <button id="startMusic" aria-label="Tocar música">▶ Música</button>
       </div>
     </header>
 
-    <main class="grid" id="grid" aria-label="Calendário do advento"></main>
+    <main id="grid" class="grid" aria-label="Calendário do advento"></main>
 
-    <div style="margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px;max-width:1100px">Oi, meu bem...</div>
+    <div style="margin-top:18px;color:rgba(239,234,242,0.62);font-size:14px;max-width:1100px">
+      Oi, meu bem...
+    </div>
   </div>
 
   <!-- modal -->
   <div class="modalBack" id="modalBack" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button id="closeModal" style="float:right;background:none;border:0;color:#fff;font-size:18px">✕</button>
+    <div class="modal" id="modal" role="dialog" aria-modal="true">
+      <button id="closeModal" style="float:right;background:none;border:0;color:var(--muted);font-size:18px">✕</button>
       <h2 id="modalTitle">Dia</h2>
-      <p id="modalText">conteúdo</p>
+      <div id="modalBody">
+        <p id="modalText"></p>
+      </div>
 
       <div class="passwordBox" id="passwordBox">
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia</label>
+        <label style="display:block;margin-bottom:6px;color:rgba(239,234,242,0.8)">Senha do dia</label>
         <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia" inputmode="text" />
       </div>
 
       <div style="height:10px"></div>
 
       <div id="hintContainer">
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica</label>
+        <label style="display:block;margin-bottom:6px;color:rgba(239,234,242,0.8)">Dica</label>
         <div class="hintBox" id="hintBox" aria-live="polite"></div>
       </div>
 
@@ -102,10 +146,13 @@
 
   <div class="toast" id="toast">✔ Senha correta</div>
 
+  <!-- audio: keep local file or change -->
   <audio id="bgMusic" loop preload="auto" src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
 
 <script>
-/* days */
+/* =========================
+   DAYS (easy to edit) - keep these keys
+   ========================= */
 const days = [
   {"index":1,"date":"2025-11-17","label":"17/11","text":"Hoje, o tempo despertou.","password":"p1","hint":"Um pequeno começo."},
   {"index":2,"date":"2025-11-18","label":"18/11","text":"O universo tem um hábito curioso.","password":"p2","hint":"Observe os sinais."},
@@ -140,34 +187,46 @@ const days = [
   {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
 ];
 
-/* helpers */
-function parseLocalDateYMD(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y, m-1, d, 0, 0, 0, 0); }
+/* ========== helpers ========== */
+function parseLocalDateYMD(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y, m-1, d, 0,0,0,0); }
+const STORAGE_KEY = 'rosa_unlocked_cinematic_v1';
+let unlockedSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]'));
 
-/* render grid */
+/* ========== grid render with stagger ========== */
 const grid = document.getElementById('grid');
 function createGrid(){
   grid.innerHTML = '';
-  days.forEach((d, i) => {
+  days.forEach((d,i)=>{
     const el = document.createElement('div');
     const today = new Date(); today.setHours(0,0,0,0);
     const dayDate = parseLocalDateYMD(d.date);
-    const unlocked = today >= dayDate;
-    el.className = unlocked ? 'day unlocked' : 'day locked';
+    const unlockedByTime = today >= dayDate;
+    const isChecked = unlockedSet.has(String(i));
+    el.className = unlockedByTime ? 'day unlocked' : 'day locked';
+    if(isChecked) el.classList.add('checked');
     el.dataset.index = i;
     el.innerHTML = `<div class="circle">${d.index}</div><div class="label">${d.label}</div><div class="check">✓</div>`;
     grid.appendChild(el);
+    setTimeout(()=> el.classList.add('enter'), i*35);
   });
 }
 createGrid();
 
-/* countdown */
+/* ========== countdown ========== */
 const cdText = document.getElementById('cdText');
 const target = parseLocalDateYMD('2025-12-17');
-function updateCountdown(){ const now = new Date(); let diff = target - now; if(diff < 0) diff = 0; const daysLeft = Math.floor(diff / (1000*60*60*24)); const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)); const mins = Math.floor((diff % (1000*60*60)) / (1000*60)); cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`; }
+function updateCountdown(){
+  const now = new Date(); let diff = target - now; if(diff < 0) diff = 0;
+  const daysLeft = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+  cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
+}
 updateCountdown(); setInterval(updateCountdown, 30*1000);
 
-/* modal handlers */
+/* ========== modal & typing ========== */
 const modalBack = document.getElementById('modalBack');
+const modal = document.getElementById('modal');
 const modalTitle = document.getElementById('modalTitle');
 const modalText = document.getElementById('modalText');
 const passwordInput = document.getElementById('passwordInput');
@@ -179,146 +238,231 @@ const btnClose = document.getElementById('btnClose');
 const closeModalBtn = document.getElementById('closeModal');
 const toast = document.getElementById('toast');
 
-closeModalBtn.addEventListener('click', closeModal);
-btnClose.addEventListener('click', closeModal);
-
 let currentIndex = null;
+let typeTimer = null;
+
+function typeText(el, text, speed=20, done){
+  if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
+  el.textContent = ''; let i=0;
+  function step(){ if(i<text.length){ el.textContent += text[i++]; typeTimer = setTimeout(step, speed); } else if(done) done(); }
+  step();
+}
+
+function showModal(){ modalBack.style.display='flex'; modalBack.setAttribute('aria-hidden','false'); modal.classList.add('show'); }
+function closeModal(){ modalBack.style.display='none'; modalBack.setAttribute('aria-hidden','true'); modal.classList.remove('show'); currentIndex=null; if(passwordBox) passwordBox.style.display='block'; if(hintContainer) hintContainer.style.display='block'; if(btnConfirm) btnConfirm.style.display='inline-block'; if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; } }
 
 function openModal(i){
-  currentIndex = i;
-  const d = days[i];
+  currentIndex = i; const d = days[i];
   const dayEl = document.querySelector(`.day[data-index="${i}"]`);
-  const alreadyCleared = dayEl.classList.contains('checked');
-
-  if (alreadyCleared) {
-    modalTitle.textContent = d.label + " — Desbloqueado 💗";
-    modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
-
-    if(passwordBox) passwordBox.style.display = "none";
-    if(hintContainer) hintContainer.style.display = "none";
-    if(btnConfirm) btnConfirm.style.display = "none";
-
-    passwordInput.value = "";
-
-    modalBack.style.display = "flex";
-    modalBack.setAttribute("aria-hidden", "false");
+  const isChecked = unlockedSet.has(String(i));
+  if(isChecked){
+    modalTitle.textContent = `${d.label} — Desbloqueado 💗`;
+    const reveal = d.hint && d.hint.trim().length ? d.hint : d.text;
+    modalText.textContent = reveal;
+    if(passwordBox) passwordBox.style.display='none';
+    if(hintContainer) hintContainer.style.display='none';
+    if(btnConfirm) btnConfirm.style.display='none';
+    showModal();
     return;
   }
-
   modalTitle.textContent = d.label;
-  modalText.textContent = d.text;
-
-  if(passwordBox) passwordBox.style.display = "block";
-  if(hintContainer) hintContainer.style.display = "block";
-  if(btnConfirm) btnConfirm.style.display = "inline-block";
-
-  passwordInput.value = "";
-  hintBox.textContent = d.hint || "";
-
-  modalBack.style.display = "flex";
-  modalBack.setAttribute("aria-hidden", "false");
-
-  setTimeout(() => passwordInput.focus(), 200);
+  typeText(modalText, d.text, 20);
+  if(passwordBox) passwordBox.style.display='block';
+  if(hintContainer) hintContainer.style.display='block';
+  if(btnConfirm) btnConfirm.style.display='inline-block';
+  passwordInput.value=''; hintBox.textContent = d.hint || '';
+  showModal();
+  setTimeout(()=> passwordInput.focus(), 240);
 }
-
-function closeModal(){
-  modalBack.style.display = 'none';
-  modalBack.setAttribute('aria-hidden','true');
-  currentIndex = null;
-  if(passwordBox) passwordBox.style.display = "block";
-  if(hintContainer) hintContainer.style.display = "block";
-  if(btnConfirm) btnConfirm.style.display = "inline-block";
-}
-
-/* toast */
-function showToast(msg = '✔ Senha correta'){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=> toast.classList.remove('show'), 1800); }
 
 /* confirm password */
 btnConfirm.addEventListener('click', ()=>{
-  if(currentIndex === null) return;
-  const d = days[currentIndex];
-  const entered = (passwordInput.value||'').trim();
-
-  if(d.password){
+  if(currentIndex===null) return;
+  const d = days[currentIndex]; const entered = (passwordInput.value||'').trim();
+  if(d.password && d.password.length){
     if(entered.toLowerCase() === d.password.toLowerCase()){
+      unlockedSet.add(String(currentIndex));
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(Array.from(unlockedSet)));
       const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
       if(dayEl) dayEl.classList.add('checked');
-
-      modalTitle.textContent = d.label + " — Desbloqueado 💗";
-      modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
-
-      if(passwordBox) passwordBox.style.display = "none";
-      if(hintContainer) hintContainer.style.display = "none";
-      if(btnConfirm) btnConfirm.style.display = "none";
-
+      const reveal = d.hint && d.hint.trim().length ? d.hint : d.text;
+      modalTitle.textContent = `${d.label} — Desbloqueado 💗`;
+      modalText.textContent = reveal;
+      if(passwordBox) passwordBox.style.display='none';
+      if(hintContainer) hintContainer.style.display='none';
+      if(btnConfirm) btnConfirm.style.display='none';
+      spawnSparklesAt(dayEl);
       showToast('✔ Senha correta');
-    } else {
-      showToast('✖ Senha incorreta');
-      passwordInput.focus();
-    }
-  }
+    } else { showToast('✖ Senha incorreta'); passwordInput.focus(); }
+  } else { showToast('✔ Sem senha — conteúdo liberado'); }
 });
 
-/* clicking boxes */
+/* grid click */
 grid.addEventListener('click', (ev)=>{
-  const dayEl = ev.target.closest('.day');
-  if(!dayEl) return;
-  const i = Number(dayEl.dataset.index);
-  if(Number.isNaN(i)) return;
-  const d = days[i];
-  const dayDate = parseLocalDateYMD(d.date);
+  const dayEl = ev.target.closest('.day'); if(!dayEl) return;
+  const i = Number(dayEl.dataset.index); if(Number.isNaN(i)) return;
+  const d = days[i]; const dayDate = parseLocalDateYMD(d.date);
   const today = new Date(); today.setHours(0,0,0,0);
-  if(today >= dayDate){
-    openModal(i);
-  } else {
+  if(today >= dayDate) openModal(i);
+  else {
     modalTitle.textContent = 'Ainda trancado';
     modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
-    if(passwordBox) passwordBox.style.display = "none";
-    if(hintContainer) hintContainer.style.display = "none";
-    passwordInput.value = '';
-    modalBack.style.display = 'flex';
-    modalBack.setAttribute('aria-hidden','false');
+    if(passwordBox) passwordBox.style.display='none'; if(hintContainer) hintContainer.style.display='none'; if(btnConfirm) btnConfirm.style.display='none';
+    passwordInput.value=''; showModal();
   }
 });
 
-/* auto-refresh unlocked */
+/* keep unlocked by time updated */
 setInterval(()=>{
   const today = new Date(); today.setHours(0,0,0,0);
   document.querySelectorAll('.day').forEach(el=>{
-    const i = Number(el.dataset.index);
-    const d = days[i];
-    const dayDate = parseLocalDateYMD(d.date);
-    if(today >= dayDate){
-      el.classList.remove('locked');
-      el.classList.add('unlocked');
-    }
+    const i = Number(el.dataset.index); const d = days[i]; const dayDate = parseLocalDateYMD(d.date);
+    if(today >= dayDate) el.classList.add('unlocked');
   });
 }, 60000);
 
-/* audio */
+/* modal close */
+closeModalBtn.addEventListener('click', closeModal);
+btnClose.addEventListener('click', closeModal);
+document.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeModal(); });
+
+/* toast */
+function showToast(msg='✔ Senha correta'){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=> toast.classList.remove('show'), 1600); }
+
+/* ========== Audio Button (user requested: play/pause on button) ========== */
 const bgMusic = document.getElementById('bgMusic');
 const startMusicBtn = document.getElementById('startMusic');
 let musicPlaying = false;
-startMusicBtn.addEventListener('click', async () => {
-  try {
-    if (!musicPlaying) { await bgMusic.play(); musicPlaying = true; startMusicBtn.textContent = '⏸ Parar'; }
-    else { bgMusic.pause(); musicPlaying = false; startMusicBtn.textContent = '▶ Música'; }
-  } catch (err) { showToast('O navegador bloqueou o áudio — toque novamente.'); }
+startMusicBtn.addEventListener('click', async ()=>{
+  try{
+    if(!musicPlaying){ await bgMusic.play(); musicPlaying = true; startMusicBtn.textContent='⏸ Parar'; }
+    else { bgMusic.pause(); musicPlaying = false; startMusicBtn.textContent='▶ Música'; }
+  }catch(err){ showToast('O navegador bloqueou o áudio — clique novamente.'); }
 });
+bgMusic.addEventListener('ended', ()=>{ musicPlaying=false; startMusicBtn.textContent='▶ Música'; });
 
-/* snow */
+/* ========== Particles (sparkles) lightweight for iPhone ========== */
+function spawnSparklesAt(el){
+  if(!el) return;
+  playSparklesAtElement(el, {count:18, life:60});
+}
+function playSparklesAtElement(el, opts={count:18, life:60}){
+  const rect = el.getBoundingClientRect(); const cx = rect.left + rect.width/2; const cy = rect.top + rect.height/2;
+  const c = document.createElement('canvas'); c.style.position='fixed'; c.style.left='0'; c.style.top='0'; c.style.pointerEvents='none'; c.width = innerWidth; c.height = innerHeight; c.style.zIndex = 9999; document.body.appendChild(c);
+  const ctx = c.getContext('2d'); const particles=[];
+  for(let i=0;i<opts.count;i++){
+    particles.push({x:cx,y:cy, vx:(Math.random()-0.5)*3, vy:(Math.random()-1.2)*-3, r:Math.random()*2+0.6, life:Math.random()*opts.life+20, color: Math.random()>0.55? 'rgba(246,215,166,1)' : 'rgba(207,163,224,1)'});
+  }
+  let frame=0;
+  function step(){
+    ctx.clearRect(0,0,c.width,c.height);
+    for(const p of particles){
+      p.x += p.vx; p.y += p.vy + (frame*0.002); p.vy += 0.03; p.life--; const a = Math.max(0, p.life/ (opts.life+20));
+      ctx.beginPath(); ctx.fillStyle = `rgba(255,255,255,${a*0.06})`; ctx.arc(p.x,p.y,p.r*2.2,0,Math.PI*2); ctx.fill();
+      ctx.beginPath(); ctx.fillStyle = p.color.replace('1)', `${a})`); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    }
+    frame++;
+    if(frame < opts.life+30) requestAnimationFrame(step); else document.body.removeChild(c);
+  }
+  step();
+}
+
+/* ========== Canvases: stars, aurora (light), snow; responsive + DPR ========== */
+const starsCanvas = document.getElementById('stars');
+const auroraCanvas = document.getElementById('aurora');
 const snowCanvas = document.getElementById('snow');
-const sctx = snowCanvas.getContext('2d');
-let W = snowCanvas.width = innerWidth;
-let H = snowCanvas.height = innerHeight;
-let flakes = [];
-function initSnow(){ flakes = []; const isMobile = /Mobi|Android/i.test(navigator.userAgent); const count = isMobile ? 80 : 160; for(let i=0;i<count;i++){ flakes.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2.5 + 0.6, vx: (Math.random()-0.5)*0.6, vy: Math.random()*0.9 + 0.4, rot: Math.random()*Math.PI*2 }); } }
-function drawSnow(){ sctx.clearRect(0,0,W,H); sctx.fillStyle = 'rgba(255,255,255,0.9)'; for(const f of flakes){ sctx.beginPath(); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2); sctx.fill(); f.x += f.vx + Math.sin(f.rot)*0.2; f.y += f.vy; f.rot += 0.01; if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; } if(f.x < -30) f.x = W + 30; if(f.x > W + 30) f.x = -30; } requestAnimationFrame(drawSnow); }
-initSnow(); drawSnow();
-window.addEventListener('resize', ()=>{ W = snowCanvas.width = innerWidth; H = snowCanvas.height = innerHeight; initSnow(); });
+const sctx = starsCanvas.getContext('2d');
+const actx = auroraCanvas.getContext('2d');
+const nctx = snowCanvas.getContext('2d');
 
-/* ESC to close */
-document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
+let DPR = Math.max(1, window.devicePixelRatio || 1);
+let W = innerWidth, H = innerHeight;
+function resizeAll(){
+  DPR = Math.max(1, window.devicePixelRatio || 1);
+  W = innerWidth; H = innerHeight;
+  [starsCanvas, auroraCanvas, snowCanvas].forEach(c=>{
+    c.width = Math.floor(W * DPR);
+    c.height = Math.floor(H * DPR);
+    c.style.width = W + 'px';
+    c.style.height = H + 'px';
+  });
+  sctx.setTransform(DPR,0,0,DPR,0,0);
+  actx.setTransform(DPR,0,0,DPR,0,0);
+  nctx.setTransform(DPR,0,0,DPR,0,0);
+  initStars(); initSnow();
+}
+window.addEventListener('resize', resizeAll);
+
+/* Stars */
+let stars = [];
+function initStars(){
+  stars = []; const count = Math.max(100, Math.floor((W*H)/9000));
+  for(let i=0;i<count;i++) stars.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.6+0.2, alpha:Math.random()*0.8+0.2, phase:Math.random()*Math.PI*2});
+}
+function drawStars(){
+  sctx.clearRect(0,0,W,H);
+  for(const st of stars){ st.phase += 0.01; const a = st.alpha * (0.5 + 0.5*Math.sin(st.phase)); sctx.beginPath(); sctx.fillStyle = `rgba(255,255,255,${a})`; sctx.arc(st.x, st.y, st.r, 0, Math.PI*2); sctx.fill(); }
+  requestAnimationFrame(drawStars);
+}
+
+/* Aurora - LIGHT (user chose A) */
+let aurPhase = 0;
+function drawAurora(){
+  actx.clearRect(0,0,W,H);
+  aurPhase += 0.0016;
+  const gradient = actx.createLinearGradient(0, H*0.12, 0, H*0.38);
+  gradient.addColorStop(0, 'rgba(151,88,198,0.08)');
+  gradient.addColorStop(0.5, 'rgba(233,160,119,0.03)');
+  gradient.addColorStop(1, 'rgba(130,80,150,0)');
+  actx.fillStyle = gradient; actx.beginPath();
+  actx.moveTo(0, H*0.32);
+  for(let x=0;x<=W;x+=60){
+    const y = H*0.30 + Math.sin((x*0.004)+aurPhase*3) * 10;
+    actx.lineTo(x, y);
+  }
+  actx.lineTo(W, H*0.32); actx.closePath(); actx.fill();
+  requestAnimationFrame(drawAurora);
+}
+
+/* Snow (light) */
+let flakes = [];
+function initSnow(){
+  flakes = []; const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const count = isMobile ? 50 : 90;
+  for(let i=0;i<count;i++) flakes.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.5 + 0.3, vx:(Math.random()-0.5)*0.3, vy:Math.random()*0.6+0.12, rot:Math.random()*Math.PI*2});
+}
+function drawSnow(){
+  nctx.clearRect(0,0,W,H);
+  nctx.fillStyle = 'rgba(255,255,255,0.9)';
+  for(const f of flakes){
+    nctx.beginPath(); nctx.arc(f.x, f.y, f.r, 0, Math.PI*2); nctx.fill();
+    f.x += f.vx + Math.sin(f.rot)*0.12; f.y += f.vy; f.rot += 0.008;
+    if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; }
+    if(f.x < -30) f.x = W + 30; if(f.x > W + 30) f.x = -30;
+  }
+  requestAnimationFrame(drawSnow);
+}
+
+/* init everything */
+resizeAll(); drawStars(); drawAurora(); drawSnow();
+
+/* ========== small helper: revive unlocked state + mark time unlocked ========== */
+function initUnlockedByTimeAndStorage(){
+  const today = new Date(); today.setHours(0,0,0,0);
+  document.querySelectorAll('.day').forEach(el=>{
+    const i = Number(el.dataset.index); const d = days[i]; const dayDate = parseLocalDateYMD(d.date);
+    if(today >= dayDate) el.classList.add('unlocked');
+    if(unlockedSet.has(String(i))) el.classList.add('checked');
+  });
+}
+initUnlockedByTimeAndStorage();
+
+/* ========== minimal accessibility notes (tap handling optimized) ========== */
+/* nothing extra; escape closes modal (already added) */
+
+/* ========== convenience: small debug helper (uncomment for dev) ========== */
+// localStorage.removeItem(STORAGE_KEY); unlockedSet = new Set(); createGrid(); initUnlockedByTimeAndStorage();
+
 </script>
 </body>
 </html>
