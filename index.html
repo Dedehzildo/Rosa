@@ -6,7 +6,6 @@
 <title>A Contagem da Rosa — Final</title>
 <meta name="color-scheme" content="dark" />
 <style>
-  /* --- base --- */
   :root{
     --bg1:#0a0a0c; --bg2:#1c2740; --accent:#e4a7d3; --muted:#f6f5f8;
     --glass: rgba(255,255,255,0.03);
@@ -17,61 +16,24 @@
     linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
     color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased;
     -webkit-text-size-adjust:100%;}
-
-  /* FIX MOBILE SAFE AREA */
-  body{
-    min-height:100vh;
-    display:block;
-    padding-bottom: env(safe-area-inset-bottom);
-  }
-
+  body{min-height:100vh;display:block;padding-bottom: env(safe-area-inset-bottom);}
   .container{width:100%;max-width:1100px;padding:20px 18px 110px;margin:0 auto;}
-
   header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:6px}
   h1{font-size:20px;margin:0}
   .tag{color:rgba(246,245,248,0.78);font-size:13px;margin-top:4px}
-
-  /* countdown & audio control */
   .controls{display:flex;align-items:center;gap:12px}
   .count{background:var(--glass);padding:10px 12px;border-radius:12px;border:1px solid rgba(228,167,211,0.05);font-size:13px}
   .count .num{font-weight:700;color:var(--accent);margin-top:4px}
-
   #startMusic{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:700;cursor:pointer}
-
-  /* grid */
   main.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px}
   .day{aspect-ratio:1;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6);transition:transform .28s,box-shadow .28s;overflow:hidden;position:relative}
   .day.locked{opacity:.4;filter:grayscale(20%);pointer-events:auto}
   .day.unlocked{animation:glow 3s ease-in-out infinite}
-  @keyframes glow{
-    0%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
-    50%{box-shadow:0 14px 30px rgba(228,167,211,0.28)}
-    100%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
-  }
+  @keyframes glow{0%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}50%{box-shadow:0 14px 30px rgba(228,167,211,0.28)}100%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}}
   .circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.95), rgba(28,40,64,0.95));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
   .label{margin-top:8px;font-size:12px;color:rgba(246,245,248,0.9);text-align:center}
-
-  /* check badge */
-  .day .check {
-    position: absolute;
-    right:8px;
-    top:8px;
-    width:28px;
-    height:28px;
-    border-radius:8px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    background:var(--accent);
-    color:#000;
-    font-weight:700;
-    box-shadow:0 6px 14px rgba(228,167,211,0.18);
-    transform:scale(0);
-    transition:transform .22s cubic-bezier(.2,.9,.2,1);
-  }
+  .day .check {position: absolute;right:8px;top:8px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent);color:#000;font-weight:700;box-shadow:0 6px 14px rgba(228,167,211,0.18);transform:scale(0);transition:transform .22s cubic-bezier(.2,.9,.2,1);}
   .day.checked .check { transform:scale(1); }
-
-  /* modal */
   .modalBack{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.85));z-index:220;padding:18px}
   .modal{width:100%;max-width:680px;background:linear-gradient(180deg, rgba(18,16,24,0.98), rgba(30,24,42,0.96));border-radius:14px;padding:20px;border:1px solid rgba(228,167,211,0.06);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
   .modal h2{margin:0 0 8px;color:var(--accent)}
@@ -83,33 +45,10 @@
   .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
   .btn.primary{background:var(--accent);color:#000;font-weight:700}
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
-
-  /* toast */
-  .toast {
-    position: fixed;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    bottom: 26px;
-    padding: 10px 14px;
-    border-radius: 12px;
-    background: rgba(0,0,0,0.6);
-    color: var(--muted);
-    z-index: 300;
-    opacity: 0;
-    transition: opacity .24s, transform .24s;
-    backdrop-filter: blur(4px);
-  }
+  .toast {position: fixed;left: 50%;transform: translateX(-50%) translateY(20px);bottom: 26px;padding: 10px 14px;border-radius: 12px;background: rgba(0,0,0,0.6);color: var(--muted);z-index: 300;opacity: 0;transition: opacity .24s, transform .24s;backdrop-filter: blur(4px);}
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-
-  /* snow */
   canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10;display:block}
-
-  /* responsive */
-  @media (max-width:720px){
-    main.grid{grid-template-columns:repeat(3,1fr);gap:10px}
-    .circle{width:50px;height:50px;font-size:16px}
-    .container{padding:18px}
-  }
+  @media (max-width:720px){ main.grid{grid-template-columns:repeat(3,1fr);gap:10px} .circle{width:50px;height:50px;font-size:16px} .container{padding:18px} }
 </style>
 </head>
 <body>
@@ -132,9 +71,7 @@
 
     <main class="grid" id="grid" aria-label="Calendário do advento"></main>
 
-    <div style="margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px;max-width:1100px">
-      Oi, meu bem...
-    </div>
+    <div style="margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px;max-width:1100px">Oi, meu bem...</div>
   </div>
 
   <!-- modal -->
@@ -163,14 +100,12 @@
     </div>
   </div>
 
-  <!-- toast -->
   <div class="toast" id="toast">✔ Senha correta</div>
 
-  <!-- audio -->
   <audio id="bgMusic" loop preload="auto" src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
 
 <script>
-/* ---------- days + passwords ---------- */
+/* days */
 const days = [
   {"index":1,"date":"2025-11-17","label":"17/11","text":"Hoje, o tempo despertou.","password":"p1","hint":"Um pequeno começo."},
   {"index":2,"date":"2025-11-18","label":"18/11","text":"O universo tem um hábito curioso.","password":"p2","hint":"Observe os sinais."},
@@ -205,13 +140,10 @@ const days = [
   {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
 ];
 
-/* ---------- helpers ---------- */
-function parseLocalDateYMD(ymd){
-  const [y,m,d] = ymd.split('-').map(Number);
-  return new Date(y, m-1, d, 0, 0, 0, 0);
-}
+/* helpers */
+function parseLocalDateYMD(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y, m-1, d, 0, 0, 0, 0); }
 
-/* ---------- render grid ---------- */
+/* render grid */
 const grid = document.getElementById('grid');
 function createGrid(){
   grid.innerHTML = '';
@@ -228,22 +160,13 @@ function createGrid(){
 }
 createGrid();
 
-/* ---------- countdown ---------- */
+/* countdown */
 const cdText = document.getElementById('cdText');
 const target = parseLocalDateYMD('2025-12-17');
-function updateCountdown(){
-  const now = new Date();
-  let diff = target - now;
-  if(diff < 0) diff = 0;
-  const daysLeft = Math.floor(diff / (1000*60*60*24));
-  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
-  cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
-}
-updateCountdown();
-setInterval(updateCountdown, 30*1000);
+function updateCountdown(){ const now = new Date(); let diff = target - now; if(diff < 0) diff = 0; const daysLeft = Math.floor(diff / (1000*60*60*24)); const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60)); const mins = Math.floor((diff % (1000*60*60)) / (1000*60)); cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`; }
+updateCountdown(); setInterval(updateCountdown, 30*1000);
 
-/* ---------- modal handlers ---------- */
+/* modal handlers */
 const modalBack = document.getElementById('modalBack');
 const modalTitle = document.getElementById('modalTitle');
 const modalText = document.getElementById('modalText');
@@ -264,7 +187,6 @@ let currentIndex = null;
 function openModal(i){
   currentIndex = i;
   const d = days[i];
-
   const dayEl = document.querySelector(`.day[data-index="${i}"]`);
   const alreadyCleared = dayEl.classList.contains('checked');
 
@@ -272,44 +194,25 @@ function openModal(i){
     modalTitle.textContent = d.label + " — Desbloqueado 💗";
     modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
 
-    // esconder senha, esconder dica, esconder botão confirmar
-    passwordBox.style.display = "none";
-    hintContainer.style.display = "none";
-    btnConfirm.style.display = "none";
+    if(passwordBox) passwordBox.style.display = "none";
+    if(hintContainer) hintContainer.style.display = "none";
+    if(btnConfirm) btnConfirm.style.display = "none";
+
+    passwordInput.value = "";
 
     modalBack.style.display = "flex";
     modalBack.setAttribute("aria-hidden", "false");
     return;
   }
 
-  // ainda não desbloqueado → mostrar senha e confirmar
   modalTitle.textContent = d.label;
   modalText.textContent = d.text;
 
-  passwordBox.style.display = "block";
-  hintContainer.style.display = "block";
-  btnConfirm.style.display = "inline-block";
-
-  passwordInput.value = "";
-  hintBox.textContent = d.hint || "";
-
-  modalBack.style.display = "flex";
-  modalBack.setAttribute("aria-hidden", "false");
-
-  setTimeout(() => passwordInput.focus(), 200);
-}
-
-
-  // Not yet cleared: show the modal with password input and hint
-  modalTitle.textContent = d.label;
-  // show the main text (you can keep d.text or decide to show another copy — keeping d.text)
-  modalText.textContent = d.text;
-
-  // ensure password area visible
   if(passwordBox) passwordBox.style.display = "block";
-  passwordInput.value = "";
-
   if(hintContainer) hintContainer.style.display = "block";
+  if(btnConfirm) btnConfirm.style.display = "inline-block";
+
+  passwordInput.value = "";
   hintBox.textContent = d.hint || "";
 
   modalBack.style.display = "flex";
@@ -322,20 +225,15 @@ function closeModal(){
   modalBack.style.display = 'none';
   modalBack.setAttribute('aria-hidden','true');
   currentIndex = null;
-
-  // restore password/hint containers so next open works consistently
   if(passwordBox) passwordBox.style.display = "block";
   if(hintContainer) hintContainer.style.display = "block";
+  if(btnConfirm) btnConfirm.style.display = "inline-block";
 }
 
-/* ---------- toast ---------- */
-function showToast(msg = '✔ Senha correta'){
-  toast.textContent = msg;
-  toast.classList.add('show');
-  setTimeout(()=> toast.classList.remove('show'), 1800);
-}
+/* toast */
+function showToast(msg = '✔ Senha correta'){ toast.textContent = msg; toast.classList.add('show'); setTimeout(()=> toast.classList.remove('show'), 1800); }
 
-/* ---------- confirm password ---------- */
+/* confirm password */
 btnConfirm.addEventListener('click', ()=>{
   if(currentIndex === null) return;
   const d = days[currentIndex];
@@ -346,14 +244,12 @@ btnConfirm.addEventListener('click', ()=>{
       const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
       if(dayEl) dayEl.classList.add('checked');
 
-      // atualiza modal com a mensagem revelada
       modalTitle.textContent = d.label + " — Desbloqueado 💗";
       modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
 
-      // esconder senha, dica e confirmar
-      passwordBox.style.display = "none";
-      hintContainer.style.display = "none";
-      btnConfirm.style.display = "none";
+      if(passwordBox) passwordBox.style.display = "none";
+      if(hintContainer) hintContainer.style.display = "none";
+      if(btnConfirm) btnConfirm.style.display = "none";
 
       showToast('✔ Senha correta');
     } else {
@@ -363,8 +259,7 @@ btnConfirm.addEventListener('click', ()=>{
   }
 });
 
-
-/* ---------- clicking boxes ---------- */
+/* clicking boxes */
 grid.addEventListener('click', (ev)=>{
   const dayEl = ev.target.closest('.day');
   if(!dayEl) return;
@@ -378,7 +273,6 @@ grid.addEventListener('click', (ev)=>{
   } else {
     modalTitle.textContent = 'Ainda trancado';
     modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
-    // ensure modal shows minimal UI
     if(passwordBox) passwordBox.style.display = "none";
     if(hintContainer) hintContainer.style.display = "none";
     passwordInput.value = '';
@@ -387,7 +281,7 @@ grid.addEventListener('click', (ev)=>{
   }
 });
 
-/* ---------- auto-refresh unlocked ---------- */
+/* auto-refresh unlocked */
 setInterval(()=>{
   const today = new Date(); today.setHours(0,0,0,0);
   document.querySelectorAll('.day').forEach(el=>{
@@ -401,80 +295,30 @@ setInterval(()=>{
   });
 }, 60000);
 
-/* ---------- audio button ---------- */
+/* audio */
 const bgMusic = document.getElementById('bgMusic');
 const startMusicBtn = document.getElementById('startMusic');
 let musicPlaying = false;
-
 startMusicBtn.addEventListener('click', async () => {
   try {
-    if (!musicPlaying) {
-      await bgMusic.play();
-      musicPlaying = true;
-      startMusicBtn.textContent = '⏸ Parar';
-    } else {
-      bgMusic.pause();
-      musicPlaying = false;
-      startMusicBtn.textContent = '▶ Música';
-    }
-  } catch (err) {
-    showToast('O navegador bloqueou o áudio — toque novamente.');
-  }
+    if (!musicPlaying) { await bgMusic.play(); musicPlaying = true; startMusicBtn.textContent = '⏸ Parar'; }
+    else { bgMusic.pause(); musicPlaying = false; startMusicBtn.textContent = '▶ Música'; }
+  } catch (err) { showToast('O navegador bloqueou o áudio — toque novamente.'); }
 });
 
-/* ---------- snow ---------- */
+/* snow */
 const snowCanvas = document.getElementById('snow');
 const sctx = snowCanvas.getContext('2d');
 let W = snowCanvas.width = innerWidth;
 let H = snowCanvas.height = innerHeight;
 let flakes = [];
+function initSnow(){ flakes = []; const isMobile = /Mobi|Android/i.test(navigator.userAgent); const count = isMobile ? 80 : 160; for(let i=0;i<count;i++){ flakes.push({ x: Math.random()*W, y: Math.random()*H, r: Math.random()*2.5 + 0.6, vx: (Math.random()-0.5)*0.6, vy: Math.random()*0.9 + 0.4, rot: Math.random()*Math.PI*2 }); } }
+function drawSnow(){ sctx.clearRect(0,0,W,H); sctx.fillStyle = 'rgba(255,255,255,0.9)'; for(const f of flakes){ sctx.beginPath(); sctx.arc(f.x, f.y, f.r, 0, Math.PI*2); sctx.fill(); f.x += f.vx + Math.sin(f.rot)*0.2; f.y += f.vy; f.rot += 0.01; if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; } if(f.x < -30) f.x = W + 30; if(f.x > W + 30) f.x = -30; } requestAnimationFrame(drawSnow); }
+initSnow(); drawSnow();
+window.addEventListener('resize', ()=>{ W = snowCanvas.width = innerWidth; H = snowCanvas.height = innerHeight; initSnow(); });
 
-function initSnow(){
-  flakes = [];
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const count = isMobile ? 80 : 160;
-  for(let i=0;i<count;i++){
-    flakes.push({
-      x: Math.random()*W,
-      y: Math.random()*H,
-      r: Math.random()*2.5 + 0.6,
-      vx: (Math.random()-0.5)*0.6,
-      vy: Math.random()*0.9 + 0.4,
-      rot: Math.random()*Math.PI*2
-    });
-  }
-}
-
-function drawSnow(){
-  sctx.clearRect(0,0,W,H);
-  sctx.fillStyle = 'rgba(255,255,255,0.9)';
-  for(const f of flakes){
-    sctx.beginPath();
-    sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-    sctx.fill();
-    f.x += f.vx + Math.sin(f.rot)*0.2;
-    f.y += f.vy;
-    f.rot += 0.01;
-    if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; }
-    if(f.x < -30) f.x = W + 30;
-    if(f.x > W + 30) f.x = -30;
-  }
-  requestAnimationFrame(drawSnow);
-}
-
-initSnow();
-drawSnow();
-
-window.addEventListener('resize', ()=>{
-  W = snowCanvas.width = innerWidth;
-  H = snowCanvas.height = innerHeight;
-  initSnow();
-});
-
-/* ---------- ESC to close ---------- */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') closeModal();
-});
+/* ESC to close */
+document.addEventListener('keydown', (e)=>{ if(e.key === 'Escape') closeModal(); });
 </script>
 </body>
 </html>
