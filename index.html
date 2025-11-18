@@ -273,16 +273,24 @@ const alreadyCleared = dayEl.classList.contains('checked');
 
 if (alreadyCleared) {
   modalTitle.textContent = d.label + " — Desbloqueado 💗";
+  
+  // MOSTRA O TEXTO DO DIA CORRETAMENTE
   modalText.textContent = d.text;
 
-  // esconder senha e dica
+  // ESCONDE TODOS OS ELEMENTOS DA SENHA
   passwordInput.style.display = "none";
+  passwordLabel.style.display = "none";
   hintBox.style.display = "none";
 
+  // GARANTE QUE NADA MAIS FIQUE NA TELA
+  passwordInput.value = "";
+  hintBox.value = "";
+  
   modalBack.style.display = "flex";
   modalBack.setAttribute("aria-hidden", "false");
   return;
 }
+
 
 // Se a data chegou mas a senha ainda NÃO foi digitada → pedir senha
 
