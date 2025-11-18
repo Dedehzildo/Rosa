@@ -103,8 +103,8 @@
       <p id="modalText">conteúdo</p>
 
       <div class="passwordBox">
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia (se houver)</label>
-        <input id="passwordInput" type="password" placeholder="Digite a senha (se aplicável)" aria-label="Senha do dia">
+        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia</label>
+        <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia">
       </div>
 
       <div style="height:10px"></div>
@@ -240,7 +240,7 @@ btnConfirm.addEventListener('click', ()=>{
   if(d.password && d.password.length>0){
     if(entered.toLowerCase() === d.password.toLowerCase()){
       // success
-      alert('✔ Senha correta — aproveite o conteúdo!');
+      alert('✔ Senha correta, muito bem...');
       // You can place additional actions here, e.g. unlock new content
       closeModal();
     } else {
@@ -249,7 +249,7 @@ btnConfirm.addEventListener('click', ()=>{
     }
   } else {
     // no password required
-    alert('✔ Conteúdo liberado — aproveite!');
+    alert('✔ Conteúdo liberado, muito bem!');
     closeModal();
   }
 });
