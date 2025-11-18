@@ -765,6 +765,26 @@ playAltMusicBtn.addEventListener("click", () => {
   playAltMusicBtn.textContent = "🎵 Tocando música deste dia";
   backToMainMusicBtn.style.display = "block";
 });
+backToMainMusicBtn.addEventListener("click", () => {
+  bgMusic.pause();
+  bgMusic.src = MAIN_MUSIC;
+  bgMusic.volume = 0;
+  bgMusic.play();
+
+  let vol = 0;
+  const fade = setInterval(() => {
+    vol += 0.03;
+    if (vol >= 0.55) {
+      bgMusic.volume = 0.55;
+      clearInterval(fade);
+    } else {
+      bgMusic.volume = vol;
+    }
+  }, 60);
+
+  backToMainMusicBtn.style.display = "none";
+  playAltMusicBtn.textContent = "▶ Tocar música deste dia";
+});
 
 /* ============================================================
    MODAL — Confirmar senha
