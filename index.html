@@ -76,6 +76,7 @@
   .modal{width:100%;max-width:680px;background:linear-gradient(180deg, rgba(18,16,24,0.98), rgba(30,24,42,0.96));border-radius:14px;padding:20px;border:1px solid rgba(228,167,211,0.06);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
   .modal h2{margin:0 0 8px;color:var(--accent)}
   .modal p{margin:6px 0 12px;line-height:1.4;color:var(--muted)}
+  .passwordBox{margin-top:6px}
   .passwordBox input{width:100%;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted)}
   .hintBox{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);color:var(--muted);min-height:72px}
   .btnRow{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
@@ -143,14 +144,14 @@
       <h2 id="modalTitle">Dia</h2>
       <p id="modalText">conteúdo</p>
 
-      <div class="passwordBox">
+      <div class="passwordBox" id="passwordBox">
         <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia</label>
         <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia" inputmode="text" />
       </div>
 
       <div style="height:10px"></div>
 
-      <div>
+      <div id="hintContainer">
         <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica</label>
         <div class="hintBox" id="hintBox" aria-live="polite"></div>
       </div>
@@ -247,7 +248,9 @@ const modalBack = document.getElementById('modalBack');
 const modalTitle = document.getElementById('modalTitle');
 const modalText = document.getElementById('modalText');
 const passwordInput = document.getElementById('passwordInput');
+const passwordBox = document.getElementById('passwordBox');
 const hintBox = document.getElementById('hintBox');
+const hintContainer = document.getElementById('hintContainer');
 const btnConfirm = document.getElementById('btnConfirm');
 const btnClose = document.getElementById('btnClose');
 const closeModalBtn = document.getElementById('closeModal');
@@ -266,11 +269,13 @@ function openModal(i){
   const alreadyCleared = dayEl.classList.contains('checked');
 
   if (alreadyCleared) {
+    // if already unlocked: show the *revealed message* (use hint when present)
     modalTitle.textContent = d.label + " — Desbloqueado 💗";
-    modalText.textContent = d.text;
+    modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
 
-    passwordInput.style.display = "none";
-    hintBox.style.display = "none";
+    // hide entire password area and hint area (we only want to show the revealed message)
+    if(passwordBox) passwordBox.style.display = "none";
+    if(hintContainer) hintContainer.style.display = "none";
 
     passwordInput.value = "";
 
@@ -279,12 +284,16 @@ function openModal(i){
     return;
   }
 
+  // Not yet cleared: show the modal with password input and hint
   modalTitle.textContent = d.label;
+  // show the main text (you can keep d.text or decide to show another copy — keeping d.text)
   modalText.textContent = d.text;
 
-  passwordInput.style.display = "block";
+  // ensure password area visible
+  if(passwordBox) passwordBox.style.display = "block";
   passwordInput.value = "";
-  hintBox.style.display = "block";
+
+  if(hintContainer) hintContainer.style.display = "block";
   hintBox.textContent = d.hint || "";
 
   modalBack.style.display = "flex";
@@ -297,6 +306,10 @@ function closeModal(){
   modalBack.style.display = 'none';
   modalBack.setAttribute('aria-hidden','true');
   currentIndex = null;
+
+  // restore password/hint containers so next open works consistently
+  if(passwordBox) passwordBox.style.display = "block";
+  if(hintContainer) hintContainer.style.display = "block";
 }
 
 /* ---------- toast ---------- */
@@ -317,9 +330,18 @@ btnConfirm.addEventListener('click', ()=>{
       const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
       if(dayEl) dayEl.classList.add('checked');
 
+      // update modal immediately to show revealed message (hint preferred)
+      modalTitle.textContent = d.label + " — Desbloqueado 💗";
+      modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
+
+      // hide password UI
+      if(passwordBox) passwordBox.style.display = "none";
+      if(hintContainer) hintContainer.style.display = "none";
+
       showToast('✔ Senha correta');
 
-      setTimeout(()=> closeModal(), 900);
+      // keep modal visible briefly so user sees the revealed message, then close
+      setTimeout(()=> closeModal(), 1500);
     } else {
       showToast('✖ Senha incorreta');
       passwordInput.focus();
@@ -341,7 +363,9 @@ grid.addEventListener('click', (ev)=>{
   } else {
     modalTitle.textContent = 'Ainda trancado';
     modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
-    hintBox.textContent = '';
+    // ensure modal shows minimal UI
+    if(passwordBox) passwordBox.style.display = "none";
+    if(hintContainer) hintContainer.style.display = "none";
     passwordInput.value = '';
     modalBack.style.display = 'flex';
     modalBack.setAttribute('aria-hidden','false');
