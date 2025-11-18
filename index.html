@@ -1,385 +1,305 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
-<title>A Contagem da Rosa — Final</title>
-<meta name="color-scheme" content="dark" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Advento</title>
+
 <style>
-  /* --- base --- */
-  :root{
-    --bg1:#0a0a0c; --bg2:#1c2740; --accent:#e4a7d3; --muted:#f6f5f8;
-    --glass: rgba(255,255,255,0.03);
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    overflow-x: hidden;
+    font-family: "Poppins", sans-serif;
+    background: #0b0b0b;
+    color: white;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
   }
-  *{box-sizing:border-box}
-  html,body{height:100%;margin:0;background:
-    radial-gradient(1200px 600px at 10% 10%, rgba(40,26,51,0.35), transparent),
-    linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
-    color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased;
-    -webkit-text-size-adjust:100%;}
-  /* avoid extra space on mobile */
-  body{min-height:100vh;display:flex;flex-direction:column;align-items:center;}
 
-  .container{width:100%;max-width:1100px;padding:20px 18px 110px;margin:0 auto;}
-
-  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:6px}
-  h1{font-size:20px;margin:0}
-  .tag{color:rgba(246,245,248,0.78);font-size:13px;margin-top:4px}
-
-  /* countdown & audio control */
-  .controls{display:flex;align-items:center;gap:12px}
-  .count{background:var(--glass);padding:10px 12px;border-radius:12px;border:1px solid rgba(228,167,211,0.05);font-size:13px}
-  .count .num{font-weight:700;color:var(--accent);margin-top:4px}
-
-  #startMusic{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:700;cursor:pointer}
-
-  /* grid */
-  main.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px}
-  .day{aspect-ratio:1;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6);transition:transform .28s,box-shadow .28s;overflow:hidden}
-  .day.locked{opacity:.4;filter:grayscale(20%);pointer-events:auto}
-  .day.unlocked{animation:glow 3s ease-in-out infinite}
-  @keyframes glow{
-    0%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
-    50%{box-shadow:0 14px 30px rgba(228,167,211,0.28)}
-    100%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
+  body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
-  .circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.95), rgba(28,40,64,0.95));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
-  .label{margin-top:8px;font-size:12px;color:rgba(246,245,248,0.9);text-align:center}
 
-  /* modal */
-  .modalBack{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.85));z-index:220;padding:18px}
-  .modal{width:100%;max-width:680px;background:linear-gradient(180deg, rgba(18,16,24,0.98), rgba(30,24,42,0.96));border-radius:14px;padding:20px;border:1px solid rgba(228,167,211,0.06);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
-  .modal h2{margin:0 0 8px;color:var(--accent)}
-  .modal p{margin:6px 0 12px;line-height:1.4;color:var(--muted)}
-  .passwordBox input{width:100%;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted)}
-  .hintBox{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);color:var(--muted);min-height:72px}
-  .btnRow{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
-  .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
-  .btn.primary{background:var(--accent);color:#000;font-weight:700}
-  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+  /* Fundo fixo corrigido para iPhone */
+  .bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at top, #222, #000);
+    z-index: -1;
+  }
 
-  /* snow canvas */
-  canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10;display:block}
+  /* Neve */
+  .snowflake {
+    position: fixed;
+    top: -10px;
+    color: white;
+    font-size: 0.8em;
+    user-select: none;
+    pointer-events: none;
+    animation: fall linear infinite;
+  }
 
-  /* responsive */
-  @media (max-width:720px){
-    main.grid{grid-template-columns:repeat(3,1fr);gap:10px}
-    .circle{width:50px;height:50px;font-size:16px}
-    .container{padding:18px}
-    #startMusic{bottom:18px;right:18px;padding:12px 14px}
+  @keyframes fall {
+    0% { transform: translateY(-10vh) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(110vh) rotate(360deg); opacity: 0.3; }
+  }
+
+  /* Botão de música */
+  #musicBtn {
+    margin-top: 20px;
+    background: #d6355b;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: none;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+  }
+  #musicBtn:hover { opacity: 0.8; }
+
+  /* GRID */
+  #grid {
+    margin-top: 30px;
+    width: 90%;
+    max-width: 900px;
+    display: grid;
+    gap: 12px;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  }
+
+  .day {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.15);
+    height: 80px;
+    border-radius: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+    cursor: pointer;
+    transition: 0.25s ease;
+  }
+
+  .day:hover {
+    background: rgba(255,255,255,0.15);
+    transform: scale(1.08);
+  }
+
+  .circle {
+    font-size: 20px;
+    font-weight: 700;
+  }
+
+  /* Modal */
+  #modalBack {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+
+  #modal {
+    background: #111;
+    padding: 20px;
+    width: 90%;
+    max-width: 420px;
+    border-radius: 20px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.15);
+  }
+
+  input {
+    width: 80%;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 10px;
+    border: none;
+    font-size: 16px;
+  }
+
+  #confirmPassword {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: #d6355b;
+    border: none;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 17px;
+  }
+
+  #closeModal {
+    margin-top: 20px;
+    background: transparent;
+    padding: 10px;
+    border: none;
+    color: white;
+    font-size: 16px;
+    opacity: 0.6;
+  }
+
+  .successCheck {
+    font-size: 40px;
+    margin-top: 15px;
+    color: #32ff82;
+    display: none;
   }
 </style>
 </head>
 <body>
-  <canvas id="snow"></canvas>
 
-  <div class="container" role="main">
-    <header style="display:flex;align-items:center;justify-content:space-between;gap:12px">
-      <div>
-        <h1>🌙 A Contagem da Rosa</h1>
-        <div class="tag">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
-      </div>
-      <div class="controls">
-        <div class="count" aria-live="polite">
-          <div style="font-size:12px;color:rgba(246,245,248,0.68)">contagem até 17 de dezembro</div>
-          <div class="num" id="cdText">-- dias --</div>
-        </div>
-        <button id="startMusic" aria-label="Iniciar música">▶ Música</button>
-      </div>
-    </header>
+<div class="bg"></div>
 
-    <main class="grid" id="grid" aria-label="Calendário do advento"></main>
+<button id="musicBtn">▶ Tocar Música</button>
 
-    <div style="margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px;max-width:1100px">
-      Quando subir no Vercel, remova o botão de música se quiser autoplay via integração — aqui ele inicia por clique.
-    </div>
+<audio id="bgMusic" src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
+
+<div id="grid"></div>
+
+<!-- Modal -->
+<div id="modalBack">
+  <div id="modal">
+    <h2 id="modalTitle"></h2>
+    <p id="modalText"></p>
+
+    <p style="margin-top:15px; opacity:0.7;">Dica:</p>
+    <p id="modalHint" style="font-size:15px; opacity:0.8;"></p>
+
+    <input id="passwordInput" placeholder="Digite a senha...">
+    <button id="confirmPassword">Confirmar</button>
+
+    <div id="successIcon" class="successCheck">✔</div>
+
+    <button id="closeModal">Fechar</button>
   </div>
-
-  <!-- modal -->
-  <div class="modalBack" id="modalBack" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true">
-      <button id="closeModal" style="float:right;background:none;border:0;color:#fff;font-size:18px">✕</button>
-      <h2 id="modalTitle">Dia</h2>
-      <p id="modalText">conteúdo</p>
-
-      <div class="passwordBox">
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia</label>
-        <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia">
-      </div>
-
-      <div style="height:10px"></div>
-
-      <div>
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica (definida no código)</label>
-        <div class="hintBox" id="hintBox" aria-live="polite"></div>
-      </div>
-
-      <div class="btnRow">
-        <button class="btn ghost" id="btnClose">Fechar</button>
-        <button class="btn primary" id="btnConfirm">Confirmar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- audio (coloque o MP3 com este nome na mesma pasta) -->
-  <audio id="bgMusic" loop preload="auto" src="body-on-fire.mp3"></audio>
+</div>
 
 <script>
-/* -----------------------
-   DIAS + SENHAS + DICAS
-   (Edite aqui no código: 'password' e 'hint')
------------------------ */
-const days = [
-  {"index":1,"date":"2025-11-17","label":"17/11","text":"Hoje, o tempo despertou.","password":"","hint":"Um pequeno começo."},
-  {"index":2,"date":"2025-11-18","label":"18/11","text":"O universo tem um hábito curioso.","password":"","hint":"Observe os sinais."},
-  {"index":3,"date":"2025-11-19","label":"19/11","text":"Há dias que parecem durar segundos.","password":"","hint":"Respire fundo."},
-  {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"","hint":"Luz em detalhes."},
-  {"index":5,"date":"2025-11-21","label":"21/11","text":"Às vezes o amor não grita — ele sussurra.","password":"","hint":"O silêncio fala."},
-  {"index":6,"date":"2025-11-22","label":"22/11","text":"Há lugares que só o amor conhece.","password":"","hint":"Memórias escondidas."},
-  {"index":7,"date":"2025-11-23","label":"23/11","text":"Sete dias, sete luzes.","password":"","hint":"O número sete."},
-  {"index":8,"date":"2025-11-24","label":"24/11","text":"Recordei uma conversa nossa.","password":"","hint":"Palavras em chuva."},
-  {"index":9,"date":"2025-11-25","label":"25/11","text":"Há um diamante oculto em cada escolha.","password":"","hint":"Escolha com carinho."},
-  {"index":10,"date":"2025-11-26","label":"26/11","text":"Lembra do nosso primeiro riso alto?","password":"","hint":"Ria outra vez."},
-  {"index":11,"date":"2025-11-27","label":"27/11","text":"As estrelas guardam lembranças.","password":"","hint":"Olhe pra cima."},
-  {"index":12,"date":"2025-11-28","label":"28/11","text":"Penso nas fases da lua como promessas.","password":"","hint":"Fases e promessas."},
-  {"index":13,"date":"2025-11-29","label":"29/11","text":"Uma playlist antiga toca ao fundo.","password":"","hint":"Uma música antiga."},
-  {"index":14,"date":"2025-11-30","label":"30/11","text":"Desenhar o teu reflexo.","password":"","hint":"Jardins de certezas."},
-  {"index":15,"date":"2025-12-01","label":"01/12","text":"Uma porta pequena em mim.","password":"","hint":"Portas pequenas."},
-  {"index":16,"date":"2025-12-02","label":"02/12","text":"Alice entrou em um país de maravilhas.","password":"","hint":"Chá e caminhos."},
-  {"index":17,"date":"2025-12-03","label":"03/12","text":"Hoje escrevo uma carta curta: obrigada.","password":"","hint":"Obrigado."},
-  {"index":18,"date":"2025-12-04","label":"04/12","text":"Uma foto rasgada, uma polaroid amarelada.","password":"","hint":"Fotos antigas."},
-  {"index":19,"date":"2025-12-05","label":"05/12","text":"Sinto o cheiro de vinho e lasanha.","password":"","hint":"Cheiros que lembram."},
-  {"index":20,"date":"2025-12-06","label":"06/12","text":"No mapa que traço toda noite.","password":"","hint":"Curvas no mapa."},
-  {"index":21,"date":"2025-12-07","label":"07/12","text":"O número sete nos sorri.","password":"","hint":"Sete cores."},
-  {"index":22,"date":"2025-12-08","label":"08/12","text":"Se o amor tivesse uma textura.","password":"","hint":"Veludo ao entardecer."},
-  {"index":23,"date":"2025-12-09","label":"09/12","text":"Luz de vela, duas taças.","password":"","hint":"Brinde breve."},
-  {"index":24,"date":"2025-12-10","label":"10/12","text":"Um pequeno enigma: feche os olhos.","password":"","hint":"Conte respirações."},
-  {"index":25,"date":"2025-12-11","label":"11/12","text":"Na dança das horas encontrei compasso.","password":"","hint":"Ritmo lento."},
-  {"index":26,"date":"2025-12-12","label":"12/12","text":"Há um pingente que carrego em memória.","password":"","hint":"Símbolos antigos."},
-  {"index":27,"date":"2025-12-13","label":"13/12","text":"As fases da lua me lembram de ti.","password":"","hint":"Fases: inteira/traço."},
-  {"index":28,"date":"2025-12-14","label":"14/12","text":"Escrevo-te como quem fala ao vento.","password":"","hint":"Palavras ao vento."},
-  {"index":29,"date":"2025-12-15","label":"15/12","text":"A reta final aproxima-se.","password":"","hint":"Cores intensas."},
-  {"index":30,"date":"2025-12-16","label":"16/12","text":"Amanhecer de véspera: preparei surpresas.","password":"","hint":"Sete surpresas."},
-  {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
-];
+/* ---------------------------
+   FUNÇÃO DA NEVE
+--------------------------- */
+function createSnow() {
+  const snow = document.createElement("div");
+  snow.classList.add("snowflake");
+  snow.textContent = "❄";
 
-/* ---------- helpers ---------- */
-// parse Y-M-D string into Date at local midnight
-function parseLocalDateYMD(ymd){
-  const [y,m,d] = ymd.split('-').map(Number);
-  return new Date(y, m-1, d, 0, 0, 0, 0);
+  snow.style.left = Math.random() * 100 + "vw";
+  snow.style.animationDuration = (Math.random() * 3 + 2) + "s";
+
+  document.body.appendChild(snow);
+  setTimeout(() => snow.remove(), 5000);
 }
+setInterval(createSnow, 200);
 
-/* ---------- render grid ---------- */
-const grid = document.getElementById('grid');
-function createGrid(){
-  grid.innerHTML = '';
-  days.forEach((d, i) => {
-    const el = document.createElement('div');
-    // decide locked/unlocked by date
-    const today = new Date(); today.setHours(0,0,0,0);
-    const dayDate = parseLocalDateYMD(d.date);
-    const unlocked = today >= dayDate;
-    el.className = unlocked ? 'day unlocked' : 'day locked';
-    el.dataset.index = i;
-    el.innerHTML = `<div class="circle">${d.index}</div><div class="label">${d.label}</div>`;
-    grid.appendChild(el);
+/* ---------------------------
+   MÚSICA PLAY/PAUSE
+--------------------------- */
+const musicBtn = document.getElementById("musicBtn");
+const bgMusic = document.getElementById("bgMusic");
+let playing = false;
+
+musicBtn.onclick = () => {
+  if (!playing) {
+    bgMusic.play();
+    playing = true;
+    musicBtn.textContent = "⏸ Pausar Música";
+  } else {
+    bgMusic.pause();
+    playing = false;
+    musicBtn.textContent = "▶ Tocar Música";
+  }
+};
+
+/* ---------------------------
+   DIAS DO 17/11 AO 17/12
+--------------------------- */
+const days = [];
+const start = new Date("2025-11-17");
+const end = new Date("2025-12-17");
+
+let index = 1;
+
+while (start <= end) {
+  const yyyy = start.getFullYear();
+  const mm = (start.getMonth()+1).toString().padStart(2,"0");
+  const dd = start.getDate().toString().padStart(2,"0");
+
+  days.push({
+    index,
+    label: `${dd}/${mm}`,
+    date: `${yyyy}-${mm}-${dd}`,
+    text: "Mensagem especial deste dia...",
+    password: "senha" + index,   // ← você pode alterar depois
+    hint: "Sua dica vai aqui..."  // ← editável no código
   });
+
+  start.setDate(start.getDate() + 1);
+  index++;
 }
-createGrid();
 
-/* ---------- countdown ---------- */
-const cdText = document.getElementById('cdText');
-const target = parseLocalDateYMD('2025-12-17');
-function updateCountdown(){
-  const now = new Date();
-  let diff = target - now;
-  if(diff < 0) diff = 0;
-  const daysLeft = Math.floor(diff / (1000*60*60*24));
-  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
-  cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
-}
-updateCountdown();
-setInterval(updateCountdown, 30*1000);
+/* ---------------------------
+   GRID
+--------------------------- */
+const grid = document.getElementById("grid");
 
-/* ---------- modal handlers ---------- */
-const modalBack = document.getElementById('modalBack');
-const modalTitle = document.getElementById('modalTitle');
-const modalText = document.getElementById('modalText');
-const passwordInput = document.getElementById('passwordInput');
-const hintBox = document.getElementById('hintBox');
-const btnConfirm = document.getElementById('btnConfirm');
-const btnClose = document.getElementById('btnClose');
-document.getElementById('closeModal').addEventListener('click', closeModal);
-btnClose.addEventListener('click', closeModal);
+days.forEach((d, i) => {
+  const box = document.createElement("div");
+  box.className = "day";
+  box.dataset.i = i;
+  box.innerHTML = `<div class='circle'>${d.index}</div>`;
+  box.onclick = () => openModal(i);
+  grid.appendChild(box);
+});
 
-let currentIndex = null;
+/* ---------------------------
+   MODAL
+--------------------------- */
+const modalBack = document.getElementById("modalBack");
+const modalTitle = document.getElementById("modalTitle");
+const modalText = document.getElementById("modalText");
+const modalHint = document.getElementById("modalHint");
+const passwordInput = document.getElementById("passwordInput");
+const confirmPassword = document.getElementById("confirmPassword");
+const successIcon = document.getElementById("successIcon");
+
 function openModal(i){
-  currentIndex = i;
   const d = days[i];
   modalTitle.textContent = d.label;
   modalText.textContent = d.text;
-  passwordInput.value = '';
-  hintBox.textContent = d.hint || '';
-  // show modal
-  modalBack.style.display = 'flex';
-  modalBack.setAttribute('aria-hidden','false');
-  passwordInput.focus();
-}
-function closeModal(){
-  modalBack.style.display = 'none';
-  modalBack.setAttribute('aria-hidden','true');
-}
+  modalHint.textContent = d.hint;
+  passwordInput.value = "";
+  successIcon.style.display = "none";
 
-/* modal confirm */
-btnConfirm.addEventListener('click', ()=>{
-  if(currentIndex === null) return;
-  const d = days[currentIndex];
-  const entered = (passwordInput.value||'').trim();
-  if(d.password && d.password.length>0){
-    if(entered.toLowerCase() === d.password.toLowerCase()){
-      // success
-      alert('✔ Senha correta, muito bem...');
-      // You can place additional actions here, e.g. unlock new content
-      closeModal();
+  confirmPassword.onclick = () => {
+    if(passwordInput.value.trim().toLowerCase() === d.password.toLowerCase()){
+      successIcon.style.display = "block";
     } else {
-      alert('Senha incorreta. Tente novamente.');
-      passwordInput.focus();
+      successIcon.style.display = "none";
+      alert("Senha incorreta.");
     }
-  } else {
-    // no password required
-    alert('✔ Conteúdo liberado, muito bem!');
-    closeModal();
-  }
-});
+  };
 
-/* clicking boxes */
-grid.addEventListener('click', (ev)=>{
-  const dayEl = ev.target.closest('.day');
-  if(!dayEl) return;
-  const i = Number(dayEl.dataset.index);
-  if(Number.isNaN(i)) return;
-  const d = days[i];
-  const dayDate = parseLocalDateYMD(d.date);
-  const today = new Date(); today.setHours(0,0,0,0);
-  if(today >= dayDate){
-    // unlocked: open modal (password may or may not be required)
-    openModal(i);
-  } else {
-    // locked: show message in modal
-    modalTitle.textContent = 'Ainda trancado';
-    modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
-    hintBox.textContent = '';
-    passwordInput.value = '';
-    modalBack.style.display = 'flex';
-    modalBack.setAttribute('aria-hidden','false');
-  }
-});
-
-/* keep locks up-to-date every minute (in case page is left open) */
-setInterval(()=>{
-  // update classes only if changed
-  const today = new Date(); today.setHours(0,0,0,0);
-  document.querySelectorAll('.day').forEach(el=>{
-    const i = Number(el.dataset.index);
-    const d = days[i];
-    const dayDate = parseLocalDateYMD(d.date);
-    if(today >= dayDate){
-      el.classList.remove('locked');
-      el.classList.add('unlocked');
-    } else {
-      el.classList.add('locked');
-      el.classList.remove('unlocked');
-    }
-  });
-}, 60*1000);
-
-/* ---------- audio control (works on iPhone: user must click) ---------- */
-const bgMusic = document.getElementById('bgMusic');
-const startMusicBtn = document.getElementById('startMusic');
-// toggle play / pause para bgMusic — botão permanece visível
-let musicPlaying = false;
-
-startMusicBtn.addEventListener('click', async () => {
-  try {
-    if (!musicPlaying) {
-      // tentar tocar
-      await bgMusic.play();
-      musicPlaying = true;
-      startMusicBtn.textContent = '⏸ Parar';
-      startMusicBtn.setAttribute('aria-pressed', 'true');
-    } else {
-      // pausar
-      bgMusic.pause();
-      musicPlaying = false;
-      startMusicBtn.textContent = '▶ Música';
-      startMusicBtn.setAttribute('aria-pressed', 'false');
-    }
-  } catch (err) {
-    console.warn('Falha ao tocar/pausar áudio', err);
-    // em caso de bloqueio, exiba instrução curta (opcional)
-    alert('O navegador bloqueou o áudio — toque novamente ou verifique permissões.');
-  }
-});
-
-// quando a música terminar (caso não seja loop), resetar estado
-bgMusic.addEventListener('ended', () => {
-  musicPlaying = false;
-  startMusicBtn.textContent = '▶ Música';
-  startMusicBtn.setAttribute('aria-pressed', 'false');
-});
-
-
-/* ---------- snow effect ---------- */
-const snowCanvas = document.getElementById('snow');
-const sctx = snowCanvas.getContext('2d');
-let W = snowCanvas.width = innerWidth;
-let H = snowCanvas.height = innerHeight;
-let flakes = [];
-function initSnow(){
-  flakes = [];
-  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
-  const count = isMobile ? 80 : 160;
-  for(let i=0;i<count;i++){
-    flakes.push({
-      x: Math.random()*W,
-      y: Math.random()*H,
-      r: Math.random()*2.5 + 0.6,
-      vx: (Math.random()-0.5)*0.6,
-      vy: Math.random()*0.9 + 0.4,
-      rot: Math.random()*Math.PI*2
-    });
-  }
+  modalBack.style.display = "flex";
 }
-function drawSnow(){
-  sctx.clearRect(0,0,W,H);
-  sctx.fillStyle = 'rgba(255,255,255,0.9)';
-  for(const f of flakes){
-    sctx.beginPath();
-    sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-    sctx.fill();
-    f.x += f.vx + Math.sin(f.rot)*0.2;
-    f.y += f.vy;
-    f.rot += 0.01;
-    if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; }
-    if(f.x < -30) f.x = W + 30;
-    if(f.x > W + 30) f.x = -30;
-  }
-  requestAnimationFrame(drawSnow);
-}
-initSnow();
-drawSnow();
-window.addEventListener('resize', ()=>{
-  W = snowCanvas.width = innerWidth;
-  H = snowCanvas.height = innerHeight;
-  initSnow();
-});
 
-/* ---------- accessibility niceties ---------- */
-document.addEventListener('keydown', (e)=>{
-  if(e.key === 'Escape') closeModal();
-});
+document.getElementById("closeModal").onclick = () => {
+  modalBack.style.display = "none";
+  successIcon.style.display = "none";
+};
 </script>
+
 </body>
 </html>
