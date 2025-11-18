@@ -11,7 +11,7 @@
   --accent: #e4a7d3;
   --muted: #f6f5f8;
 }
-html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Helvetica,Arial; background: radial-gradient(1200px 600px at 10% 10%, rgba(40,26,51,0.35), transparent), linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%); color:var(--muted);}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Roboto,Helvetica,Arial; background: radial-gradient(1200px 600px at 10% 10%, rgba(40,26,51,0.35), transparent), linear-gradient(180deg, var(--bg1) 0%, var(--bg2) 100%); color:var(--muted);} 
 .container{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:28px 20px 80px;}
 header{width:100%;max-width:1100px;display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:8px;}
 .title{display:flex;flex-direction:column;}
@@ -26,25 +26,14 @@ main.grid{margin-top:28px;width:100%;max-width:1100px;display:grid;grid-template
 .day.locked{opacity:0.36;filter:grayscale(20%);pointer-events:none}
 .circle{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.9), rgba(28,40,64,0.9));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
 .label{margin-top:10px;font-size:13px;color:rgba(246,245,248,0.85);text-align:center;padding:0 6px}
-.day.unlocked{
-  animation:unlockFade .8s ease both;
-}
-@keyframes unlockFade{
-  from{opacity:0;transform:translateY(8px) scale(.98);} 
-  to{opacity:1;transform:translateY(0) scale(1);} 
-}
-
-/* modal */
+.day.unlocked{animation:unlockFade .8s ease both;transform:translateY(0);}
+@keyframes unlockFade{from{opacity:0;transform:translateY(8px) scale(.98);} to{opacity:1;transform:translateY(0) scale(1);} }
 .modalBack{position:fixed;inset:0;background:rgba(2,6,23,0.78);display:none;align-items:center;justify-content:center;z-index:50;padding:20px}
 .modal{width:100%;max-width:760px;background:linear-gradient(180deg, rgba(20,20,30,0.95), rgba(40,30,60,0.92));border-radius:14px;padding:28px;border:1px solid var(--accent);box-shadow:0 0 16px rgba(228,167,211,0.38);position:relative}
 .modal h2{margin:0 0 8px;font-size:18px;color:var(--accent);text-shadow:0 0 6px rgba(228,167,211,0.18);} 
 .modal p{margin:6px 0 0;line-height:1.55;color:var(--muted);white-space:pre-wrap}
 .closeBtn{position:absolute;right:14px;top:14px;border:0;background:transparent;color:rgba(246,245,248,0.7);cursor:pointer;font-size:18px}
-
-/* stars canvas */
 canvas#stars{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1}
-
-/* responsive */
 @media (max-width:720px){main.grid{grid-template-columns:repeat(3,1fr);gap:12px}header{flex-direction:column;align-items:flex-start}}
 .footer{position:fixed;left:0;right:0;bottom:14px;display:flex;align-items:center;justify-content:center;color:rgba(246,245,248,0.45);font-size:13px}
 </style>
@@ -84,13 +73,46 @@ canvas#stars{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:n
 </div>
 
 <script>
-// Conteúdo dos 31 dias
-const days = [ /* ... manteve-se igual ... */ ];
+// Conteúdo dos 31 dias (17/11/2025 → 17/12/2025)
+const days = [
+  {"index":1,"date":"2025-11-17","label":"17 de novembro","text":"Hoje, o tempo despertou. Um mês separa o agora do teu dia — e cada amanhecer será uma pétala desse caminho."},
+  {"index":2,"date":"2025-11-18","label":"18 de novembro","text":"O universo tem um hábito curioso: esconder o destino dentro dos detalhes. Cada sorriso teu foi um sinal que o tempo deixou pra mim."},
+  {"index":3,"date":"2025-11-19","label":"19 de novembro","text":"Há dias que parecem durar segundos; há segundos que parecem eternos. E há momentos — como os nossos — que param o tempo inteiro."},
+  {"index":4,"date":"2025-11-20","label":"20 de novembro","text":"Cada gesto teu é uma estrela, Rosa. Sozinha, é bela. Mas juntas, elas formam a constelação que guia o meu caminho."},
+  {"index":5,"date":"2025-11-21","label":"21 de novembro","text":"Às vezes o amor não grita — ele sussurra. Está no silêncio, no olhar, no respirar junto. Hoje, só sentir basta."},
+  {"index":6,"date":"2025-11-22","label":"22 de novembro","text":"Há lugares que só o amor conhece — onde o tempo desacelera, e o mundo se curva. Eu encontrei um desses lugares e tinha o teu nome."},
+  {"index":7,"date":"2025-11-23","label":"23 de novembro","text":"Sete dias, sete luzes. O primeiro círculo se completa sob a lua crescente; algo começa a cintilar com mais força."},
+  {"index":8,"date":"2025-11-24","label":"24 de novembro","text":"Recordei uma conversa nossa em uma noite de chuva: você falou de sonhos e eu decorei cada palavra como quem decora mapas antigos."},
+  {"index":9,"date":"2025-11-25","label":"25 de novembro","text":"Há um diamante oculto em cada escolha tua — não o bruto, mas o reflexo que brilha quando você sorri."},
+  {"index":10,"date":"2025-11-26","label":"26 de novembro","text":"Lembra do nosso primeiro riso alto? Guardei-o num bolso seguro. Hoje retiro-o para que ria comigo outra vez."},
+  {"index":11,"date":"2025-11-27","label":"27 de novembro","text":"O Pequeno Príncipe diria que as estrelas são importantes porque é nelas que colocamos nossas lembranças. Hoje, acendo a tua."},
+  {"index":12,"date":"2025-11-28","label":"28 de novembro","text":"Penso nas fases da lua como sete promessas. Hoje começo a cumprir a primeira: ser presença nas noites de silêncio."},
+  {"index":13,"date":"2025-11-29","label":"29 de novembro","text":"Uma playlist antiga toca ao fundo e eu me pego lembrando das nossas mãos, do abraço que parecia um abrigo de inverno."},
+  {"index":14,"date":"2025-11-30","label":"30 de novembro","text":"Se eu tivesse de desenhar o teu reflexo, desenharia um jardim de certezas — flores que sabem os nossos nomes."},
+  {"index":15,"date":"2025-12-01","label":"1 de dezembro","text":"Há uma porta pequena em mim que só se abre com o teu riso. Hoje deixo-a escancarada."},
+  {"index":16,"date":"2025-12-02","label":"2 de dezembro","text":"Alice entrou em um país de maravilhas e encontrou-se. Eu quero ser teu país seguro — com caminhos de luz e chá quente."},
+  {"index":17,"date":"2025-12-03","label":"3 de dezembro","text":"Hoje escrevo uma carta curta: obrigada. Por ser cor, por ser calma, por ser destino."},
+  {"index":18,"date":"2025-12-04","label":"4 de dezembro","text":"Uma foto rasgada, uma polaroid amarelada — e nela, teus olhos mostram que o mundo vale a pena."},
+  {"index":19,"date":"2025-12-05","label":"5 de dezembro","text":"Sinto o cheiro de vinho e lasanha quando fecho os olhos; sinto o calor dos nossos pequenos rituais. É isso: intimidade sagrada."},
+  {"index":20,"date":"2025-12-06","label":"6 de dezembro","text":"No mapa que traço toda noite, teu nome forma curvas suaves; sigo cada curva como quem lê um poema antigo."},
+  {"index":21,"date":"2025-12-07","label":"7 de dezembro","text":"O número sete nos sorri: sete cores, sete luas, sete vezes em que te escolhi sem perceber."},
+  {"index":22,"date":"2025-12-08","label":"8 de dezembro","text":"Se o amor tivesse uma textura, seria o veludo de um céu ao entardecer. Hoje quero tocar essa textura contigo."},
+  {"index":23,"date":"2025-12-09","label":"9 de dezembro","text":"Luz de vela, duas taças, um brinde ao que foi e ao que virá. Hoje, breve e perfeito, celebramos nós."},
+  {"index":24,"date":"2025-12-10","label":"10 de dezembro","text":"Um pequeno enigma: feche os olhos. Conte sete respirações. No sétimo, diga em pensamento o que mais te encanta em mim."},
+  {"index":25,"date":"2025-12-11","label":"11 de dezembro","text":"Na dança das horas, encontrei um compasso só nosso — ritmo lento, passos precisos, calor compartilhado."},
+  {"index":26,"date":"2025-12-12","label":"12 de dezembro","text":"Há um pingente que carrego em memória: cada símbolo é um capítulo. Hoje abro o livro e leio ao teu lado."},
+  {"index":27,"date":"2025-12-13","label":"13 de dezembro","text":"As fases da lua me lembram de ti: às vezes inteira, às vezes só um traço — sempre maravilhosa."},
+  {"index":28,"date":"2025-12-14","label":"14 de dezembro","text":"Escrevo-te como quem fala ao vento: palavras que chegam, que pousam e que ficam, simples e verdadeiras."},
+  {"index":29,"date":"2025-12-15","label":"15 de dezembro","text":"A reta final aproxima-se. Cada dia agora traz uma cor mais intensa; o coração acelera como se a cidade inteira vibrasse."},
+  {"index":30,"date":"2025-12-16","label":"16 de dezembro","text":"Amanhecer de véspera: preparei sete pequenas surpresas (só ideias): um bilhete, uma foto, uma flor, um vinho, uma mini playlist, uma receita, um poema."},
+  {"index":31,"date":"2025-12-17","label":"17 de dezembro","text":"Hoje o tempo se curva. Tudo o que foi dito, mostrado e sentido leva até você. Feliz aniversário, Rosa — a luz que me fez enxergar cores. O resto... eu te direi pessoalmente."}
+];
 
-// (Para caber no canvas, posso inserir novamente o array completo aqui se quiser — me avise!)
-
+//test
 // populate grid
 const grid = document.getElementById('grid');
+
+// create boxes
 days.forEach((d, i) => {
   const el = document.createElement('div');
   el.className = 'day locked';
@@ -112,4 +134,82 @@ function updateCountdown(){
   cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
 }
 updateCountdown();
-setInterval(update
+setInterval(updateCountdown, 30000);
+
+// modal handlers
+const modalBack = document.getElementById('modalBack');
+const modalTitle = document.getElementById('modalTitle');
+const modalContent = document.getElementById('modalContent');
+const closeBtn = document.getElementById('closeModal');
+closeBtn.addEventListener('click', ()=> modalBack.style.display='none');
+
+function openModal(i){
+  const d = days[i];
+  modalTitle.textContent = `${d.label}`;
+  modalContent.textContent = d.text;
+  modalBack.style.display = 'flex';
+}
+
+// lock/unlock logic
+function refreshLocks(){
+  const preview = document.getElementById('preview').checked;
+  const now = new Date();
+  const todayYMD = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  document.querySelectorAll('.day').forEach(item => {
+    const i = Number(item.dataset.index);
+    const d = days[i];
+    const dayDate = new Date(d.date + 'T00:00:00-03:00');
+    if(preview || todayYMD >= dayDate){
+      item.classList.remove('locked');
+      item.classList.add('unlocked');
+      item.onclick = () => openModal(i);
+    } else {
+      item.classList.add('locked');
+      item.onclick = () => {
+        modalTitle.textContent = "Ainda trancado";
+        modalContent.textContent = "O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.";
+        modalBack.style.display = 'flex';
+      }
+    }
+  });
+}
+document.getElementById('preview').addEventListener('change', refreshLocks);
+refreshLocks();
+
+// stars animation canvas
+const canvas = document.getElementById('stars');
+const ctx = canvas.getContext('2d');
+let w,h,stars=[];
+function resize(){ w = canvas.width = innerWidth; h = canvas.height = innerHeight; initStars(); }
+function rand(min,max){ return Math.random()*(max-min)+min; }
+function initStars(){
+  stars = [];
+  const count = Math.floor((w*h)/12000);
+  for(let i=0;i<count;i++){
+    stars.push({x:Math.random()*w,y:Math.random()*h,r:rand(0.3,1.6),vx:rand(-0.02,0.02),vy:rand(-0.03,0.03),alpha:rand(0.1,0.9),phase:Math.random()*Math.PI*2});
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,w,h);
+  for(const s of stars){
+    s.x += s.vx;
+    s.y += s.vy;
+    s.phase += 0.01;
+    const a = s.alpha * (0.6 + 0.4*Math.sin(s.phase));
+    ctx.beginPath();
+    ctx.fillStyle = 'rgba(255,255,255,'+a+')';
+    ctx.arc(s.x,s.y,s.r,0,Math.PI*2);
+    ctx.fill();
+    if(s.x<-10) s.x = w+10;
+    if(s.x>w+10) s.x = -10;
+    if(s.y<-10) s.y = h+10;
+    if(s.y>h+10) s.y = -10;
+  }
+  requestAnimationFrame(draw);
+}
+addEventListener('resize', resize);
+resize();
+draw();
+</script>
+</body>
+</html>
