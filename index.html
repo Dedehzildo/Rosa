@@ -154,7 +154,7 @@
       <div style="height:10px"></div>
 
       <div>
-        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica (definida no código)</label>
+        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica</label>
         <div class="hintBox" id="hintBox" aria-live="polite"></div>
       </div>
 
@@ -267,21 +267,25 @@ function openModal(i){
   currentIndex = i;
   const d = days[i];
 
-  // Se já estiver desbloqueado → NÃO pedir senha
-  const dayEl = document.querySelector(`.day[data-index="${i}"]`);
-  const isUnlocked = dayEl.classList.contains('checked');
+// Se já foi desbloqueado pela senha → mostrar mensagem final
+const dayEl = document.querySelector(`.day[data-index="${i}"]`);
+const alreadyCleared = dayEl.classList.contains('checked');
 
-  if (isUnlocked) {
-    modalTitle.textContent = d.label + " — Desbloqueado 💗";
-    modalText.textContent = d.text;
+if (alreadyCleared) {
+  modalTitle.textContent = d.label + " — Desbloqueado 💗";
+  modalText.textContent = d.text;
 
-    passwordInput.style.display = "none";
-    hintBox.style.display = "none";
+  // esconder senha e dica
+  passwordInput.style.display = "none";
+  hintBox.style.display = "none";
 
-    modalBack.style.display = "flex";
-    modalBack.setAttribute("aria-hidden", "false");
-    return;
-  }
+  modalBack.style.display = "flex";
+  modalBack.setAttribute("aria-hidden", "false");
+  return;
+}
+
+// Se a data chegou mas a senha ainda NÃO foi digitada → pedir senha
+
 
   // Se estiver bloqueado → pedir senha
   modalTitle.textContent = d.label;
