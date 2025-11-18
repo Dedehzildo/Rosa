@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>A Contagem da Rosa — Final</title>
 <style>
-/* --- RESET & BASE --- */
 html, body {
   margin: 0;
   padding: 0;
@@ -16,14 +15,9 @@ html, body {
               linear-gradient(180deg, #0a0a0c 0%, #1c2740 100%);
   color: #f6f5f8;
 }
-
-/* Melhorias para iPhone 15 Pro Max */
 @supports (-webkit-touch-callout: none) {
-  body {
-    padding-bottom: env(safe-area-inset-bottom);
-  }
+  body { padding-bottom: env(safe-area-inset-bottom); }
 }
-
 .container {
   position: relative;
   min-height: 100vh;
@@ -32,24 +26,7 @@ html, body {
   align-items: center;
   padding: 28px 20px 80px;
 }
-
-/* --- HEADER --- */
-header {
-  width: 100%;
-  max-width: 1100px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-  margin-top: 8px;
-}
-
-h1 {
-  margin: 0;
-  font-size: 22px;
-}
-
-/* --- GRID --- */
+h1 { margin: 0; font-size: 24px; text-align: center; }
 main.grid {
   margin-top: 28px;
   width: 100%;
@@ -60,110 +37,72 @@ main.grid {
   align-items: stretch;
   justify-items: center;
 }
-
 .day {
-  width: 100%;
-  aspect-ratio: 1;
+  width: 100%; aspect-ratio: 1;
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  cursor: pointer;
-  position: relative;
+  display: flex; align-items: center; justify-content: center; flex-direction: column;
+  cursor: pointer; position: relative; overflow: hidden;
   box-shadow: 0 6px 18px rgba(2,6,23,0.6);
-  overflow: hidden;
-  transition: transform .3s ease, box-shadow .3s ease;
-}
-
-/* ✨ Brilho suave nas caixas */
-.day.unlocked {
+  transition: transform .3s, box-shadow .3s;
   animation: glowPulse 2.5s ease-in-out infinite;
 }
-
 @keyframes glowPulse {
   0% { box-shadow: 0 0 8px rgba(228,167,211,0.25); }
-  50%{ box-shadow: 0 0 18px rgba(228,167,211,0.45); }
-  100%{ box-shadow: 0 0 8px rgba(228,167,211,0.25); }
+  50% { box-shadow: 0 0 18px rgba(228,167,211,0.45); }
+  100% { box-shadow: 0 0 8px rgba(228,167,211,0.25); }
 }
-
 .circle {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 64px; height: 64px; border-radius: 50%;
   background: rgba(40,26,51,0.7);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 20px;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: bold; font-size: 20px;
 }
-
-/* --- MODAL + SENHA --- */
 .modalBack {
-  position: fixed;
-  inset: 0;
-  display: none;
-  align-items: center;
-  justify-content: center;
+  position: fixed; inset: 0;
+  display: none; align-items: center; justify-content: center;
   background: rgba(0,0,0,0.6);
-  z-index: 100;
-  padding: 20px;
+  z-index: 100; padding: 20px;
 }
-
 .modal {
-  width: 100%;
-  max-width: 600px;
-  padding: 24px;
+  width: 100%; max-width: 600px; padding: 24px;
   border-radius: 14px;
   background: rgba(20,20,30,0.95);
   border: 1px solid #e4a7d3;
   box-shadow: 0 0 16px rgba(228,167,211,0.35);
 }
-
 .passwordBox input {
-  width: 100%;
-  padding: 12px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 10px;
-  font-size: 16px;
+  width: 100%; padding: 12px;
+  border-radius: 10px; border: none;
+  margin-top: 10px; font-size: 16px;
 }
-
-.hintBox textarea {
-  width: 100%;
-  padding: 10px;
+.hintBox div {
+  width: 100%; padding: 10px;
   border-radius: 8px;
-  margin-top: 12px;
-  min-height: 80px;
-  border: none;
-  resize: vertical;
+  background: rgba(255,255,255,0.07);
+  margin-top: 12px; min-height: 80px;
+  font-size: 14px;
 }
-
-/* --- NEVE --- */
-#snowCanvas {
-  position: fixed;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
+#snowCanvas { position: fixed; inset: 0; z-index: 5; pointer-events: none; }
+#startMusic {
+  position: fixed; bottom: 40px; right: 40px;
+  padding: 16px 22px; border-radius: 16px;
+  border: none; background: #e4a7d3; font-weight: bold;
+  z-index: 200; font-size: 18px;
 }
 </style>
 </head>
 <body>
 <canvas id="snowCanvas"></canvas>
 <div class="container">
-<h1>🌙 A Contagem da Rosa</h1>
-
-<main class="grid" id="grid"></main>
+  <h1>🌙 A Contagem da Rosa</h1>
+  <main class="grid" id="grid"></main>
 </div>
 
-<!-- Modal -->
 <div class="modalBack" id="modalBack">
   <div class="modal">
     <button id="closeModal" style="float:right;font-size:18px;background:none;border:none;color:#fff">✕</button>
     <h2 id="modalTitle"></h2>
-
     <p id="modalText"></p>
 
     <div class="passwordBox">
@@ -172,96 +111,75 @@ main.grid {
     </div>
 
     <div class="hintBox">
-      <label>Dica do dia (editável):</label>
-      <textarea id="hintBox"></textarea>
+      <label>Dica do dia:</label>
+      <div id="hintBox"></div>
     </div>
 
     <button id="confirmPassword" style="margin-top:14px;padding:10px 18px;border-radius:10px;border:none;background:#e4a7d3;color:#000;font-weight:bold">Confirmar</button>
   </div>
 </div>
 
-<audio id="bgMusic" src="music.mp3"></audio>
-<button id="startMusic" style="position:fixed;bottom:20px;right:20px;padding:14px 20px;border-radius:14px;border:none;background:#e4a7d3;font-weight:bold;z-index:200">▶ Música</button>
+<audio id="bgMusic" src="music.mp3" preload="auto"></audio>
+<button id="startMusic">▶ Música</button>
 
 <script>
-/* -----------------------
-   DIAS + SENHAS + DICAS
------------------------ */
 const days = [
-  { index: 1, date: "2025-11-17", label: "17/11", text: "Mensagem…", password: "test1", hint: "Dica editável" },
+  { index: 1, date: "2025-11-17", label: "17/11", text: "Mensagem…", password: "test1", hint: "Dica 1" },
   { index: 2, date: "2025-11-18", label: "18/11", text: "Mensagem…", password: "test2", hint: "Dica 2" },
-  /* ... continue ... */
   { index: 31, date: "2025-12-17", label: "17/12", text: "O GRANDE DIA", password: "vday", hint: "O presente final espera por você…" }
 ];
 
-/* GRID */
 const grid = document.getElementById("grid");
-days.forEach((d, i) => {
-  const box = document.createElement("div");
-  box.className = "day unlocked";
-  box.dataset.i = i;
-  box.innerHTML = `<div class='circle'>${d.index}</div>`;
-  box.onclick = () => openModal(i);
+days.forEach((d,i)=>{
+  const box=document.createElement("div");
+  box.className="day unlocked";
+  box.dataset.i=i;
+  box.innerHTML=`<div class='circle'>${d.index}</div>`;
+  box.onclick=()=>openModal(i);
   grid.appendChild(box);
 });
 
-/* MODAL */
-const modalBack = document.getElementById("modalBack");
-const modalTitle = document.getElementById("modalTitle");
-const modalText = document.getElementById("modalText");
-const passwordInput = document.getElementById("passwordInput");
-const confirmPassword = document.getElementById("confirmPassword");
-const hintBox = document.getElementById("hintBox");
+const modalBack=document.getElementById("modalBack");
+const modalTitle=document.getElementById("modalTitle");
+const modalText=document.getElementById("modalText");
+const passwordInput=document.getElementById("passwordInput");
+const confirmPassword=document.getElementById("confirmPassword");
+const hintBox=document.getElementById("hintBox");
 
 function openModal(i){
-  const d = days[i];
-  modalTitle.textContent = d.label;
-  modalText.textContent = d.text;
-  passwordInput.value = "";
-  hintBox.value = d.hint;
+  const d=days[i];
+  modalTitle.textContent=d.label;
+  modalText.textContent=d.text;
+  passwordInput.value="";
+  hintBox.textContent=d.hint;
 
-  confirmPassword.onclick = () => {
-    if(passwordInput.value.trim().toLowerCase() === d.password.toLowerCase()){
+  confirmPassword.onclick=()=>{
+    if(passwordInput.value.trim().toLowerCase()===d.password.toLowerCase()){
       alert("✔ Senha correta!");
-    } else {
-      alert("Senha incorreta!");
-    }
+    } else alert("Senha incorreta!");
   };
 
-  hintBox.oninput = () => {
-    d.hint = hintBox.value;
-  };
-
-  modalBack.style.display = "flex";
+  modalBack.style.display="flex";
 }
 
-document.getElementById("closeModal").onclick = () => modalBack.style.display = "none";
+document.getElementById("closeModal").onclick=()=>modalBack.style.display="none";
 
-/* MÚSICA */
-const bgMusic = document.getElementById("bgMusic");
-document.getElementById("startMusic").onclick = () => {
-  bgMusic.play();
-};
+/* Música — versão FULL compatível iPhone */
+const bgMusic=document.getElementById("bgMusic");
+const startMusic=document.getElementById("startMusic");
+startMusic.addEventListener("click",()=>{
+  bgMusic.play().then(()=>{
+    startMusic.style.display="none";
+  }).catch(e=>console.log(e));
+});
 
-/* NEVE */
-const snow = document.getElementById("snowCanvas");
-const sctx = snow.getContext("2d");
-let W, H, flakes = [];
-function resize(){ W = snow.width = innerWidth; H = snow.height = innerHeight; initSnow(); }
-function initSnow(){ flakes=[]; for(let i=0;i<150;i++){ flakes.push({x:Math.random()*W, y:Math.random()*H, r:Math.random()*3+1, s:Math.random()*1+0.5}); }}
-function drawSnow(){
+/* Neve */
+const snow=document.getElementById("snowCanvas");
+const sctx=snow.getContext("2d");
+let W,H,flakes=[];
+function resize(){W=snow.width=innerWidth;H=snow.height=innerHeight;init();}
+function init(){flakes=[];for(let i=0;i<150;i++)flakes.push({x:Math.random()*W,y:Math.random()*H,r:Math.random()*3+1,s:Math.random()*1+0.5});}
+function draw(){
   sctx.clearRect(0,0,W,H);
-  sctx.fillStyle = "white";
-  flakes.forEach(f=>{
-    sctx.beginPath(); sctx.arc(f.x,f.y,f.r,0,Math.PI*2); sctx.fill();
-    f.y += f.s; if(f.y>H) f.y = -5;
-    f.x += Math.sin(f.y*0.01);
-  });
-  requestAnimationFrame(drawSnow);
-}
-resize();
-addEventListener("resize",resize);
-drawSnow();
-</script>
-</body>
-</html>
+  sctx.fillStyle="white";
+  flakes.forEach(f=>{sctx.beginPath();sctx.arc(f.x,f.y,f.r,0,Math.PI*2);sctx.fill();f.y+=f.s;if(f.y>H)f
