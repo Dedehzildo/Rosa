@@ -266,17 +266,38 @@ let currentIndex = null;
 function openModal(i){
   currentIndex = i;
   const d = days[i];
+
+  // Se já estiver desbloqueado → NÃO pedir senha
+  const dayEl = document.querySelector(`.day[data-index="${i}"]`);
+  const isUnlocked = dayEl.classList.contains('checked');
+
+  if (isUnlocked) {
+    modalTitle.textContent = d.label + " — Desbloqueado 💗";
+    modalText.textContent = d.text;
+
+    passwordInput.style.display = "none";
+    hintBox.style.display = "none";
+
+    modalBack.style.display = "flex";
+    modalBack.setAttribute("aria-hidden", "false");
+    return;
+  }
+
+  // Se estiver bloqueado → pedir senha
   modalTitle.textContent = d.label;
   modalText.textContent = d.text;
-  passwordInput.value = '';
-  hintBox.textContent = d.hint || '';
-  passwordInput.setAttribute('inputmode','text');
-  // show modal
-  modalBack.style.display = 'flex';
-  modalBack.setAttribute('aria-hidden','false');
-  // small timeout to ensure mobile opens and focuses correctly
-  setTimeout(()=>{ passwordInput.focus(); }, 200);
+
+  passwordInput.style.display = "block";
+  passwordInput.value = "";
+  hintBox.style.display = "block";
+  hintBox.textContent = d.hint || "";
+
+  modalBack.style.display = "flex";
+  modalBack.setAttribute("aria-hidden", "false");
+
+  setTimeout(() => passwordInput.focus(), 200);
 }
+
 function closeModal(){
   modalBack.style.display = 'none';
   modalBack.setAttribute('aria-hidden','true');
