@@ -18,9 +18,7 @@
     color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased;
     -webkit-text-size-adjust:100%;}
 
-  /* --- FIX MOBILE SCROLL / SAFE AREA ---
-     Important: do NOT vertically center the whole page (avoids empty space above on some mobiles)
-  */
+  /* FIX MOBILE SAFE AREA */
   body{
     min-height:100vh;
     display:block;
@@ -53,7 +51,7 @@
   .circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.95), rgba(28,40,64,0.95));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
   .label{margin-top:8px;font-size:12px;color:rgba(246,245,248,0.9);text-align:center}
 
-  /* check badge when unlocked by correct password */
+  /* check badge */
   .day .check {
     position: absolute;
     right:8px;
@@ -85,7 +83,7 @@
   .btn.primary{background:var(--accent);color:#000;font-weight:700}
   .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
 
-  /* toast (inline success message) */
+  /* toast */
   .toast {
     position: fixed;
     left: 50%;
@@ -102,7 +100,7 @@
   }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-  /* snow canvas */
+  /* snow */
   canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10;display:block}
 
   /* responsive */
@@ -110,7 +108,6 @@
     main.grid{grid-template-columns:repeat(3,1fr);gap:10px}
     .circle{width:50px;height:50px;font-size:16px}
     .container{padding:18px}
-    #startMusic{bottom:18px;right:18px;padding:12px 14px}
   }
 </style>
 </head>
@@ -118,7 +115,7 @@
   <canvas id="snow"></canvas>
 
   <div class="container" role="main">
-    <header style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+    <header>
       <div>
         <h1>🌙 A Contagem da Rosa</h1>
         <div class="tag">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
@@ -168,14 +165,11 @@
   <!-- toast -->
   <div class="toast" id="toast">✔ Senha correta</div>
 
-  <!-- audio (use your exact filename in the same folder) -->
+  <!-- audio -->
   <audio id="bgMusic" loop preload="auto" src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
 
 <script>
-/* -----------------------
-   DIAS + SENHAS + DICAS
-   (Edite aqui no código: 'password' e 'hint')
------------------------ */
+/* ---------- days + passwords ---------- */
 const days = [
   {"index":1,"date":"2025-11-17","label":"17/11","text":"Hoje, o tempo despertou.","password":"p1","hint":"Um pequeno começo."},
   {"index":2,"date":"2025-11-18","label":"18/11","text":"O universo tem um hábito curioso.","password":"p2","hint":"Observe os sinais."},
@@ -263,39 +257,28 @@ closeModalBtn.addEventListener('click', closeModal);
 btnClose.addEventListener('click', closeModal);
 
 let currentIndex = null;
+
 function openModal(i){
   currentIndex = i;
   const d = days[i];
 
-// Se já foi desbloqueado pela senha → mostrar mensagem final
-const dayEl = document.querySelector(`.day[data-index="${i}"]`);
-const alreadyCleared = dayEl.classList.contains('checked');
+  const dayEl = document.querySelector(`.day[data-index="${i}"]`);
+  const alreadyCleared = dayEl.classList.contains('checked');
 
-if (alreadyCleared) {
-  modalTitle.textContent = d.label + " — Desbloqueado 💗";
-  
-  // MOSTRA O TEXTO DO DIA CORRETAMENTE
-  modalText.textContent = d.text;
+  if (alreadyCleared) {
+    modalTitle.textContent = d.label + " — Desbloqueado 💗";
+    modalText.textContent = d.text;
 
-  // ESCONDE TODOS OS ELEMENTOS DA SENHA
-  passwordInput.style.display = "none";
-  passwordLabel.style.display = "none";
-  hintBox.style.display = "none";
+    passwordInput.style.display = "none";
+    hintBox.style.display = "none";
 
-  // GARANTE QUE NADA MAIS FIQUE NA TELA
-  passwordInput.value = "";
-  hintBox.value = "";
-  
-  modalBack.style.display = "flex";
-  modalBack.setAttribute("aria-hidden", "false");
-  return;
-}
+    passwordInput.value = "";
 
+    modalBack.style.display = "flex";
+    modalBack.setAttribute("aria-hidden", "false");
+    return;
+  }
 
-// Se a data chegou mas a senha ainda NÃO foi digitada → pedir senha
-
-
-  // Se estiver bloqueado → pedir senha
   modalTitle.textContent = d.label;
   modalText.textContent = d.text;
 
@@ -316,38 +299,35 @@ function closeModal(){
   currentIndex = null;
 }
 
-/* modal confirm: no alerts, inline UI feedback */
+/* ---------- toast ---------- */
 function showToast(msg = '✔ Senha correta'){
   toast.textContent = msg;
   toast.classList.add('show');
   setTimeout(()=> toast.classList.remove('show'), 1800);
 }
 
+/* ---------- confirm password ---------- */
 btnConfirm.addEventListener('click', ()=>{
   if(currentIndex === null) return;
   const d = days[currentIndex];
   const entered = (passwordInput.value||'').trim();
-  if(d.password && d.password.length>0){
+
+  if(d.password){
     if(entered.toLowerCase() === d.password.toLowerCase()){
-      // success: show inline toast + check badge + close
       const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
       if(dayEl) dayEl.classList.add('checked');
+
       showToast('✔ Senha correta');
-      // close modal after a short pause so user sees feedback
+
       setTimeout(()=> closeModal(), 900);
     } else {
-      // wrong: show small inline feedback and focus
       showToast('✖ Senha incorreta');
       passwordInput.focus();
     }
-  } else {
-    // no password required
-    showToast('✔ Conteúdo liberado');
-    setTimeout(()=> closeModal(), 700);
   }
 });
 
-/* clicking boxes */
+/* ---------- clicking boxes ---------- */
 grid.addEventListener('click', (ev)=>{
   const dayEl = ev.target.closest('.day');
   if(!dayEl) return;
@@ -357,10 +337,8 @@ grid.addEventListener('click', (ev)=>{
   const dayDate = parseLocalDateYMD(d.date);
   const today = new Date(); today.setHours(0,0,0,0);
   if(today >= dayDate){
-    // unlocked: open modal (password may or may not be required)
     openModal(i);
   } else {
-    // locked: show message in modal
     modalTitle.textContent = 'Ainda trancado';
     modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
     hintBox.textContent = '';
@@ -370,7 +348,7 @@ grid.addEventListener('click', (ev)=>{
   }
 });
 
-/* keep locks up-to-date every minute (in case page is left open) */
+/* ---------- auto-refresh unlocked ---------- */
 setInterval(()=>{
   const today = new Date(); today.setHours(0,0,0,0);
   document.querySelectorAll('.day').forEach(el=>{
@@ -380,53 +358,38 @@ setInterval(()=>{
     if(today >= dayDate){
       el.classList.remove('locked');
       el.classList.add('unlocked');
-    } else {
-      el.classList.add('locked');
-      el.classList.remove('unlocked');
     }
   });
-}, 60*1000);
+}, 60000);
 
-/* ---------- audio control (works on iPhone: user must click) ---------- */
+/* ---------- audio button ---------- */
 const bgMusic = document.getElementById('bgMusic');
 const startMusicBtn = document.getElementById('startMusic');
-// toggle play / pause para bgMusic — botão permanece visível
 let musicPlaying = false;
 
 startMusicBtn.addEventListener('click', async () => {
   try {
     if (!musicPlaying) {
-      // tentar tocar
       await bgMusic.play();
       musicPlaying = true;
       startMusicBtn.textContent = '⏸ Parar';
-      startMusicBtn.setAttribute('aria-pressed', 'true');
     } else {
-      // pausar
       bgMusic.pause();
       musicPlaying = false;
       startMusicBtn.textContent = '▶ Música';
-      startMusicBtn.setAttribute('aria-pressed', 'false');
     }
   } catch (err) {
-    console.warn('Falha ao tocar/pausar áudio', err);
-    // instrução curta sem bloquear (não usa alert)
     showToast('O navegador bloqueou o áudio — toque novamente.');
   }
 });
 
-bgMusic.addEventListener('ended', () => {
-  musicPlaying = false;
-  startMusicBtn.textContent = '▶ Música';
-  startMusicBtn.setAttribute('aria-pressed', 'false');
-});
-
-/* ---------- snow effect ---------- */
+/* ---------- snow ---------- */
 const snowCanvas = document.getElementById('snow');
 const sctx = snowCanvas.getContext('2d');
 let W = snowCanvas.width = innerWidth;
 let H = snowCanvas.height = innerHeight;
 let flakes = [];
+
 function initSnow(){
   flakes = [];
   const isMobile = /Mobi|Android/i.test(navigator.userAgent);
@@ -442,6 +405,7 @@ function initSnow(){
     });
   }
 }
+
 function drawSnow(){
   sctx.clearRect(0,0,W,H);
   sctx.fillStyle = 'rgba(255,255,255,0.9)';
@@ -458,15 +422,17 @@ function drawSnow(){
   }
   requestAnimationFrame(drawSnow);
 }
+
 initSnow();
 drawSnow();
+
 window.addEventListener('resize', ()=>{
   W = snowCanvas.width = innerWidth;
   H = snowCanvas.height = innerHeight;
   initSnow();
 });
 
-/* ---------- accessibility niceties ---------- */
+/* ---------- ESC to close ---------- */
 document.addEventListener('keydown', (e)=>{
   if(e.key === 'Escape') closeModal();
 });
