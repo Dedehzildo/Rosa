@@ -99,6 +99,10 @@ header{
   border:0; color:#080206;
   font-weight:700; cursor:pointer;
 }
+#startMusic.playing {
+  background:linear-gradient(180deg, #a77bb7, var(--accent));
+}
+
 
 /* ============================================================
    GRID FANTÁSTICO / ANIMAÇÃO
@@ -400,6 +404,51 @@ main.grid{
 <audio id="bgMusic" loop preload="auto"
   src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
 <script>
+  /* ============================================================
+   MÚSICA — Play com desbloqueio do iPhone + Fade-in
+============================================================ */
+
+const bgMusic = document.getElementById("bgMusic");
+const startBtn = document.getElementById("startMusic");
+
+let musicStarted = false;
+
+startBtn.addEventListener("click", async () => {
+  try {
+    if (!musicStarted) {
+      bgMusic.volume = 0; // começa no silêncio
+      await bgMusic.play();  // Safari permite porque está dentro do clique
+
+      musicStarted = true;
+      startBtn.classList.add("playing");
+      startBtn.textContent = "🎵 Tocando";
+
+      // fade-in suave (1.4s)
+      let vol = 0;
+      const fade = setInterval(() => {
+        vol += 0.02;
+        if (vol >= 0.9) {
+          bgMusic.volume = 0.9;
+          clearInterval(fade);
+        } else {
+          bgMusic.volume = vol;
+        }
+      }, 40);
+
+    } else {
+      // Toggle (pausar)
+      bgMusic.pause();
+      musicStarted = false;
+      startBtn.classList.remove("playing");
+      startBtn.textContent = "▶ Música";
+    }
+
+  } catch (err) {
+    console.log("Erro ao iniciar música:", err);
+    alert("O navegador bloqueou o áudio. Ative o som manualmente e tente de novo.");
+  }
+});
+
 /* ============================================================
    DIAS — Simples de editar
    Apenas ajuste text / password / hint
