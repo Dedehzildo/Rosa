@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1" />
+<title>A Contagem da Rosa — Final</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  /* --- base --- */
+  :root{
+    --bg1:#0a0a0c; --bg2:#1c2740; --accent:#e4a7d3; --muted:#f6f5f8;
+    --glass: rgba(255,255,255,0.03);
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%;margin:0;background:
+    radial-gradient(1200px 600px at 10% 10%, rgba(40,26,51,0.35), transparent),
+    linear-gradient(180deg,var(--bg1) 0%,var(--bg2) 100%);
+    color:var(--muted);font-family:Inter,system-ui,Roboto,Helvetica,Arial;-webkit-font-smoothing:antialiased;
+    -webkit-text-size-adjust:100%;}
+
+  /* FIX MOBILE SAFE AREA */
+  body{
+    min-height:100vh;
+    display:block;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .container{width:100%;max-width:1100px;padding:20px 18px 110px;margin:0 auto;}
+
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:6px}
+  h1{font-size:20px;margin:0}
+  .tag{color:rgba(246,245,248,0.78);font-size:13px;margin-top:4px}
+
+  /* countdown & audio control */
+  .controls{display:flex;align-items:center;gap:12px}
+  .count{background:var(--glass);padding:10px 12px;border-radius:12px;border:1px solid rgba(228,167,211,0.05);font-size:13px}
+  .count .num{font-weight:700;color:var(--accent);margin-top:4px}
+
+  #startMusic{padding:10px 14px;border-radius:12px;background:var(--accent);border:0;color:#000;font-weight:700;cursor:pointer}
+
+  /* grid */
+  main.grid{margin-top:20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:14px}
+  .day{aspect-ratio:1;border-radius:12px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(0,0,0,0.06));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 6px 18px rgba(2,6,23,0.6);transition:transform .28s,box-shadow .28s;overflow:hidden;position:relative}
+  .day.locked{opacity:.4;filter:grayscale(20%);pointer-events:auto}
+  .day.unlocked{animation:glow 3s ease-in-out infinite}
+  @keyframes glow{
+    0%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
+    50%{box-shadow:0 14px 30px rgba(228,167,211,0.28)}
+    100%{box-shadow:0 6px 18px rgba(228,167,211,0.12)}
+  }
+  .circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:18px;background:linear-gradient(180deg, rgba(40,26,51,0.95), rgba(28,40,64,0.95));border:1px solid rgba(228,167,211,0.06);color:var(--muted)}
+  .label{margin-top:8px;font-size:12px;color:rgba(246,245,248,0.9);text-align:center}
+
+  /* check badge */
+  .day .check {
+    position: absolute;
+    right:8px;
+    top:8px;
+    width:28px;
+    height:28px;
+    border-radius:8px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:var(--accent);
+    color:#000;
+    font-weight:700;
+    box-shadow:0 6px 14px rgba(228,167,211,0.18);
+    transform:scale(0);
+    transition:transform .22s cubic-bezier(.2,.9,.2,1);
+  }
+  .day.checked .check { transform:scale(1); }
+
+  /* modal */
+  .modalBack{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,6,23,0.6), rgba(2,6,23,0.85));z-index:220;padding:18px}
+  .modal{width:100%;max-width:680px;background:linear-gradient(180deg, rgba(18,16,24,0.98), rgba(30,24,42,0.96));border-radius:14px;padding:20px;border:1px solid rgba(228,167,211,0.06);box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+  .modal h2{margin:0 0 8px;color:var(--accent)}
+  .modal p{margin:6px 0 12px;line-height:1.4;color:var(--muted)}
+  .passwordBox{margin-top:6px}
+  .passwordBox input{width:100%;padding:12px;border-radius:10px;border:0;background:rgba(255,255,255,0.03);color:var(--muted)}
+  .hintBox{width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.03);color:var(--muted);min-height:72px}
+  .btnRow{display:flex;gap:10px;justify-content:flex-end;margin-top:12px}
+  .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer}
+  .btn.primary{background:var(--accent);color:#000;font-weight:700}
+  .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+  /* toast */
+  .toast {
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    bottom: 26px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: rgba(0,0,0,0.6);
+    color: var(--muted);
+    z-index: 300;
+    opacity: 0;
+    transition: opacity .24s, transform .24s;
+    backdrop-filter: blur(4px);
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* snow */
+  canvas#snow{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:10;display:block}
+
+  /* responsive */
+  @media (max-width:720px){
+    main.grid{grid-template-columns:repeat(3,1fr);gap:10px}
+    .circle{width:50px;height:50px;font-size:16px}
+    .container{padding:18px}
+  }
+</style>
+</head>
+<body>
+  <canvas id="snow"></canvas>
+
+  <div class="container" role="main">
+    <header>
+      <div>
+        <h1>🌙 A Contagem da Rosa</h1>
+        <div class="tag">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
+      </div>
+      <div class="controls">
+        <div class="count" aria-live="polite">
+          <div style="font-size:12px;color:rgba(246,245,248,0.68)">contagem até 17 de Dezembro</div>
+          <div class="num" id="cdText">-- dias --</div>
+        </div>
+        <button id="startMusic" aria-label="Iniciar música">▶ Música</button>
+      </div>
+    </header>
+
+    <main class="grid" id="grid" aria-label="Calendário do advento"></main>
+
+    <div style="margin-top:18px;color:rgba(246,245,248,0.62);font-size:14px;max-width:1100px">
+      Oi, meu bem...
+    </div>
+  </div>
+
+  <!-- modal -->
+  <div class="modalBack" id="modalBack" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button id="closeModal" style="float:right;background:none;border:0;color:#fff;font-size:18px">✕</button>
+      <h2 id="modalTitle">Dia</h2>
+      <p id="modalText">conteúdo</p>
+
+      <div class="passwordBox" id="passwordBox">
+        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Senha do dia</label>
+        <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia" inputmode="text" />
+      </div>
+
+      <div style="height:10px"></div>
+
+      <div id="hintContainer">
+        <label style="display:block;margin-bottom:6px;color:rgba(246,245,248,0.8)">Dica</label>
+        <div class="hintBox" id="hintBox" aria-live="polite"></div>
+      </div>
+
+      <div class="btnRow">
+        <button class="btn ghost" id="btnClose">Fechar</button>
+        <button class="btn primary" id="btnConfirm">Confirmar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- toast -->
+  <div class="toast" id="toast">✔ Senha correta</div>
+
+  <!-- audio -->
+  <audio id="bgMusic" loop preload="auto" src="Slaves - Body on Fire (Music video) [trstPd6vs9U].mp3"></audio>
+
+<script>
+/* ---------- days + passwords ---------- */
+const days = [
+  {"index":1,"date":"2025-11-17","label":"17/11","text":"Hoje, o tempo despertou.","password":"p1","hint":"Um pequeno começo."},
+  {"index":2,"date":"2025-11-18","label":"18/11","text":"O universo tem um hábito curioso.","password":"p2","hint":"Observe os sinais."},
+  {"index":3,"date":"2025-11-19","label":"19/11","text":"Há dias que parecem durar segundos.","password":"p3","hint":"Respire fundo."},
+  {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"p4","hint":"Luz em detalhes."},
+  {"index":5,"date":"2025-11-21","label":"21/11","text":"Às vezes o amor não grita — ele sussurra.","password":"p5","hint":"O silêncio fala."},
+  {"index":6,"date":"2025-11-22","label":"22/11","text":"Há lugares que só o amor conhece.","password":"p6","hint":"Memórias escondidas."},
+  {"index":7,"date":"2025-11-23","label":"23/11","text":"Sete dias, sete luzes.","password":"p7","hint":"O número sete."},
+  {"index":8,"date":"2025-11-24","label":"24/11","text":"Recordei uma conversa nossa.","password":"p8","hint":"Palavras em chuva."},
+  {"index":9,"date":"2025-11-25","label":"25/11","text":"Há um diamante oculto em cada escolha.","password":"p9","hint":"Escolha com carinho."},
+  {"index":10,"date":"2025-11-26","label":"26/11","text":"Lembra do nosso primeiro riso alto?","password":"p10","hint":"Ria outra vez."},
+  {"index":11,"date":"2025-11-27","label":"27/11","text":"As estrelas guardam lembranças.","password":"p11","hint":"Olhe pra cima."},
+  {"index":12,"date":"2025-11-28","label":"28/11","text":"Penso nas fases da lua como promessas.","password":"p12","hint":"Fases e promessas."},
+  {"index":13,"date":"2025-11-29","label":"29/11","text":"Uma playlist antiga toca ao fundo.","password":"p13","hint":"Uma música antiga."},
+  {"index":14,"date":"2025-11-30","label":"30/11","text":"Desenhar o teu reflexo.","password":"p14","hint":"Jardins de certezas."},
+  {"index":15,"date":"2025-12-01","label":"01/12","text":"Uma porta pequena em mim.","password":"p15","hint":"Portas pequenas."},
+  {"index":16,"date":"2025-12-02","label":"02/12","text":"Alice entrou em um país de maravilhas.","password":"p16","hint":"Chá e caminhos."},
+  {"index":17,"date":"2025-12-03","label":"03/12","text":"Hoje escrevo uma carta curta: obrigada.","password":"p17","hint":"Obrigado."},
+  {"index":18,"date":"2025-12-04","label":"04/12","text":"Uma foto rasgada, uma polaroid amarelada.","password":"p18","hint":"Fotos antigas."},
+  {"index":19,"date":"2025-12-05","label":"05/12","text":"Sinto o cheiro de vinho e lasanha.","password":"p19","hint":"Cheiros que lembram."},
+  {"index":20,"date":"2025-12-06","label":"06/12","text":"No mapa que traço toda noite.","password":"p20","hint":"Curvas no mapa."},
+  {"index":21,"date":"2025-12-07","label":"07/12","text":"O número sete nos sorri.","password":"p21","hint":"Sete cores."},
+  {"index":22,"date":"2025-12-08","label":"08/12","text":"Se o amor tivesse uma textura.","password":"p22","hint":"Veludo ao entardecer."},
+  {"index":23,"date":"2025-12-09","label":"09/12","text":"Luz de vela, duas taças.","password":"p23","hint":"Brinde breve."},
+  {"index":24,"date":"2025-12-10","label":"10/12","text":"Um pequeno enigma: feche os olhos.","password":"p24","hint":"Conte respirações."},
+  {"index":25,"date":"2025-12-11","label":"11/12","text":"Na dança das horas encontrei compasso.","password":"p25","hint":"Ritmo lento."},
+  {"index":26,"date":"2025-12-12","label":"12/12","text":"Há um pingente que carrego em memória.","password":"p26","hint":"Símbolos antigos."},
+  {"index":27,"date":"2025-12-13","label":"13/12","text":"As fases da lua me lembram de ti.","password":"p27","hint":"Fases: inteira/traço."},
+  {"index":28,"date":"2025-12-14","label":"14/12","text":"Escrevo-te como quem fala ao vento.","password":"p28","hint":"Palavras ao vento."},
+  {"index":29,"date":"2025-12-15","label":"15/12","text":"A reta final aproxima-se.","password":"p29","hint":"Cores intensas."},
+  {"index":30,"date":"2025-12-16","label":"16/12","text":"Amanhecer de véspera: preparei surpresas.","password":"p30","hint":"Sete surpresas."},
+  {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
+];
+
+/* ---------- helpers ---------- */
+function parseLocalDateYMD(ymd){
+  const [y,m,d] = ymd.split('-').map(Number);
+  return new Date(y, m-1, d, 0, 0, 0, 0);
+}
+
+/* ---------- render grid ---------- */
+const grid = document.getElementById('grid');
+function createGrid(){
+  grid.innerHTML = '';
+  days.forEach((d, i) => {
+    const el = document.createElement('div');
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dayDate = parseLocalDateYMD(d.date);
+    const unlocked = today >= dayDate;
+    el.className = unlocked ? 'day unlocked' : 'day locked';
+    el.dataset.index = i;
+    el.innerHTML = `<div class="circle">${d.index}</div><div class="label">${d.label}</div><div class="check">✓</div>`;
+    grid.appendChild(el);
+  });
+}
+createGrid();
+
+/* ---------- countdown ---------- */
+const cdText = document.getElementById('cdText');
+const target = parseLocalDateYMD('2025-12-17');
+function updateCountdown(){
+  const now = new Date();
+  let diff = target - now;
+  if(diff < 0) diff = 0;
+  const daysLeft = Math.floor(diff / (1000*60*60*24));
+  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
+  cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
+}
+updateCountdown();
+setInterval(updateCountdown, 30*1000);
+
+/* ---------- modal handlers ---------- */
+const modalBack = document.getElementById('modalBack');
+const modalTitle = document.getElementById('modalTitle');
+const modalText = document.getElementById('modalText');
+const passwordInput = document.getElementById('passwordInput');
+const passwordBox = document.getElementById('passwordBox');
+const hintBox = document.getElementById('hintBox');
+const hintContainer = document.getElementById('hintContainer');
+const btnConfirm = document.getElementById('btnConfirm');
+const btnClose = document.getElementById('btnClose');
+const closeModalBtn = document.getElementById('closeModal');
+const toast = document.getElementById('toast');
+
+closeModalBtn.addEventListener('click', closeModal);
+btnClose.addEventListener('click', closeModal);
+
+let currentIndex = null;
+
+function openModal(i){
+  currentIndex = i;
+  const d = days[i];
+
+  const dayEl = document.querySelector(`.day[data-index="${i}"]`);
+  const alreadyCleared = dayEl.classList.contains('checked');
+
+  if (alreadyCleared) {
+    // if already unlocked: show the *revealed message* (use hint when present)
+    modalTitle.textContent = d.label + " — Desbloqueado 💗";
+    modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
+
+    // hide entire password area and hint area (we only want to show the revealed message)
+    if(passwordBox) passwordBox.style.display = "none";
+    if(hintContainer) hintContainer.style.display = "none";
+
+    passwordInput.value = "";
+
+    modalBack.style.display = "flex";
+    modalBack.setAttribute("aria-hidden", "false");
+    return;
+  }
+
+  // Not yet cleared: show the modal with password input and hint
+  modalTitle.textContent = d.label;
+  // show the main text (you can keep d.text or decide to show another copy — keeping d.text)
+  modalText.textContent = d.text;
+
+  // ensure password area visible
+  if(passwordBox) passwordBox.style.display = "block";
+  passwordInput.value = "";
+
+  if(hintContainer) hintContainer.style.display = "block";
+  hintBox.textContent = d.hint || "";
+
+  modalBack.style.display = "flex";
+  modalBack.setAttribute("aria-hidden", "false");
+
+  setTimeout(() => passwordInput.focus(), 200);
+}
+
+function closeModal(){
+  modalBack.style.display = 'none';
+  modalBack.setAttribute('aria-hidden','true');
+  currentIndex = null;
+
+  // restore password/hint containers so next open works consistently
+  if(passwordBox) passwordBox.style.display = "block";
+  if(hintContainer) hintContainer.style.display = "block";
+}
+
+/* ---------- toast ---------- */
+function showToast(msg = '✔ Senha correta'){
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(()=> toast.classList.remove('show'), 1800);
+}
+
+/* ---------- confirm password ---------- */
+btnConfirm.addEventListener('click', ()=>{
+  if(currentIndex === null) return;
+  const d = days[currentIndex];
+  const entered = (passwordInput.value||'').trim();
+
+  if(d.password){
+    if(entered.toLowerCase() === d.password.toLowerCase()){
+      const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
+      if(dayEl) dayEl.classList.add('checked');
+
+      // update modal immediately to show revealed message (hint preferred)
+      modalTitle.textContent = d.label + " — Desbloqueado 💗";
+      modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
+
+      // hide password UI
+      if(passwordBox) passwordBox.style.display = "none";
+      if(hintContainer) hintContainer.style.display = "none";
+
+      showToast('✔ Senha correta');
+
+      // keep modal visible briefly so user sees the revealed message, then close
+      setTimeout(()=> closeModal(), 1500);
+    } else {
+      showToast('✖ Senha incorreta');
+      passwordInput.focus();
+    }
+  }
+});
+
+/* ---------- clicking boxes ---------- */
+grid.addEventListener('click', (ev)=>{
+  const dayEl = ev.target.closest('.day');
+  if(!dayEl) return;
+  const i = Number(dayEl.dataset.index);
+  if(Number.isNaN(i)) return;
+  const d = days[i];
+  const dayDate = parseLocalDateYMD(d.date);
+  const today = new Date(); today.setHours(0,0,0,0);
+  if(today >= dayDate){
+    openModal(i);
+  } else {
+    modalTitle.textContent = 'Ainda trancado';
+    modalText.textContent = 'O tempo ainda não permite ver este dia. Aguarde o toque da próxima lua.';
+    // ensure modal shows minimal UI
+    if(passwordBox) passwordBox.style.display = "none";
+    if(hintContainer) hintContainer.style.display = "none";
+    passwordInput.value = '';
+    modalBack.style.display = 'flex';
+    modalBack.setAttribute('aria-hidden','false');
+  }
+});
+
+/* ---------- auto-refresh unlocked ---------- */
+setInterval(()=>{
+  const today = new Date(); today.setHours(0,0,0,0);
+  document.querySelectorAll('.day').forEach(el=>{
+    const i = Number(el.dataset.index);
+    const d = days[i];
+    const dayDate = parseLocalDateYMD(d.date);
+    if(today >= dayDate){
+      el.classList.remove('locked');
+      el.classList.add('unlocked');
+    }
+  });
+}, 60000);
+
+/* ---------- audio button ---------- */
+const bgMusic = document.getElementById('bgMusic');
+const startMusicBtn = document.getElementById('startMusic');
+let musicPlaying = false;
+
+startMusicBtn.addEventListener('click', async () => {
+  try {
+    if (!musicPlaying) {
+      await bgMusic.play();
+      musicPlaying = true;
+      startMusicBtn.textContent = '⏸ Parar';
+    } else {
+      bgMusic.pause();
+      musicPlaying = false;
+      startMusicBtn.textContent = '▶ Música';
+    }
+  } catch (err) {
+    showToast('O navegador bloqueou o áudio — toque novamente.');
+  }
+});
+
+/* ---------- snow ---------- */
+const snowCanvas = document.getElementById('snow');
+const sctx = snowCanvas.getContext('2d');
+let W = snowCanvas.width = innerWidth;
+let H = snowCanvas.height = innerHeight;
+let flakes = [];
+
+function initSnow(){
+  flakes = [];
+  const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+  const count = isMobile ? 80 : 160;
+  for(let i=0;i<count;i++){
+    flakes.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      r: Math.random()*2.5 + 0.6,
+      vx: (Math.random()-0.5)*0.6,
+      vy: Math.random()*0.9 + 0.4,
+      rot: Math.random()*Math.PI*2
+    });
+  }
+}
+
+function drawSnow(){
+  sctx.clearRect(0,0,W,H);
+  sctx.fillStyle = 'rgba(255,255,255,0.9)';
+  for(const f of flakes){
+    sctx.beginPath();
+    sctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
+    sctx.fill();
+    f.x += f.vx + Math.sin(f.rot)*0.2;
+    f.y += f.vy;
+    f.rot += 0.01;
+    if(f.y > H + 10){ f.y = -10; f.x = Math.random()*W; }
+    if(f.x < -30) f.x = W + 30;
+    if(f.x > W + 30) f.x = -30;
+  }
+  requestAnimationFrame(drawSnow);
+}
+
+initSnow();
+drawSnow();
+
+window.addEventListener('resize', ()=>{
+  W = snowCanvas.width = innerWidth;
+  H = snowCanvas.height = innerHeight;
+  initSnow();
+});
+
+/* ---------- ESC to close ---------- */
+document.addEventListener('keydown', (e)=>{
+  if(e.key === 'Escape') closeModal();
+});
+</script>
+</body>
+</html>
