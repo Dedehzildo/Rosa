@@ -269,20 +269,36 @@ function openModal(i){
   const alreadyCleared = dayEl.classList.contains('checked');
 
   if (alreadyCleared) {
-    // if already unlocked: show the *revealed message* (use hint when present)
     modalTitle.textContent = d.label + " — Desbloqueado 💗";
     modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
 
-    // hide entire password area and hint area (we only want to show the revealed message)
-    if(passwordBox) passwordBox.style.display = "none";
-    if(hintContainer) hintContainer.style.display = "none";
-
-    passwordInput.value = "";
+    // esconder senha, esconder dica, esconder botão confirmar
+    passwordBox.style.display = "none";
+    hintContainer.style.display = "none";
+    btnConfirm.style.display = "none";
 
     modalBack.style.display = "flex";
     modalBack.setAttribute("aria-hidden", "false");
     return;
   }
+
+  // ainda não desbloqueado → mostrar senha e confirmar
+  modalTitle.textContent = d.label;
+  modalText.textContent = d.text;
+
+  passwordBox.style.display = "block";
+  hintContainer.style.display = "block";
+  btnConfirm.style.display = "inline-block";
+
+  passwordInput.value = "";
+  hintBox.textContent = d.hint || "";
+
+  modalBack.style.display = "flex";
+  modalBack.setAttribute("aria-hidden", "false");
+
+  setTimeout(() => passwordInput.focus(), 200);
+}
+
 
   // Not yet cleared: show the modal with password input and hint
   modalTitle.textContent = d.label;
@@ -330,24 +346,23 @@ btnConfirm.addEventListener('click', ()=>{
       const dayEl = document.querySelector(`.day[data-index="${currentIndex}"]`);
       if(dayEl) dayEl.classList.add('checked');
 
-      // update modal immediately to show revealed message (hint preferred)
+      // atualiza modal com a mensagem revelada
       modalTitle.textContent = d.label + " — Desbloqueado 💗";
       modalText.textContent = d.hint && d.hint.length ? d.hint : d.text;
 
-      // hide password UI
-      if(passwordBox) passwordBox.style.display = "none";
-      if(hintContainer) hintContainer.style.display = "none";
+      // esconder senha, dica e confirmar
+      passwordBox.style.display = "none";
+      hintContainer.style.display = "none";
+      btnConfirm.style.display = "none";
 
       showToast('✔ Senha correta');
-
-      // keep modal visible briefly so user sees the revealed message, then close
-      setTimeout(()=> closeModal(), 1500);
     } else {
       showToast('✖ Senha incorreta');
       passwordInput.focus();
     }
   }
 });
+
 
 /* ---------- clicking boxes ---------- */
 grid.addEventListener('click', (ev)=>{
