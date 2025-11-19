@@ -369,6 +369,27 @@ main.grid{
     <div id="modalBody">
       <p id="modalText">carregando...</p>
     </div>
+    <!-- CAPA DO ÁLBUM -->
+<div id="albumBox" style="
+    display:none;
+    margin-top:18px;
+    text-align:center;
+">
+  <img id="albumArt" 
+       src="" 
+       alt="Capa do álbum"
+       style="
+         width:150px;
+         height:150px;
+         object-fit:cover;
+         border-radius:16px;
+         box-shadow:0 6px 18px rgba(0,0,0,0.45);
+         opacity:0;
+         transition:opacity .45s ease;
+       ">
+  <div id="albumTitle" style="margin-top:10px;font-size:14px;opacity:0.78;"></div>
+</div>
+
 <div id="extraMusicBox" style="display:none; margin-top:16px;">
   <button id="playAltMusic" 
           class="btn ghost"
@@ -634,13 +655,21 @@ const MAIN_MUSIC = "body-on-fire.mp3";
 
 
 // mapa de músicas extras por dia
-// várias músicas por dia
 const dayExtraMusic = {
   3: [
-    "sleep-token-mine.mp3",
-    "body-on-fire.mp3"     // exemplo: você pode trocar
+    {
+      src: "sleep-token-mine.mp3",
+      title: "Sleep Token — Mine",
+      cover: "mine-cover.jpg"
+    },
+    {
+      src: "body-on-fire.mp3",
+      title: "SLAVES — Body On Fire",
+      cover: "body-on-fire-cover.jpg"
+    }
   ]
 };
+
 
 
 
@@ -745,7 +774,12 @@ if (dayExtraMusic[i]) {
   extraMusicBox.style.display = "none";
   document.getElementById("prevTrack").style.display = "none";
   document.getElementById("nextTrack").style.display = "none";
+  
 }
+document.getElementById("albumBox").style.display = dayExtraMusic[i] ? "block" : "none";
+document.getElementById("albumArt").style.opacity = 0;
+document.getElementById("albumTitle").textContent = "";
+
 
 backToMainMusicBtn.style.display = "none";
 playAltMusicBtn.textContent = "▶ Tocar música deste dia";
@@ -761,9 +795,11 @@ let currentTrack = 0;
 function playTrack(list, index) {
   if (!list || !list[index]) return;
 
-  const src = list[index];
+  const track = list[index];
+
+  // troca música
   bgMusic.pause();
-  bgMusic.src = src;
+  bgMusic.src = track.src;
   bgMusic.volume = 0;
   bgMusic.play();
 
@@ -778,6 +814,22 @@ function playTrack(list, index) {
       bgMusic.volume = v;
     }
   }, 60);
+
+  // mostra capa
+  const albumBox = document.getElementById("albumBox");
+  const albumArt = document.getElementById("albumArt");
+  const albumTitle = document.getElementById("albumTitle");
+
+  albumBox.style.display = "block";
+
+  albumArt.style.opacity = 0;
+  albumArt.src = track.cover;
+
+  requestAnimationFrame(() => {
+    albumArt.style.opacity = 1;
+  });
+
+  albumTitle.textContent = track.title;
 
   playAltMusicBtn.textContent = "🎵 Tocando trilha";
 }
