@@ -82,6 +82,88 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
 /* minimal responsive */
+/* ================= GRID (restaura espaçamento e estilo dos cards) ================ */
+main.grid{
+  margin-top:20px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+  gap:14px;
+  touch-action:manipulation;
+}
+
+.day{
+  aspect-ratio:1;
+  border-radius:14px;
+  background:linear-gradient(180deg,var(--card-bg),rgba(255,255,255,0.02));
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  cursor:pointer; position:relative;
+  overflow:visible;
+  box-shadow:0 8px 28px rgba(0,0,0,0.55);
+  transform:translateY(22px) scale(.94);
+  opacity:0;
+  transition:transform .28s cubic-bezier(.2,.9,.2,1), opacity .28s;
+  padding:10px;
+}
+
+.day.enter{
+  animation:cardIn .55s cubic-bezier(.2,.9,.2,1) forwards;
+}
+@keyframes cardIn{
+  0%{ opacity:0; transform:translateY(28px) scale(.94); }
+  100%{ opacity:1; transform:none; }
+}
+
+.circle{
+  width:60px; height:60px; border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  background:linear-gradient(180deg, rgba(20,12,30,0.95), rgba(28,40,64,0.96));
+  border:1px solid rgba(255,255,255,0.05);
+  font-weight:700; font-size:18px;
+}
+
+.label{
+  margin-top:8px; font-size:12px; opacity:0.92;
+  text-align:center; padding:0 6px;
+}
+
+.day.locked{
+  filter:grayscale(45%) brightness(0.60);
+  opacity:0.40;
+  transform:scale(0.95);
+  box-shadow:0 4px 12px rgba(0,0,0,0.55);
+}
+
+.day.checked{
+  box-shadow:0 14px 40px rgba(212,160,255,0.14);
+}
+
+.day .check{
+  position:absolute; right:8px; top:8px;
+  width:28px; height:28px;
+  border-radius:8px;
+  display:flex; align-items:center; justify-content:center;
+  background:var(--accent-2);
+  color:#000; font-weight:700;
+  transform:scale(0);
+  transition:transform .22s cubic-bezier(.2,.9,.2,1);
+}
+.day.checked .check{ transform:scale(1); }
+
+/* desktop hover */
+@media (hover:hover){
+  .day:hover{
+    transform:translateY(-6px);
+    box-shadow:0 22px 60px rgba(0,0,0,0.65);
+  }
+}
+
+/* responsive tweak */
+@media (max-width:720px){
+  main.grid{ grid-template-columns:repeat(3,1fr); gap:10px; }
+  .circle{ width:52px; height:52px; font-size:16px; }
+}
+
 @media (max-width:720px){
   .player{ min-width:180px; gap:8px; padding:8px; }
   .player .title, .player .sub { max-width:100px; font-size:12px; }
@@ -208,15 +290,30 @@ const days = [
   {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
 ];
 
-/* ========== dayExtraMusic: key = day.index ==========
-   coloque os arquivos no servidor: ex: "assets/sleep-token-mine.mp3", "assets/mine-cover.jpg"
-*/
+/* ========== dayExtraMusic: key = day.index ========== */
 const dayExtraMusic = {
+  1: [
+    {
+      src: "body-on-fire.mp3",
+      title: "SLAVES — Body On Fire",
+      cover: "body-on-fire-cover.jpg"
+    }
+  ],
+
   3: [
-    { src: "sleep-token-mine.mp3", title: "Sleep Token — Mine", cover: "mine-cover.jpg" },
-    { src: "body-on-fire.mp3", title: "SLAVES — Body On Fire", cover: "body-on-fire-cover.jpg" }
+    {
+      src: "sleep-token-mine.mp3",
+      title: "Sleep Token — Mine",
+      cover: "mine-cover.jpg"
+    },
+    {
+      src: "body-on-fire.mp3",
+      title: "SLAVES — Body On Fire",
+      cover: "body-on-fire-cover.jpg"
+    }
   ]
 };
+
 
 /* ========== Helpers ========= */
 function parseLocalDateYMD(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y,m-1,d,0,0,0,0); }
@@ -233,11 +330,17 @@ function createGrid(){
     const dayDate = parseLocalDateYMD(d.date);
     const unlockedByTime = today >= dayDate;
     const alreadyUnlocked = unlockedSet.has(String(i));
-    el.className = unlockedByTime ? "day unlocked" : "day locked";
+    el.className = "day " + (unlockedByTime ? "unlocked" : "locked");
+
     if(alreadyUnlocked) el.classList.add("checked");
     el.dataset.index = i;
-    el.style.cssText = "aspect-ratio:1;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:visible;box-shadow:0 8px 28px rgba(0,0,0,0.55);transform:translateY(22px) scale(.94);opacity:0;margin:8px;";
-    el.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(20,12,30,0.95), rgba(28,40,64,0.96));border:1px solid rgba(255,255,255,0.05);font-weight:700;font-size:18px">${d.index}</div><div style="margin-top:8px;font-size:12px;opacity:0.92;text-align:center;padding:0 6px">${d.label}</div><div style="position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent-2);color:#000;font-weight:700;transform:scale(0);transition:transform .22s">✓</div>`;
+
+    el.innerHTML = `
+  <div class="circle">${d.index}</div>
+  <div class="label">${d.label}</div>
+  <div class="check">✓</div>
+`;
+
     grid.appendChild(el);
     setTimeout(()=> el.style.opacity = 1, i*30);
   });
@@ -420,6 +523,7 @@ function openModal(i){
       albumBox.style.display = "none";
       extraMusicBox.style.display = "none";
     }
+    
 
     showModal();
     return;
