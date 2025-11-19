@@ -8,17 +8,37 @@
 
 <style>
 :root{
-  --bg-deep:#06050a;
+  /* fundo */
+  --bg-deep: #06050a;
   --nebula-1: rgba(91,35,96,0.12);
   --nebula-2: rgba(134,54,131,0.08);
-  --accent:#d8b3f1;
-  --accent-2:#f6d7b1;
-  --muted:#f0e9f6;
-  --card-bg: rgba(255,255,255,0.035);
-  --glass: rgba(255,255,255,0.05);
-  --glass-strong: rgba(255,255,255,0.07);
+
+  /* accents */
+  --accent: #d9b3f3;        /* lavanda claro (texto/contagem) */
+  --accent-2: #ffd7b1;      /* dourado suave (detalhes) */
+  --muted: #ede7f4;         /* texto secundário */
+
+  /* glass base */
+  --glass: rgba(255,255,255,0.045);
+  --glass-strong: rgba(255,255,255,0.08);
+
+  /* cores do círculo (gradientes) */
+  --circle-top: rgba(255,255,255,0.24);
+  --circle-mid: rgba(180,150,230,0.16);
+  --circle-bottom: rgba(40,30,60,0.06);
+
+  /* borda e aura */
+  --circle-border: rgba(255,255,255,0.20);
+  --circle-halo-1: rgba(200,160,255,0.24);
+  --circle-halo-2: rgba(120,80,200,0.14);
+
+  /* sombras/glow */
+  --inset-white: rgba(255,255,255,0.18);
+  --inset-lavender: rgba(150,100,210,0.22);
+  --card-shadow: rgba(0,0,0,0.55);
   --gold-glow: rgba(212,160,255,0.12);
 }
+
 
 *{ box-sizing:border-box; }
 html,body{ height:100%; margin:0; font-family:Inter,system-ui,-apple-system,Roboto,Helvetica,Arial; color:var(--muted);
@@ -211,15 +231,13 @@ main.grid{
 }
 
 /* --- DAY STATES (locked / unlocked) --- */
-
 .circle {
-  width: 72px;
-  height: 72px;
+  width: 70px;
+  height: 70px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-
   font-size: 22px;
   font-weight: 600;
   color: #ffffff;
@@ -227,66 +245,92 @@ main.grid{
   position: relative;
   overflow: hidden;
 
-  /* CAMADA 1 – fundo de vidro */
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(18px) saturate(180%);
-  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  /* GLASS ESCURO + LAVANDA SUTIL */
+  background:
+    radial-gradient(circle at 50% 35%,
+      rgba(255,255,255,0.12) 0%,
+      rgba(160,120,210,0.10) 40%,
+      rgba(40,30,60,0.15) 75%,
+      rgba(10,8,14,0.55) 100%
+    );
 
-  /* CAMADA 2 – anel suave */
+  /* AQUI VEM O VIDRO ESCURO REAL */
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+
+  /* BORDA DE VIDRO MAIS MARCADA */
+  border: 1.4px solid rgba(255,255,255,0.12);
+
+  /* PROFUNDIDADE MAIS ESCURA */
   box-shadow:
-    inset 0 0 0 1.6px rgba(255, 255, 255, 0.22),
-    inset 0 0 18px rgba(200, 150, 255, 0.18),
-    0 4px 14px rgba(0, 0, 0, 0.35);
+    inset 0 3px 8px rgba(255,255,255,0.10),
+    inset 0 -8px 18px rgba(120,90,160,0.18),
+    0 8px 28px rgba(0,0,0,0.65);
+
+  transition: all .26s cubic-bezier(.2,.9,.2,1);
 }
 
-/* CAMADA 3 – highlight superior */
+/* REFLEXO ajustado para ficar mais “vidro escuro” */
 .circle::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 50%;
+  border-radius: inherit;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0.22),
-    rgba(255, 255, 255, 0.04) 45%,
-    rgba(0, 0, 0, 0) 75%
+    rgba(255,255,255,0.45),
+    rgba(255,255,255,0.10) 38%,
+    transparent 75%
   );
-  mix-blend-mode: screen;
+  opacity: 0.55;     /* ↓ antes era 0.75 */
   pointer-events: none;
 }
 
-/* CAMADA 4 – brilho de aura leve (quase imperceptível) */
+/* HALO EXTERNO MAIS FINO, E MAIS ESCURO */
 .circle::after {
   content: "";
   position: absolute;
-  inset: -12px;
-  border-radius: 50%;
+  inset: -24px;
+  border-radius: inherit;
+
   background: radial-gradient(
     circle,
-    rgba(180, 120, 255, 0.12),
-    rgba(120, 60, 180, 0.06),
-    transparent 70%
+    rgba(180,140,230,0.18),
+    rgba(100,70,160,0.12) 40%,
+    transparent 78%
   );
-  filter: blur(20px);
+
+  filter: blur(26px);
+  opacity: 0.55;   /* ↓ antes era 0.70 */
   pointer-events: none;
 }
 
-/* BLOQUEADO */
+
+/* locked (mais translúcido, sem halo) */
 .day.locked .circle {
-  opacity: 0.22;
-  filter: grayscale(80%) brightness(0.5);
+  opacity: 0.28;
+  filter: grayscale(85%) contrast(0.85);
+  box-shadow: none;          /* remove profundidade quando trancado */
 }
 
-/* HOVER (leve, sofisticado) */
-@media (hover:hover) {
-  .day:hover .circle {
-    transform: translateY(-3px);
-    box-shadow:
-      inset 0 0 0 2px rgba(255, 255, 255, 0.28),
-      inset 0 0 22px rgba(215, 170, 255, 0.24),
-      0 8px 20px rgba(0, 0, 0, 0.5);
+/* checked — mostrar esfera com brilho discreto */
+.day.checked .circle{
+  box-shadow:
+    inset 0 3px 12px rgba(255,255,255,0.20),
+    inset 0 -6px 16px rgba(170,120,255,0.26),
+    0 14px 36px rgba(60,20,80,0.45);
+}
+
+/* hover sutil (desktop) */
+@media (hover:hover){
+  .day:hover .circle{
+    transform: translateY(-3px) scale(1.02);
+    transition:transform .22s, box-shadow .22s;
   }
 }
+
+/* label contraste */
+.label{ color: rgba(235,225,245,0.9); }
 
 
 .label{
