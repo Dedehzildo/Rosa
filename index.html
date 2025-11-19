@@ -132,9 +132,9 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 .player .meta{
   display:flex;
   flex-direction:column;
-  gap:4px;
+  justify-content:center;
   flex-grow:1;
-  min-width:0;
+  min-width:0; /* permite encolher sem quebrar layout */
 }
 
 .player .title{
@@ -144,15 +144,18 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  margin-bottom:2px;
 }
 
 .player .sub{
   font-size:12px;
-  opacity:0.78;
+  opacity:0.75;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  line-height:1.1;
 }
+
 
 
 /* iPhone optimization */
