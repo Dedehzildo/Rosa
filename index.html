@@ -67,7 +67,12 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 .subtitle{ margin-top:6px; font-size:13px; opacity:0.78; }
 
 /* controls area */
-.controls{ display:flex; gap:12px; align-items:center; }
+.controls{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  min-width: 0;  /* <<< AQUI */
+}
 .count{ background:var(--glass); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); font-size:13px; backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:flex-start; min-width:170px; }
 .count .num{ font-weight:700; color:var(--accent); margin-top:4px; }
 
@@ -419,6 +424,7 @@ header > div:last-child > div {
 
 
   .controls {
+    min-width: 0;
     width: 100%;
     justify-content: flex-start;
   }
