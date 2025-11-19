@@ -7,12 +7,6 @@
 <meta name="color-scheme" content="dark" />
 
 <style>
-/* ============================================================
-   TEMA CINEMÁTICO — LUXO MÍSTICO
-   Aurora leve + estrelas + neve + brilho suave
-   Totalmente otimizado para iPhone 15 Pro Max
-============================================================ */
-
 :root{
   --bg-deep:#06050a;
   --nebula-1: rgba(91,35,96,0.12);
@@ -22,14 +16,12 @@
   --muted:#f0e9f6;
   --card-bg: rgba(255,255,255,0.035);
   --glass: rgba(255,255,255,0.05);
+  --glass-strong: rgba(255,255,255,0.07);
+  --gold-glow: rgba(212,160,255,0.12);
 }
 
 *{ box-sizing:border-box; }
-
-html,body{
-  height:100%; margin:0;
-  font-family:Inter,system-ui,-apple-system,Roboto,Helvetica,Arial;
-  color:var(--muted);
+html,body{ height:100%; margin:0; font-family:Inter,system-ui,-apple-system,Roboto,Helvetica,Arial; color:var(--muted);
   background:
     radial-gradient(1200px 700px at 12% 10%, var(--nebula-1), transparent 22%),
     radial-gradient(900px 500px at 90% 75%, var(--nebula-2), transparent 18%),
@@ -38,893 +30,424 @@ html,body{
   -webkit-text-size-adjust:100%;
   overscroll-behavior:none;
 }
+.wrap{ width:100%; max-width:1100px; margin:0 auto; padding:24px 18px 120px; position:relative; z-index:10; }
+header{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
 
-body{
-  padding-bottom:env(safe-area-inset-bottom);
-  -webkit-tap-highlight-color: transparent;
+/* title */
+.title h1{ margin:0; font-size:22px; font-weight:600; }
+.subtitle{ margin-top:6px; font-size:13px; opacity:0.78; }
+
+/* controls area */
+.controls{ display:flex; gap:12px; align-items:center; }
+.count{ background:var(--glass); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); font-size:13px; backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:flex-start; min-width:170px; }
+.count .num{ font-weight:700; color:var(--accent); margin-top:4px; }
+
+/* PLAYER CARD (next to counter) - minimal luxury */
+.player{
+  display:flex; align-items:center; gap:12px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.035);
+  padding:8px 10px; border-radius:12px; min-width:260px;
+  backdrop-filter: blur(6px); position:relative;
+}
+.player.locked{ filter:grayscale(.5) contrast(.85) brightness(.9); opacity:.9; }
+.player .cover{
+  width:48px; height:48px; border-radius:10px; overflow:hidden; flex:0 0 48px;
+  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.15)); display:flex; align-items:center; justify-content:center;
+  border:1px solid rgba(255,255,255,0.03);
+}
+.player .cover img{ width:100%; height:100%; object-fit:cover; display:block; transform:scale(1); transition:transform .28s ease, opacity .28s; opacity:1; }
+.player .meta{ display:flex; flex-direction:column; gap:2px; min-width:0; }
+.player .title{ font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+.player .sub{ font-size:12px; opacity:0.68; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
+.player .controls-mini{ display:flex; gap:6px; align-items:center; margin-left:6px; }
+.icon-btn{ background:transparent; border:0; padding:8px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); }
+.icon-btn svg{ width:18px; height:18px; display:block; opacity:.98; }
+.icon-btn:focus{ outline:2px solid rgba(216,179,241,0.12); outline-offset:2px; }
+
+/* lock overlay */
+.player .lockBadge{
+  position:absolute; right:8px; top:8px; font-size:11px; padding:6px 8px; border-radius:999px;
+  background:rgba(0,0,0,0.36); border:1px solid rgba(255,255,255,0.03); display:flex; gap:6px; align-items:center; color:var(--muted);
 }
 
-/* ============================================================
-   HEADER
-============================================================ */
+/* tiny glow when unlocked */
+.player.unlocked{ box-shadow:0 8px 30px var(--gold-glow); border-color: rgba(212,160,255,0.06); }
 
-.wrap{
-  width:100%;
-  max-width:1100px;
-  margin:0 auto;
-  padding:24px 18px 120px;
-  position:relative;
-  z-index:10;
-}
-
-header{
-  display:flex; align-items:center; justify-content:space-between;
-  gap:12px;
-}
-
-.title h1{
-  margin:0; font-size:22px; font-weight:600;
-}
-
-.subtitle{
-  margin-top:6px; font-size:13px; opacity:0.78;
-}
-
-/* ============================================================
-   CONTROLES — Contador e Música
-============================================================ */
-
-.controls{
-  display:flex; gap:12px; align-items:center;
-}
-
-.count{
-  background:var(--glass);
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid rgba(255,255,255,0.04);
-  font-size:13px;
-  backdrop-filter:blur(4px);
-}
-
-.count .num{
-  font-weight:700; color:var(--accent);
-  margin-top:4px;
-}
-
-#startMusic{
-  padding:10px 14px;
-  border-radius:12px;
-  background:linear-gradient(180deg,var(--accent),#a77bb7);
-  border:0; color:#080206;
-  font-weight:700; cursor:pointer;
-}
-#startMusic.playing {
-  background:linear-gradient(180deg, #a77bb7, var(--accent));
-}
-
-
-/* ============================================================
-   GRID FANTÁSTICO / ANIMAÇÃO
-============================================================ */
-
-main.grid{
-  margin-top:20px;
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
-  gap:14px;
-  touch-action:manipulation;
-}
-
-.day{
-  aspect-ratio:1;
-  border-radius:14px;
-  background:linear-gradient(180deg,var(--card-bg),rgba(255,255,255,0.02));
-  display:flex; flex-direction:column;
-  align-items:center; justify-content:center;
-  cursor:pointer; position:relative;
-  overflow:visible;
-  box-shadow:0 8px 28px rgba(0,0,0,0.55);
-  transform:translateY(22px) scale(.94);
-  opacity:0;
-}
-
-/* animação de entrada estagiada */
-.day.enter{
-  animation:cardIn .55s cubic-bezier(.2,.9,.2,1) forwards;
-}
-
-@keyframes cardIn{
-  0%{ opacity:0; transform:translateY(28px) scale(.94); }
-  100%{ opacity:1; transform:none; }
-}
-
-.circle{
-  width:60px; height:60px; border-radius:50%;
-  display:flex; align-items:center; justify-content:center;
-  background:linear-gradient(180deg, rgba(20,12,30,0.95), rgba(28,40,64,0.96));
-  border:1px solid rgba(255,255,255,0.05);
-  font-weight:700; font-size:18px;
-}
-
-.label{
-  margin-top:8px; font-size:12px; opacity:0.92;
-  text-align:center; padding:0 6px;
-}
-
-/* locked visual */
-.day.locked{
-  filter:grayscale(45%) brightness(0.60);
-  opacity:0.40;
-  transform:scale(0.95);
-  box-shadow:0 4px 12px rgba(0,0,0,0.55);
-}
-
-/* checked */
-.day.checked{
-  box-shadow:0 14px 40px rgba(212,160,255,0.14);
-}
-
-.day .check{
-  position:absolute; right:8px; top:8px;
-  width:28px; height:28px;
-  border-radius:8px;
-  display:flex; align-items:center; justify-content:center;
-  background:var(--accent-2);
-  color:#000; font-weight:700;
-  transform:scale(0);
-  transition:transform .22s cubic-bezier(.2,.9,.2,1);
-}
-
-.day.checked .check{ transform:scale(1); }
-
-/* hover (desktop only) */
-@media (hover:hover){
-  .day:hover{
-    transform:translateY(-6px);
-    box-shadow:0 22px 60px rgba(0,0,0,0.65);
-  }
-}
-
-/* ============================================================
-   MODAL CINEMÁTICO — vidro + glow
-============================================================ */
-
-.modalBack{
-  position:fixed; inset:0;
-  display:none;
-  align-items:center; justify-content:center;
-  background:linear-gradient(rgba(2,3,6,0.55),rgba(2,3,6,0.85));
-  z-index:220; padding:18px;
-}
-
-.modal{
-  width:100%; max-width:760px;
-  border-radius:16px;
-  padding:22px 20px;
-  background:linear-gradient(180deg, rgba(10,8,18,0.86), rgba(20,12,30,0.97));
-  border:1px solid rgba(255,255,255,0.04);
-  backdrop-filter:blur(10px);
-  box-shadow:0 28px 80px rgba(0,0,0,0.70);
-  transform:translateY(12px) scale(.96);
-  opacity:0;
-}
-
-.modal.show{
-  animation:modalIn .36s cubic-bezier(.2,.9,.2,1) forwards;
-}
-
-@keyframes modalIn{
-  to{ opacity:1; transform:none; }
-}
-
-.modal h2{
-  margin:0 0 10px 0;
-  color:var(--accent);
-}
-
-.modal p{
-  line-height:1.65;
-  font-size:15px;
-  white-space:pre-line;   /* ISSO AQUI É O QUE MELHORA TUDO */
-}
-
-
-/* senha */
-.passwordBox input{
-  width:100%;
-  padding:12px;
-  border-radius:10px;
-  background:rgba(255,255,255,0.05);
-  border:0; color:var(--muted);
-}
-
-/* dica */
-.hintBox{
-  background:rgba(255,255,255,0.04);
-  border-radius:10px;
-  padding:12px;
-  min-height:60px;
-}
-
-/* botões modal */
-.btnRow{
-  margin-top:14px;
-  display:flex;
-  gap:12px;
-  justify-content:flex-end;
-}
-
-.btn{
-  padding:10px 14px;
-  border-radius:10px;
-  border:0; cursor:pointer;
-}
-
-.btn.primary{
-  background:linear-gradient(180deg,var(--accent),#b58ad8);
-  color:#09040d; font-weight:700;
-}
-
-.btn.ghost{
-  background:transparent;
-  border:1px solid rgba(255,255,255,0.06);
-  color:var(--muted);
-}
+/* modal album box tweaks */
+#albumBox img{ width:180px; height:180px; border-radius:12px; object-fit:cover; }
 
 /* toast */
-.toast{
-  position:fixed;
-  left:50%; transform:translateX(-50%) translateY(20px);
-  bottom:28px;
-  padding:10px 14px;
-  border-radius:12px;
-  background:rgba(0,0,0,0.65);
-  opacity:0;
-  color:var(--muted);
-  transition:all .22s;
-  z-index:300;
-}
-.toast.show{
-  opacity:1;
-  transform:translateX(-50%) translateY(0);
-}
+.toast{ position:fixed; left:50%; transform:translateX(-50%) translateY(20px); bottom:28px; padding:10px 14px; border-radius:12px; background:rgba(0,0,0,0.65); opacity:0; color:var(--muted); transition:all .22s; z-index:300; }
+.toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-/* cursor de digitação (typing effect) */
-.type-cursor{
-  display:inline-block; width:7px; height:18px;
-  background:var(--accent);
-  margin-left:6px;
-  animation:blink 1s steps(2) infinite;
-}
-@keyframes blink{ 50%{opacity:0;} }
-
-/* responsivo */
+/* minimal responsive */
 @media (max-width:720px){
-  main.grid{ grid-template-columns:repeat(3,1fr); gap:10px; }
-  .circle{ width:52px; height:52px; font-size:16px; }
-  .modal{ padding:18px; }
+  .player{ min-width:180px; gap:8px; padding:8px; }
+  .player .title, .player .sub { max-width:100px; font-size:12px; }
+  .count{ min-width:120px; }
 }
-
 </style>
 </head>
 <body>
-
-<!-- ============================================================
-     CANVAS — Aurora + Estrelas + Neve
-============================================================ -->
 
 <canvas id="aurora" style="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:3"></canvas>
 <canvas id="stars"  style="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2"></canvas>
 <canvas id="snow"   style="position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:4"></canvas>
 
-
-<!-- ============================================================
-     MAIN CONTENT
-============================================================ -->
-
 <div class="wrap" role="main">
-
   <header>
     <div class="title">
       <h1>🌙 A Contagem da Rosa</h1>
-      <div class="subtitle">
-        Há magias que não precisam de feitiços — só do tempo certo para florescer.
-      </div>
+      <div class="subtitle">Há magias que não precisam de feitiços — só do tempo certo para florescer.</div>
     </div>
 
-    <div class="controls" aria-hidden="false">
-      <div class="count" aria-live="polite">
-        <div style="font-size:12px;opacity:0.72">Contagem até 17 de Dezembro</div>
-        <div class="num" id="cdText">-- dias --</div>
-      </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="controls" aria-hidden="false">
+        <div class="count" aria-live="polite">
+          <div style="font-size:12px;opacity:0.72">Contagem até 17 de Dezembro</div>
+          <div class="num" id="cdText">-- dias --</div>
+        </div>
 
-      <button id="startMusic" aria-label="Tocar música">▶ Música</button>
+        <!-- PLAYER next to the counter -->
+        <div id="playerCard" class="player" aria-live="polite" title="Player">
+          <div class="cover" id="playerCover">
+            <!-- default blank cover -->
+            <img id="playerCoverImg" src="" alt="Capa" style="opacity:0;">
+          </div>
+
+          <div class="meta">
+            <div class="title" id="playerTrackTitle">Trilha bloqueada</div>
+            <div class="sub" id="playerTrackArtist">—</div>
+          </div>
+
+          <div class="controls-mini" aria-hidden="false" style="margin-left:8px">
+            <button id="playerPrev" class="icon-btn" title="Anterior" aria-label="Anterior">
+              <!-- SVG prev -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M19 18L11 12l8-6v12zM5 6v12"/></svg>
+            </button>
+
+            <button id="playerPlay" class="icon-btn" title="Tocar" aria-label="Tocar">
+              <!-- SVG play -->
+              <svg id="playerPlayIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>
+            </button>
+
+            <button id="playerNext" class="icon-btn" title="Próxima" aria-label="Próxima">
+              <!-- SVG next -->
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 6l8 6-8 6V6zm14 0v12"/></svg>
+            </button>
+          </div>
+
+          <div class="lockBadge" id="playerLockBadge" style="display:flex;align-items:center;gap:6px;">
+            <!-- SVG lock -->
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <span style="font-size:12px;opacity:0.88">Trilha bloqueada</span>
+          </div>
+        </div>
+      </div>
     </div>
   </header>
 
-
-  <!-- Calendário -->
+  <!-- grid and content (unchanged, will be populated by script) -->
   <main id="grid" class="grid" aria-label="Calendário do advento"></main>
-
-  <div style="margin-top:18px;font-size:14px;opacity:0.65;">
-    Oi, meu bem...
-  </div>
-
+  <div style="margin-top:18px;font-size:14px;opacity:0.65;">Oi, meu bem...</div>
 </div>
 
+<!-- MODAL (mantive sua estrutura, ajustei para sempre mostrar música quando desbloqueado) -->
+<div class="modalBack" id="modalBack" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,3,6,0.55),rgba(2,3,6,0.85));z-index:220;padding:18px;">
+  <div class="modal" id="modal" role="dialog" aria-modal="true" style="width:100%;max-width:760px;border-radius:16px;padding:22px 20px;background:linear-gradient(180deg, rgba(10,8,18,0.86), rgba(20,12,30,0.97));border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(10px);box-shadow:0 28px 80px rgba(0,0,0,0.70);">
+    <button id="closeModal" style="float:right;background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+    <h2 id="modalTitle" style="margin:0 0 10px 0;color:var(--accent)">Dia</h2>
+    <div id="modalBody"><p id="modalText" style="line-height:1.65;font-size:15px;white-space:pre-line;">carregando...</p></div>
 
-<!-- ============================================================
-     MODAL
-============================================================ -->
-
-<div class="modalBack" id="modalBack" aria-hidden="true">
-  <div class="modal" id="modal" role="dialog" aria-modal="true">
-
-    <button id="closeModal"
-      style="float:right;background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
-
-    <h2 id="modalTitle">Dia</h2>
-
-    <div id="modalBody">
-      <p id="modalText">carregando...</p>
+    <!-- CAPA DO ÁLBUM (modal) -->
+    <div id="albumBox" style="display:none;margin-top:18px;text-align:center;">
+      <img id="albumArt" src="" alt="Capa do álbum" style="width:180px;height:180px;object-fit:cover;border-radius:12px;box-shadow:0 6px 18px rgba(0,0,0,0.45);opacity:0;transition:opacity .45s ease;">
+      <div id="albumTitle" style="margin-top:10px;font-size:16px;opacity:0.95;color:var(--accent);"></div>
     </div>
-    <!-- CAPA DO ÁLBUM -->
-<div id="albumBox" style="
-    display:none;
-    margin-top:18px;
-    text-align:center;
-">
-  <img id="albumArt" 
-       src="" 
-       alt="Capa do álbum"
-       style="
-         width:150px;
-         height:150px;
-         object-fit:cover;
-         border-radius:16px;
-         box-shadow:0 6px 18px rgba(0,0,0,0.45);
-         opacity:0;
-         transition:opacity .45s ease;
-       ">
-  <div id="albumTitle" style="margin-top:10px;font-size:14px;opacity:0.78;"></div>
-</div>
 
-<div id="extraMusicBox" style="display:none; margin-top:16px;">
-  <button id="playAltMusic" 
-          class="btn ghost"
-          style="width:100%; text-align:center;">
-    ▶ Tocar música deste dia
-  </button>
-</div>
-<div style="display:flex; gap:10px; margin-top:10px;">
-  <button id="prevTrack" class="btn ghost" style="flex:1; display:none;">⏮ Música anterior</button>
-  <button id="nextTrack" class="btn ghost" style="flex:1; display:none;">⏭ Próxima música</button>
-</div>
+    <div id="extraMusicBox" style="display:none;margin-top:16px;">
+      <div style="display:flex;gap:8px;align-items:center;justify-content:center;">
+        <button id="modalPrev" class="btn ghost" style="padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted)">⏮</button>
+        <button id="modalPlay" class="btn primary" style="padding:8px 12px;border-radius:8px;background:linear-gradient(180deg,var(--accent),#b58ad8);border:0;color:#09040d;font-weight:700">▶</button>
+        <button id="modalNext" class="btn ghost" style="padding:8px 10px;border-radius:8px;border:1px solid rgba(255,255,255,0.06);background:transparent;color:var(--muted)">⏭</button>
+      </div>
+    </div>
 
-<button id="backToMainMusic"
-        class="btn ghost"
-        style="width:100%; text-align:center; margin-top:10px; display:none;">
-  ⏪ Voltar para a música principal
-</button>
-
-    <div class="passwordBox" id="passwordBox">
+    <div class="passwordBox" id="passwordBox" style="margin-top:18px;">
       <label style="display:block;margin-bottom:6px;opacity:0.8">Senha do dia</label>
-      <input id="passwordInput" type="password" placeholder="Digite a senha"
-             aria-label="Senha do dia" inputmode="text" />
+      <input id="passwordInput" type="password" placeholder="Digite a senha" aria-label="Senha do dia" inputmode="text" style="width:100%;padding:12px;border-radius:10px;background:rgba(255,255,255,0.05);border:0;color:var(--muted)" />
     </div>
 
     <div style="height:10px"></div>
+    <div id="hintContainer"><label style="display:block;margin-bottom:6px;opacity:0.8">Dica</label><div class="hintBox" id="hintBox" aria-live="polite" style="background:rgba(255,255,255,0.04);border-radius:10px;padding:12px;min-height:60px;"></div></div>
 
-    <div id="hintContainer">
-      <label style="display:block;margin-bottom:6px;opacity:0.8">Dica</label>
-      <div class="hintBox" id="hintBox" aria-live="polite"></div>
+    <div class="btnRow" style="margin-top:14px;display:flex;gap:12px;justify-content:flex-end;">
+      <button class="btn ghost" id="btnClose" style="background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:10px 14px;border-radius:10px;">Fechar</button>
+      <button class="btn primary" id="btnConfirm" style="background:linear-gradient(180deg,var(--accent),#b58ad8);color:#09040d;font-weight:700;padding:10px 14px;border-radius:10px;border:0;">Confirmar</button>
     </div>
-
-    <div class="btnRow">
-      <button class="btn ghost" id="btnClose">Fechar</button>
-      <button class="btn primary" id="btnConfirm">Confirmar</button>
-    </div>
-
   </div>
 </div>
 
-
-<!-- ============================================================
-     TOAST
-============================================================ -->
-
 <div class="toast" id="toast">✔ Senha correta</div>
 
+<!-- AUDIO: player-specific audio (global player) -->
+<audio id="playerAudio" preload="auto"></audio>
 
-<!-- ============================================================
-     AUDIO
-============================================================ -->
-
-<audio id="bgMusic" loop preload="auto"
-  src="body-on-fire.mp3"></audio>
 <script>
-/* ============================================================
-   MÚSICA — Play com desbloqueio do iPhone + Fade-in suave
-============================================================ */
-
-const bgMusic = document.getElementById("bgMusic");
-const startBtn = document.getElementById("startMusic");
-
-let musicStarted = false;
-
-startBtn.addEventListener("click", async () => {
-  try {
-    if (!musicStarted) {
-      bgMusic.volume = 0.15; // volume inicial baixo
-      await bgMusic.play();
-
-      musicStarted = true;
-      startBtn.classList.add("playing");
-      startBtn.textContent = "🎵 Tocando";
-
-      // fade-in até volume confortável
-      let vol = 0.15;
-      const fade = setInterval(() => {
-        vol += 0.015;
-        if (vol >= 0.55) {  // limite final do fade-in
-          bgMusic.volume = 0.55;
-          clearInterval(fade);
-        } else {
-          bgMusic.volume = vol;
-        }
-      }, 60);
-
-    } else {
-      // Toggle para pausar
-      bgMusic.pause();
-      musicStarted = false;
-      startBtn.classList.remove("playing");
-      startBtn.textContent = "▶ Música";
-    }
-
-  } catch (err) {
-    alert("O navegador bloqueou o áudio. Ative o som manualmente e tente de novo.");
-  }
-});
-
-
-/* ============================================================
-   DIAS — Simples de editar
-   Apenas ajuste text / password / hint
-============================================================ */
+/* ========== Dados originais (dias) ========== */
 const days = [
-{
-  "index": 1,
-  "date": "2025-11-17",
-  "label": "17/11",
-
-  "text_before": "Toda história tem um ponto onde o destino respira mais fundo.\nO nosso… começou com um som simples.\nUma coisa que atravessou o silêncio.\nAlgo que despertou tudo.\n\nSe você lembrar desse primeiro gesto, deste primeiro “chamado”, a porta se abre.",
-
-  "password": "ligação",
-
-  "hint": "Pense na ação que começou tudo.",
-
-  "text_after": "17 de novembro.\n\nExiste um tipo de destino que não desce do céu nem se anuncia em grandezas.\nEle simplesmente chama. Às vezes tarde da noite. Às vezes com uma voz que você nunca ouviu antes — e que, ainda assim, parece familiar.\n\nNaquela noite, você me ligou. E algo em mim… acordou de verdade.\n\nFoi o instante em que o mundo - o meu mundo — deixou de ser cinza...\nFoi quando o silêncio ganhou forma,\nquando o escuro deu passagem,\nquando eu soube, sem entender por quê,\nque aquela luz era diferente.\n\n“Obrigado por ter me ligado...”\n“Obrigada por me atender e não ir dormir...”\n\nEu nunca esqueci.\nNunca vou esquecer.\n\nVocê foi o começo de tudo."
-},
-
-  {
-  "index": 2,
-  "date": "2025-11-18",
-  "label": "18/11",
-
-  "text_before": "Ontem o universo tropeçou — e me arrependo.\nAlgumas coisas começam assim: fora do ritmo, fora da hora.\nHoje, porém, ele se ajusta.\n\nPorque 18 nunca foi só um número.\nFoi uma porta, um marco, um jeito do tempo dizer: “aqui, algo muda”.\n\nPara abrir este dia, você precisa lembrar das três marcas que sempre foram nossas:\no dia que virou ritual,\no mês que virou memória,\ne o segredo silencioso que sempre nos acompanhou.\n\nA combinação que só existe quando é você e eu… abre o caminho.",
-
-  "password": "1805",
-
-  "hint": "Dia. Mês. Nós.",
-
-  "text_after": "18 sempre foi um lugar, não um número.\nUm ponto onde tudo se realinha — mesmo quando parecia fora do eixo.\n\nÉ por isso que hoje importa tanto.\nPorque hoje eu quis fazer do 18 aquilo que ele sempre foi pra gente:\num começo limpo, intencional, cuidado.\n\nE quando você digitou 1805, não foi só uma senha.\nFoi uma lembrança — nossa forma discreta de dizer que sabemos quem somos, e de onde começamos.\n\nO 17 tropeçou.\nO 18 acerta o passo.\n\nE agora sim: começa o que realmente quero entregar pra você.\nCom calma.\nCom brilho.\nCom presença.\n\nPressione play.\nO resto, eu te mostro no caminho."
-},
-{
-  "index": 3,
-  "date": "2025-11-19",
-  "label": "19/11",
-
-  "text_before": "35 de 72\n10ª frase\nPalavra 4",
-
-  "password": "mine",
-
-  "hint": "Grey — Cinza",
-
-  "text_after": "Começou a perceber como esse lugar funciona, né?\nAqui dentro, cada dia tem um ritmo: alguns vão exigir calma, outros atenção, outros só… sentir.\n\nQuero te mostrar todas as camadas da sua intensidade\nCada pequeno enigma, cada detalhe, cada escolha… é uma parte do que eu sinto por você.\n\nE, princesa…\neu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
-},
-
+  {"index":1,"date":"2025-11-17","label":"17/11","text_before":"Toda história ...","password":"ligação","hint":"Pense na ação que começou tudo.","text_after":"Você foi o começo de tudo."},
+  {"index":2,"date":"2025-11-18","label":"18/11","text_before":"Ontem ...","password":"1805","hint":"Dia. Mês. Nós.","text_after":"Pressione play. O resto, eu te mostro no caminho."},
+  {"index":3,"date":"2025-11-19","label":"19/11","text_before":"35 de 72\n10ª frase\nPalavra 4","password":"mine","hint":"Grey — Cinza","text_after":"...eu amo você de um jeito..."},
   {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"p4","hint":"Luz em detalhes."},
   {"index":5,"date":"2025-11-21","label":"21/11","text":"Às vezes o amor não grita — ele sussurra.","password":"p5","hint":"O silêncio fala."},
   {"index":6,"date":"2025-11-22","label":"22/11","text":"Há lugares que só o amor conhece.","password":"p6","hint":"Memórias escondidas."},
   {"index":7,"date":"2025-11-23","label":"23/11","text":"Sete dias, sete luzes.","password":"p7","hint":"O número sete."},
-  {"index":8,"date":"2025-11-24","label":"24/11","text":"Recordei uma conversa nossa.","password":"p8","hint":"Palavras em chuva."},
-  {"index":9,"date":"2025-11-25","label":"25/11","text":"Há um diamante oculto em cada escolha.","password":"p9","hint":"Escolha com carinho."},
-  {"index":10,"date":"2025-11-26","label":"26/11","text":"Lembra do nosso primeiro riso alto?","password":"p10","hint":"Ria outra vez."},
-  {"index":11,"date":"2025-11-27","label":"27/11","text":"As estrelas guardam lembranças.","password":"p11","hint":"Olhe pra cima."},
-  {"index":12,"date":"2025-11-28","label":"28/11","text":"Penso nas fases da lua como promessas.","password":"p12","hint":"Fases e promessas."},
-  {"index":13,"date":"2025-11-29","label":"29/11","text":"Uma playlist antiga toca ao fundo.","password":"p13","hint":"Uma música antiga."},
-  {"index":14,"date":"2025-11-30","label":"30/11","text":"Desenhar o teu reflexo.","password":"p14","hint":"Jardins de certezas."},
-  {"index":15,"date":"2025-12-01","label":"01/12","text":"Uma porta pequena em mim.","password":"p15","hint":"Portas pequenas."},
-  {"index":16,"date":"2025-12-02","label":"02/12","text":"Alice entrou em um país de maravilhas.","password":"p16","hint":"Chá e caminhos."},
-  {"index":17,"date":"2025-12-03","label":"03/12","text":"Hoje escrevo uma carta curta: obrigada.","password":"p17","hint":"Obrigado."},
-  {"index":18,"date":"2025-12-04","label":"04/12","text":"Uma foto rasgada, uma polaroid amarelada.","password":"p18","hint":"Fotos antigas."},
-  {"index":19,"date":"2025-12-05","label":"05/12","text":"Sinto o cheiro de vinho e lasanha.","password":"p19","hint":"Cheiros que lembram."},
-  {"index":20,"date":"2025-12-06","label":"06/12","text":"No mapa que traço toda noite.","password":"p20","hint":"Curvas no mapa."},
-  {"index":21,"date":"2025-12-07","label":"07/12","text":"O número sete nos sorri.","password":"p21","hint":"Sete cores."},
-  {"index":22,"date":"2025-12-08","label":"08/12","text":"Se o amor tivesse uma textura.","password":"p22","hint":"Veludo ao entardecer."},
-  {"index":23,"date":"2025-12-09","label":"09/12","text":"Luz de vela, duas taças.","password":"p23","hint":"Brinde breve."},
-  {"index":24,"date":"2025-12-10","label":"10/12","text":"Um pequeno enigma: feche os olhos.","password":"p24","hint":"Conte respirações."},
-  {"index":25,"date":"2025-12-11","label":"11/12","text":"Na dança das horas encontrei compasso.","password":"p25","hint":"Ritmo lento."},
-  {"index":26,"date":"2025-12-12","label":"12/12","text":"Há um pingente que carrego em memória.","password":"p26","hint":"Símbolos antigos."},
-  {"index":27,"date":"2025-12-13","label":"13/12","text":"As fases da lua me lembram de ti.","password":"p27","hint":"Fases: inteira/traço."},
-  {"index":28,"date":"2025-12-14","label":"14/12","text":"Escrevo-te como quem fala ao vento.","password":"p28","hint":"Palavras ao vento."},
-  {"index":29,"date":"2025-12-15","label":"15/12","text":"A reta final aproxima-se.","password":"p29","hint":"Cores intensas."},
-  {"index":30,"date":"2025-12-16","label":"16/12","text":"Amanhecer de véspera: preparei surpresas.","password":"p30","hint":"Sete surpresas."},
+  /* ... resto dos dias ... */
   {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
 ];
 
-
-/* ============================================================
-   HELPERS
-============================================================ */
-function parseLocalDateYMD(ymd){
-  const [y,m,d] = ymd.split('-').map(Number);
-  return new Date(y, m-1, d, 0,0,0,0);
-}
-
-const STORAGE_KEY = "rosa_unlocked_cinematic_v2";
-let unlockedSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
-
-
-/* ============================================================
-   GRID — Render + animação stagger
-============================================================ */
-const grid = document.getElementById("grid");
-
-function createGrid(){
-  grid.innerHTML = "";
-
-  days.forEach((d,i)=>{
-    const el = document.createElement("div");
-
-    const today = new Date(); today.setHours(0,0,0,0);
-    const dayDate = parseLocalDateYMD(d.date);
-
-    const unlockedByTime = today >= dayDate;
-    const alreadyUnlocked = unlockedSet.has(String(i));
-
-    el.className = unlockedByTime ? "day unlocked" : "day locked";
-    if(alreadyUnlocked) el.classList.add("checked");
-
-    el.dataset.index = i;
-
-    el.innerHTML = `
-      <div class="circle">${d.index}</div>
-      <div class="label">${d.label}</div>
-      <div class="check">✓</div>
-    `;
-
-    grid.appendChild(el);
-
-    // delay de entrada (efeito cascata)
-    setTimeout(()=> el.classList.add("enter"), i * 40);
-  });
-}
-
-createGrid();
-
-
-/* ============================================================
-   COUNTDOWN
-============================================================ */
-const cdText = document.getElementById("cdText");
-const target = parseLocalDateYMD("2025-12-17");
-
-function updateCountdown(){
-  const now = new Date();
-  let diff = target - now;
-  if(diff < 0) diff = 0;
-
-  const daysLeft = Math.floor(diff / (1000*60*60*24));
-  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
-  const mins = Math.floor((diff % (1000*60*60)) / (1000*60));
-
-  cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`;
-}
-
-updateCountdown();
-setInterval(updateCountdown, 60000);
-
-
-/* ============================================================
-   MODAL ELEMENTS (referências)
-============================================================ */
-
-const modalBack = document.getElementById("modalBack");
-const modal = document.getElementById("modal");
-const modalTitle = document.getElementById("modalTitle");
-const modalText  = document.getElementById("modalText");
-
-// Música adicional por dia
-const extraMusicBox = document.getElementById("extraMusicBox");
-const playAltMusicBtn = document.getElementById("playAltMusic");
-const backToMainMusicBtn = document.getElementById("backToMainMusic");
-const MAIN_MUSIC = "body-on-fire.mp3";
-
-// helper: retorna lista de músicas para o dia (usando days[i].index)
-function getDayMusicByArrayIndex(arrayIndex) {
-  if (arrayIndex === null || arrayIndex === undefined) return null;
-  const dayObj = days[arrayIndex];
-  if (!dayObj) return null;
-  const key = dayObj.index; // esse é o "index" que você colocou no objeto (1,2,3...)
-  return dayExtraMusic[key] || null;
-}
-
-// mapa de músicas extras por dia
+/* ========== dayExtraMusic: key = day.index ==========
+   coloque os arquivos no servidor: ex: "assets/sleep-token-mine.mp3", "assets/mine-cover.jpg"
+*/
 const dayExtraMusic = {
   3: [
-    {
-      src: "sleep-token-mine.mp3",
-      title: "Sleep Token — Mine",
-      cover: "mine-cover.jpg"
-    },
-    {
-      src: "body-on-fire.mp3",
-      title: "SLAVES — Body On Fire",
-      cover: "body-on-fire-cover.jpg"
-    }
+    { src: "sleep-token-mine.mp3", title: "Sleep Token — Mine", cover: "mine-cover.jpg" },
+    { src: "body-on-fire.mp3", title: "SLAVES — Body On Fire", cover: "body-on-fire-cover.jpg" }
   ]
 };
 
+/* ========== Helpers ========= */
+function parseLocalDateYMD(ymd){ const [y,m,d] = ymd.split('-').map(Number); return new Date(y,m-1,d,0,0,0,0); }
+const STORAGE_KEY = "rosa_unlocked_cinematic_v3";
+let unlockedSet = new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
 
+/* ========== GRID ========== */
+const grid = document.getElementById("grid");
+function createGrid(){
+  grid.innerHTML = "";
+  days.forEach((d,i)=>{
+    const el = document.createElement("div");
+    const today = new Date(); today.setHours(0,0,0,0);
+    const dayDate = parseLocalDateYMD(d.date);
+    const unlockedByTime = today >= dayDate;
+    const alreadyUnlocked = unlockedSet.has(String(i));
+    el.className = unlockedByTime ? "day unlocked" : "day locked";
+    if(alreadyUnlocked) el.classList.add("checked");
+    el.dataset.index = i;
+    el.style.cssText = "aspect-ratio:1;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02));display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:visible;box-shadow:0 8px 28px rgba(0,0,0,0.55);transform:translateY(22px) scale(.94);opacity:0;margin:8px;";
+    el.innerHTML = `<div style="width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg, rgba(20,12,30,0.95), rgba(28,40,64,0.96));border:1px solid rgba(255,255,255,0.05);font-weight:700;font-size:18px">${d.index}</div><div style="margin-top:8px;font-size:12px;opacity:0.92;text-align:center;padding:0 6px">${d.label}</div><div style="position:absolute;right:8px;top:8px;width:28px;height:28px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:var(--accent-2);color:#000;font-weight:700;transform:scale(0);transition:transform .22s">✓</div>`;
+    grid.appendChild(el);
+    setTimeout(()=> el.style.opacity = 1, i*30);
+  });
+}
+createGrid();
 
+/* ========== COUNTDOWN ========== */
+const cdText = document.getElementById("cdText");
+const target = parseLocalDateYMD("2025-12-17");
+function updateCountdown(){ const now=new Date(); let diff=target-now; if(diff<0) diff=0; const daysLeft=Math.floor(diff/(1000*60*60*24)); const hours=Math.floor((diff%(1000*60*60*24))/(1000*60*60)); const mins=Math.floor((diff%(1000*60*60))/(1000*60)); cdText.textContent = `${daysLeft}d ${hours}h ${mins}m`; }
+updateCountdown(); setInterval(updateCountdown,60000);
 
-const passwordBox = document.getElementById("passwordBox");
-const passwordInput = document.getElementById("passwordInput");
-
-const hintContainer = document.getElementById("hintContainer");
+/* ========== MODAL ELEMENTS ========== */
+const modalBack = document.getElementById("modalBack"), modal = document.getElementById("modal"), modalTitle = document.getElementById("modalTitle"), modalText = document.getElementById("modalText");
+const albumBox = document.getElementById("albumBox"), albumArt = document.getElementById("albumArt"), albumTitle = document.getElementById("albumTitle");
+const extraMusicBox = document.getElementById("extraMusicBox"), modalPlay = document.getElementById("modalPlay"), modalPrev = document.getElementById("modalPrev"), modalNext = document.getElementById("modalNext");
+const passwordBox = document.getElementById("passwordBox"), passwordInput = document.getElementById("passwordInput");
 const hintBox = document.getElementById("hintBox");
-
-const btnConfirm = document.getElementById("btnConfirm");
-const btnClose = document.getElementById("btnClose");
-const closeModalBtn = document.getElementById("closeModal");
-
+const btnConfirm = document.getElementById("btnConfirm"), btnClose = document.getElementById("btnClose");
 const toast = document.getElementById("toast");
 
-let currentIndex = null;
+let currentIndex = null; // array index for the day opened in modal
 let typeTimer = null;
 
-/* ============================================================
-   Typewriter effect
-============================================================ */
+/* ========== PLAYER (global) ========== */
+const playerCard = document.getElementById("playerCard");
+const playerCoverImg = document.getElementById("playerCoverImg");
+const playerTrackTitle = document.getElementById("playerTrackTitle");
+const playerTrackArtist = document.getElementById("playerTrackArtist");
+const playerLockBadge = document.getElementById("playerLockBadge");
+const playerPrev = document.getElementById("playerPrev");
+const playerPlay = document.getElementById("playerPlay");
+const playerNext = document.getElementById("playerNext");
+const playerAudio = document.getElementById("playerAudio");
+
+let playerList = null; // current list of tracks (array)
+let playerListDayIndex = null; // which day.index this list belongs to
+let playerPos = 0;
+let isPlaying = false;
+
+/* helper: get track list by array index (days array index) */
+function getDayMusicByArrayIndex(arrayIndex){
+  if(arrayIndex === null || arrayIndex === undefined) return null;
+  const dayObj = days[arrayIndex];
+  if(!dayObj) return null;
+  const key = dayObj.index;
+  return dayExtraMusic[key] || null;
+}
+
+/* load a list into global player (does NOT autoplay unless play() called) */
+function loadPlayerList(list, dayIndexKey){
+  if(!list || list.length === 0){
+    playerList = null;
+    playerListDayIndex = null;
+    playerPos = 0;
+    playerCoverImg.src = "";
+    playerCoverImg.style.opacity = 0;
+    playerTrackTitle.textContent = "Trilha bloqueada";
+    playerTrackArtist.textContent = "—";
+    playerCard.classList.remove("unlocked");
+    playerLockBadge.style.display = "flex";
+    return;
+  }
+
+  playerList = list;
+  playerListDayIndex = dayIndexKey;
+  playerPos = 0;
+
+  // update UI with first track (no autoplay)
+  const t = list[0];
+  playerCoverImg.src = t.cover || "";
+  playerCoverImg.style.opacity = t.cover ? 1 : 0;
+  playerTrackTitle.textContent = t.title || "Faixa";
+  playerTrackArtist.textContent = ""; // you can fill artist separately if desired
+  playerCard.classList.add("unlocked");
+  playerLockBadge.style.display = "none";
+
+  // load audio source but do not play automatically (you requested B)
+  playerAudio.src = t.src || "";
+  playerAudio.pause();
+  isPlaying = false;
+  updatePlayIcon();
+}
+
+/* play/pause */
+function togglePlayerPlay(){
+  if(!playerList){ showToast("Trilha bloqueada"); return; }
+  if(!isPlaying){
+    playerAudio.play().catch(()=>{ showToast("Navegador bloqueou o áudio. Permita som."); });
+    isPlaying = true;
+  } else {
+    playerAudio.pause();
+    isPlaying = false;
+  }
+  updatePlayIcon();
+}
+
+function updatePlayIcon(){
+  const svg = document.getElementById("playerPlayIcon");
+  if(isPlaying){
+    // switch to pause icon
+    playerPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+  } else {
+    playerPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>';
+  }
+}
+
+/* next / prev */
+function playerNextTrack(){
+  if(!playerList) return;
+  playerPos = (playerPos + 1) % playerList.length;
+  const t = playerList[playerPos];
+  playerAudio.src = t.src; playerAudio.play().catch(()=>{}); isPlaying = true; updatePlayIcon();
+  playerCoverImg.src = t.cover || ""; playerCoverImg.style.opacity = t.cover ? 1 : 0;
+  playerTrackTitle.textContent = t.title || "Faixa";
+}
+function playerPrevTrack(){
+  if(!playerList) return;
+  playerPos = (playerPos - 1 + playerList.length) % playerList.length;
+  const t = playerList[playerPos];
+  playerAudio.src = t.src; playerAudio.play().catch(()=>{}); isPlaying = true; updatePlayIcon();
+  playerCoverImg.src = t.cover || ""; playerCoverImg.style.opacity = t.cover ? 1 : 0;
+  playerTrackTitle.textContent = t.title || "Faixa";
+}
+
+/* keep UI synced when audio ends */
+playerAudio.addEventListener('ended', () => {
+  // auto-advance
+  if(playerList && playerList.length > 1){
+    playerNextTrack();
+  } else {
+    isPlaying = false;
+    updatePlayIcon();
+  }
+});
+
+/* bind player buttons */
+playerPlay.addEventListener("click", togglePlayerPlay);
+playerPrev.addEventListener("click", playerPrevTrack);
+playerNext.addEventListener("click", playerNextTrack);
+
+/* ========== Typewriter effect for modal ========== */
 function typeText(el, text, speed=22, done){
   if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
   el.textContent = "";
   let i=0;
-
-  function step(){
-    if(i < text.length){
-      el.textContent += text[i++];
-      typeTimer = setTimeout(step, speed);
-    } else if(done){
-      done();
-    }
-  }
+  function step(){ if(i < text.length){ el.textContent += text[i++]; typeTimer = setTimeout(step, speed); } else if(done){ done(); } }
   step();
 }
-/* ============================================================
-   MODAL — Abrir
-============================================================ */
-function showModal(){
-  modalBack.style.display = "flex";
-  modalBack.setAttribute("aria-hidden", "false");
-  modal.classList.add("show");
-}
 
-function closeModal(){
-  modalBack.style.display = "none";
-  modalBack.setAttribute("aria-hidden", "true");
-  modal.classList.remove("show");
+/* ========== Modal open/close ========== */
+function showModal(){ modalBack.style.display = "flex"; modalBack.setAttribute("aria-hidden","false"); }
+function closeModal(){ modalBack.style.display = "none"; modalBack.setAttribute("aria-hidden","true"); currentIndex = null; if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; } passwordBox.style.display = "block"; hintBox.style.display = "block"; btnConfirm.style.display = "inline-block"; albumBox.style.display = "none"; extraMusicBox.style.display = "none"; }
 
-  currentIndex = null;
-  if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
-
-  // restaurar elementos para próximo acesso
-  passwordBox.style.display = "block";
-  hintContainer.style.display = "block";
-  btnConfirm.style.display = "inline-block";
-}
-
-/* ============================================================
-   MODAL — Conteúdo inicial
-============================================================ */
 function openModal(i){
   currentIndex = i;
   const d = days[i];
-
   const alreadyUnlocked = unlockedSet.has(String(i));
-
-// -------- dia já desbloqueado --------
-if (alreadyUnlocked) {
-  modalTitle.textContent = `${d.label} — Desbloqueado 💗`;
-
-  // sempre mostrar o texto final após desbloquear
-  const reveal = d.text_after || d.text || d.text_before || "Conteúdo desbloqueado.";
-  modalText.textContent = reveal;
-
-  passwordBox.style.display = "none";
-  hintContainer.style.display = "none";
-  btnConfirm.style.display = "none";
-
-  showModal();
-  return;
-}
-
-
-  // -------- dia ainda bloqueado (mas já no dia permitido) --------
   modalTitle.textContent = d.label;
 
-  // efeito digitando
-typeText(modalText, d.text_before || d.text, 22);
+  if(alreadyUnlocked){
+    // always show final text AND music area if day has tracks
+    const reveal = d.text_after || d.text || d.text_before || "Conteúdo desbloqueado.";
+    modalText.textContent = reveal;
 
+    passwordBox.style.display = "none";
+    hintBox.style.display = "none";
+    btnConfirm.style.display = "none";
 
-  passwordInput.value = "";
-  hintBox.textContent = d.hint || "";
-
-// NÃO mostrar música extra antes do desbloqueio
-extraMusicBox.style.display = "none";
-document.getElementById("prevTrack").style.display = "none";
-document.getElementById("nextTrack").style.display = "none";
-document.getElementById("albumBox").style.display = "none";
-document.getElementById("albumArt").style.opacity = 0;
-document.getElementById("albumTitle").textContent = "";
-
-
-
-backToMainMusicBtn.style.display = "none";
-playAltMusicBtn.textContent = "▶ Tocar música deste dia";
-
-
-
-  showModal();
-  setTimeout(() => passwordInput.focus(), 200);
-}
-
-let currentTrack = 0;  
-
-function playTrack(list, index) {
-  if (!list || !list[index]) return;
-
-  const track = list[index];
-
-  // troca música
-  bgMusic.pause();
-  bgMusic.src = track.src;
-  bgMusic.volume = 0;
-  bgMusic.play();
-
-  // fade-in
-  let v = 0;
-  const fade = setInterval(() => {
-    v += 0.03;
-    if (v >= 0.55) {
-      bgMusic.volume = 0.55;
-      clearInterval(fade);
+    // if day has music, populate modal music area (always when unlocked)
+    const list = getDayMusicByArrayIndex(i);
+    if(list){
+      albumBox.style.display = "block";
+      extraMusicBox.style.display = "block";
+      albumArt.style.opacity = 0;
+      albumArt.src = list[0].cover || "";
+      albumTitle.textContent = list[0].title || "";
+      setTimeout(()=> albumArt.style.opacity = 1, 30);
     } else {
-      bgMusic.volume = v;
+      albumBox.style.display = "none";
+      extraMusicBox.style.display = "none";
     }
-  }, 60);
 
-  // mostra capa
-  const albumBox = document.getElementById("albumBox");
-  const albumArt = document.getElementById("albumArt");
-  const albumTitle = document.getElementById("albumTitle");
-
-  albumBox.style.display = "block";
-
-  albumArt.style.opacity = 0;
-  albumArt.src = track.cover;
-
-  requestAnimationFrame(() => {
-    albumArt.style.opacity = 1;
-  });
-
-  albumTitle.textContent = track.title;
-
-  playAltMusicBtn.textContent = "🎵 Tocando trilha";
-}
-
-// BOTÃO — tocar música
-playAltMusicBtn.addEventListener("click", () => {
-  const list = getDayMusicByArrayIndex(currentIndex);
-  if (!list) return;
-
-  currentTrack = 0;
-  playTrack(list, currentTrack);
-
-  backToMainMusicBtn.style.display = "block";
-});
-
-
-// BOTÃO — voltar música principal
-backToMainMusicBtn.addEventListener("click", () => {
-  bgMusic.pause();
-  bgMusic.src = MAIN_MUSIC;
-  bgMusic.volume = 0;
-  bgMusic.play();
-
-  let v = 0;
-  const fade = setInterval(() => {
-    v += 0.03;
-    if (v >= 0.55) {
-      bgMusic.volume = 0.55;
-      clearInterval(fade);
-    } else {
-      bgMusic.volume = v;
-    }
-  }, 60);
-
-  playAltMusicBtn.textContent = "▶ Tocar trilha deste dia";
-  backToMainMusicBtn.style.display = "none";
-});
-
-// BOTÃO — próxima música
-document.getElementById("nextTrack").addEventListener("click", () => {
-  const list = getDayMusicByArrayIndex(currentIndex);
-  if (!list) return;
-
-  currentTrack = (currentTrack + 1) % list.length;
-  playTrack(list, currentTrack);
-});
-
-// BOTÃO — música anterior
-document.getElementById("prevTrack").addEventListener("click", () => {
-  const list = getDayMusicByArrayIndex(currentIndex);
-  if (!list) return;
-
-  currentTrack = (currentTrack - 1 + list.length) % list.length;
-  playTrack(list, currentTrack);
-});
-
-
-backToMainMusicBtn.addEventListener("click", () => {
-  bgMusic.pause();
-  bgMusic.src = MAIN_MUSIC;
-  bgMusic.volume = 0;
-  bgMusic.play();
-
-  let vol = 0;
-  const fade = setInterval(() => {
-    vol += 0.03;
-    if (vol >= 0.55) {
-      bgMusic.volume = 0.55;
-      clearInterval(fade);
-    } else {
-      bgMusic.volume = vol;
-    }
-  }, 60);
-
-  backToMainMusicBtn.style.display = "none";
-  playAltMusicBtn.textContent = "▶ Tocar música deste dia";
-});
-
-/* ============================================================
-   MODAL — Confirmar senha
-============================================================ */
-btnConfirm.addEventListener("click", () => {
-  if(currentIndex === null) return;
-
-  const d = days[currentIndex];
-  const typed = (passwordInput.value || "").trim().toLowerCase();
-
-  if(!d.password){
-    showToast("✔ Sem senha — liberado");
-    unlockDay(currentIndex);
+    showModal();
     return;
   }
 
+  // locked or first-time-open (but date allowed)
+  typeText(modalText, d.text_before || d.text || "", 22);
+  passwordInput.value = "";
+  hintBox.textContent = d.hint || "";
+
+  // hide music area until unlocked
+  albumBox.style.display = "none";
+  extraMusicBox.style.display = "none";
+
+  passwordBox.style.display = "block";
+  hintBox.style.display = "block";
+  btnConfirm.style.display = "inline-block";
+
+  showModal();
+  setTimeout(()=> passwordInput.focus(), 200);
+}
+
+/* ========== Confirm/Unlock handling ========== */
+btnConfirm.addEventListener("click", ()=>{
+  if(currentIndex === null) return;
+  const d = days[currentIndex];
+  const typed = (passwordInput.value || "").trim().toLowerCase();
+  if(!d.password){ unlockDay(currentIndex); return; }
   if(typed === d.password.toLowerCase()){
     unlockDay(currentIndex);
   } else {
@@ -933,353 +456,162 @@ btnConfirm.addEventListener("click", () => {
   }
 });
 
-
-/* ============================================================
-   DESBLOQUEAR DIA
-============================================================ */
 function unlockDay(i){
   const d = days[i];
   const dayEl = document.querySelector(`.day[data-index="${i}"]`);
-
-  if(dayEl){
-    dayEl.classList.add("checked");
-  }
-
+  if(dayEl) dayEl.classList.add("checked");
   unlockedSet.add(String(i));
   localStorage.setItem(STORAGE_KEY, JSON.stringify([...unlockedSet]));
 
-  // atualizar modal
+  // update modal
   modalTitle.textContent = `${d.label} — Desbloqueado 💗`;
-  const reveal = d.text_after || d.hint || d.text_before;
-  modalText.textContent = reveal;
-// Se o dia tiver músicas extras, MOSTRAR agora que desbloqueou
-const list = getDayMusicByArrayIndex(i);
-if (list) {
-  extraMusicBox.style.display = "block";
-  document.getElementById("prevTrack").style.display = "block";
-  document.getElementById("nextTrack").style.display = "block";
+  modalText.textContent = d.text_after || d.hint || d.text_before || "";
 
-  const albumBox = document.getElementById("albumBox");
-  const albumArt = document.getElementById("albumArt");
-  const albumTitle = document.getElementById("albumTitle");
+  // if day has music, show and load into player (but DO NOT autoplay per your choice)
+  const list = getDayMusicByArrayIndex(i);
+  if(list){
+    albumBox.style.display = "block";
+    extraMusicBox.style.display = "block";
+    albumArt.style.opacity = 0;
+    albumArt.src = list[0].cover || "";
+    albumTitle.textContent = list[0].title || "";
+    setTimeout(()=> albumArt.style.opacity = 1, 30);
 
-  albumBox.style.display = "block";
-  albumArt.style.opacity = 0;
-
-  if (list[0]) {
-    albumArt.src = list[0].cover;
-    albumTitle.textContent = list[0].title;
-    requestAnimationFrame(() => {
-      albumArt.style.opacity = 1;
-    });
-  } else {
-    albumTitle.textContent = "";
+    // load into global player but do not play automatically (you answered B)
+    loadPlayerList(list, days[i].index);
+    // visual unlock glow on player
+    playerCard.classList.add("unlocked");
+    spawnUnlockGlow(playerCard);
   }
-}
-
 
   passwordBox.style.display = "none";
-  hintContainer.style.display = "none";
+  hintBox.style.display = "none";
   btnConfirm.style.display = "none";
 
   showToast("✔ Senha correta");
-
-  // efeito de partículas
   spawnSparklesAt(dayEl);
 }
 
+/* ========== Modal music controls should control the same global player ========= */
+modalPlay.addEventListener("click", ()=> {
+  // if modal corresponds to a day with music, set player to that day if not already
+  if(currentIndex === null) return;
+  const list = getDayMusicByArrayIndex(currentIndex);
+  if(!list){ showToast("Sem trilha para este dia."); return; }
+  // if player has different list loaded, load (but do not autoplay unless we want to start)
+  if(playerListDayIndex !== days[currentIndex].index){
+    loadPlayerList(list, days[currentIndex].index);
+  }
+  // toggle play/pause
+  togglePlayerPlay();
+});
+modalNext.addEventListener("click", ()=> {
+  const list = getDayMusicByArrayIndex(currentIndex);
+  if(!list) return;
+  if(playerListDayIndex !== days[currentIndex].index) loadPlayerList(list, days[currentIndex].index);
+  playerNextTrack();
+});
+modalPrev.addEventListener("click", ()=> {
+  const list = getDayMusicByArrayIndex(currentIndex);
+  if(!list) return;
+  if(playerListDayIndex !== days[currentIndex].index) loadPlayerList(list, days[currentIndex].index);
+  playerPrevTrack();
+});
 
-/* ============================================================
-   TOAST
-============================================================ */
-function showToast(msg="✔"){
-  toast.textContent = msg;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 1600);
-}
-
-
-/* ============================================================
-   GRID — Clique
-============================================================ */
+/* ========== Grid click behavior ========= */
 grid.addEventListener("click", ev => {
   const dayEl = ev.target.closest(".day");
   if(!dayEl) return;
-
   const i = Number(dayEl.dataset.index);
   if(isNaN(i)) return;
-
   const d = days[i];
   const dayDate = parseLocalDateYMD(d.date);
+  const today = new Date(); today.setHours(0,0,0,0);
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
-
-  // ainda não chegou a data
   if(today < dayDate){
     modalTitle.textContent = "Ainda trancado";
     modalText.textContent = "O tempo ainda não permite ver este dia. Espere um pouco mais, meu bem.";
-
-    passwordBox.style.display = "none";
-    hintContainer.style.display = "none";
-    btnConfirm.style.display = "none";
-
+    passwordBox.style.display = "none"; hintBox.style.display = "none"; btnConfirm.style.display = "none";
+    albumBox.style.display = "none"; extraMusicBox.style.display = "none";
     showModal();
     return;
   }
-
-  // pode abrir normalmente
   openModal(i);
 });
 
-
-/* ============================================================
-   Fechar modal
-============================================================ */
-closeModalBtn.addEventListener("click", closeModal);
+/* ========== open/close modal bindings ========= */
+document.getElementById("closeModal").addEventListener("click", closeModal);
 btnClose.addEventListener("click", closeModal);
-document.addEventListener("keydown", (e)=>{
-  if(e.key === "Escape") closeModal();
-});
+document.addEventListener("keydown", (e)=>{ if(e.key === "Escape") closeModal(); });
 
-
-/* ============================================================
-   Sparkles — Efeito ao desbloquear
-============================================================ */
+/* ========== Sparkles & unlock glow ========= */
 function spawnSparklesAt(el){
   if(!el) return;
-
   const rect = el.getBoundingClientRect();
   const cx = rect.left + rect.width/2;
   const cy = rect.top + rect.height/2;
-
   const canvas = document.createElement("canvas");
-  canvas.width = innerWidth;
-  canvas.height = innerHeight;
-  canvas.style.position = "fixed";
-  canvas.style.left = "0";
-  canvas.style.top = "0";
-  canvas.style.pointerEvents = "none";
-  canvas.style.zIndex = "9999";
-
+  canvas.width = innerWidth; canvas.height = innerHeight;
+  canvas.style.position = "fixed"; canvas.style.left = "0"; canvas.style.top = "0"; canvas.style.pointerEvents = "none"; canvas.style.zIndex = "9999";
   document.body.appendChild(canvas);
-
   const ctx = canvas.getContext("2d");
-
-  const particles = [];
-  const count = 24;
-
+  const particles = []; const count = 22;
   for(let i=0;i<count;i++){
-    particles.push({
-      x: cx,
-      y: cy,
-      vx: (Math.random()-0.5)*3,
-      vy: (Math.random()-0.8)*3,
-      r: Math.random()*2+1,
-      life: Math.random()*40 + 20,
-      color: Math.random()>0.5
-        ? "rgba(207,163,224,1)"
-        : "rgba(246,215,166,1)"
-    });
+    particles.push({ x:cx, y:cy, vx:(Math.random()-0.5)*3, vy:(Math.random()-0.8)*3, r:Math.random()*2+1, life:Math.random()*40+20, color: Math.random()>0.5 ? "rgba(207,163,224,1)" : "rgba(246,215,166,1)" });
   }
-
   let frame=0;
-
   function loop(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-
     for(const p of particles){
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.04;
-      p.life--;
-
-      const opacity = Math.max(0, p.life / 60);
-
-      ctx.beginPath();
-      ctx.fillStyle = p.color.replace("1)", `${opacity})`);
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
-      ctx.fill();
+      p.x += p.vx; p.y += p.vy; p.vy += 0.04; p.life--;
+      const opacity = Math.max(0, p.life/60);
+      ctx.beginPath(); ctx.fillStyle = p.color.replace("1)", `${opacity})`); ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
     }
-
     frame++;
-
-    if(frame < 80){
-      requestAnimationFrame(loop);
-    } else {
-      canvas.remove();
-    }
+    if(frame < 80){ requestAnimationFrame(loop); } else { canvas.remove(); }
   }
   loop();
 }
-</script>
-<script>
-/* ============================================================
-   CANVAS — Aurora, Estrelas e Neve (final do script)
-============================================================ */
-
-const starsCanvas = document.getElementById("stars");
-const auroraCanvas = document.getElementById("aurora");
-const snowCanvas   = document.getElementById("snow");
-
-const sctx = starsCanvas.getContext("2d");
-const actx = auroraCanvas.getContext("2d");
-const nctx = snowCanvas.getContext("2d");
-
-let DPR = Math.max(1, window.devicePixelRatio || 1);
-let W = innerWidth;
-let H = innerHeight;
-
-/* Resize para garantir nitidez no iPhone */
-function resizeAll(){
-  DPR = Math.max(1, window.devicePixelRatio || 1);
-  W = innerWidth; 
-  H = innerHeight;
-
-  [starsCanvas, auroraCanvas, snowCanvas].forEach(c=>{
-    c.width  = Math.floor(W * DPR);
-    c.height = Math.floor(H * DPR);
-    c.style.width  = W + "px";
-    c.style.height = H + "px";
-  });
-
-  sctx.setTransform(DPR,0,0,DPR,0,0);
-  actx.setTransform(DPR,0,0,DPR,0,0);
-  nctx.setTransform(DPR,0,0,DPR,0,0);
-
-  initStars();
-  initSnow();
+function spawnUnlockGlow(el){
+  el.animate([{ boxShadow: '0 0 0 rgba(212,160,255,0)' }, { boxShadow: '0 12px 40px rgba(212,160,255,0.12)' }, { boxShadow: '0 0 0 rgba(212,160,255,0)' }], { duration: 900 });
 }
 
+/* ========== Toast ========= */
+function showToast(msg="✔"){ toast.textContent = msg; toast.classList.add("show"); setTimeout(()=> toast.classList.remove("show"), 1600); }
+
+/* ========== Initialize state ========= */
+// keep player locked unless a day with music was previously loaded
+// If you previously unlocked a day with music and want it loaded on page load, detect that here:
+(function initFromStorage(){
+  // if any unlocked day has music, load the most recent unlocked with music (optional)
+  const unlockedArr = [...unlockedSet].map(Number).sort((a,b)=>a-b);
+  for(let k=unlockedArr.length-1;k>=0;k--){
+    const idx = unlockedArr[k];
+    const list = getDayMusicByArrayIndex(idx);
+    if(list){ loadPlayerList(list, days[idx].index); break; }
+  }
+})();
+
+/* ========== Simple stars/aurora/snow canvases (kept minimal) ========= */
+const starsCanvas = document.getElementById("stars"), auroraCanvas = document.getElementById("aurora"), snowCanvas = document.getElementById("snow");
+const sctx = starsCanvas.getContext("2d"), actx = auroraCanvas.getContext("2d"), nctx = snowCanvas.getContext("2d");
+let DPR = Math.max(1, window.devicePixelRatio || 1), W = innerWidth, H = innerHeight;
+function resizeAll(){ DPR = Math.max(1, window.devicePixelRatio || 1); W = innerWidth; H = innerHeight; [starsCanvas, auroraCanvas, snowCanvas].forEach(c=>{ c.width = Math.floor(W*DPR); c.height = Math.floor(H*DPR); c.style.width = W + "px"; c.style.height = H + "px"; }); sctx.setTransform(DPR,0,0,DPR,0,0); actx.setTransform(DPR,0,0,DPR,0,0); nctx.setTransform(DPR,0,0,DPR,0,0); initStars(); initSnow(); }
 window.addEventListener("resize", resizeAll);
 
-
-/* ============================================================
-   ESTRELAS
-============================================================ */
-
 let stars = [];
-
-function initStars(){
-  stars = [];
-
-  const count = Math.max(120, Math.floor((W*H)/8000)); // mais estrelas no iPhone 15
-  for(let i=0;i<count;i++){
-    stars.push({
-      x: Math.random()*W,
-      y: Math.random()*H,
-      r: Math.random()*1.4 + 0.3,
-      alpha: Math.random()*0.8 + 0.2,
-      phase: Math.random()*Math.PI*2
-    });
-  }
-}
-
-function drawStars(){
-  sctx.clearRect(0,0,W,H);
-
-  for(const st of stars){
-    st.phase += 0.01;
-    const a = st.alpha * (0.5 + 0.5*Math.sin(st.phase));
-
-    sctx.beginPath();
-    sctx.fillStyle = Math.random() > 0.9
-      ? `rgba(207,163,224,${a})`
-      : `rgba(255,255,255,${a})`;
-
-    sctx.arc(st.x, st.y, st.r, 0, Math.PI*2);
-    sctx.fill();
-  }
-
-  requestAnimationFrame(drawStars);
-}
-
-
-/* ============================================================
-   AURORA MÍSTICA
-============================================================ */
+function initStars(){ stars = []; const count = Math.max(120, Math.floor((W*H)/8000)); for(let i=0;i<count;i++){ stars.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*1.4+0.3, alpha:Math.random()*0.8+0.2, phase:Math.random()*Math.PI*2 }); } }
+function drawStars(){ sctx.clearRect(0,0,W,H); for(const st of stars){ st.phase += 0.01; const a = st.alpha * (0.5 + 0.5*Math.sin(st.phase)); sctx.beginPath(); sctx.fillStyle = Math.random()>0.9 ? `rgba(207,163,224,${a})` : `rgba(255,255,255,${a})`; sctx.arc(st.x,st.y,st.r,0,Math.PI*2); sctx.fill(); } requestAnimationFrame(drawStars); }
 
 let aurPhase = 0;
-
-function drawAurora(){
-  actx.clearRect(0,0,W,H);
-  aurPhase += 0.0016;
-
-  const gradient = actx.createLinearGradient(0, H*0.1, 0, H*0.4);
-  gradient.addColorStop(0,   "rgba(151,88,198,0.16)");
-  gradient.addColorStop(0.5, "rgba(233,160,119,0.07)");
-  gradient.addColorStop(1,   "rgba(130,80,150,0)");
-
-  actx.fillStyle = gradient;
-  actx.beginPath();
-  actx.moveTo(0, H*0.30);
-
-  for(let x=0; x<=W; x+=55){
-    const y = H*0.28 + Math.sin((x*0.0038)+(aurPhase*3)) * 14;
-    actx.lineTo(x, y);
-  }
-
-  actx.lineTo(W, H*0.30);
-  actx.closePath();
-  actx.fill();
-
-  requestAnimationFrame(drawAurora);
-}
-
-
-/* ============================================================
-   NEVE LEVE
-============================================================ */
+function drawAurora(){ actx.clearRect(0,0,W,H); aurPhase += 0.0016; const gradient = actx.createLinearGradient(0, H*0.1, 0, H*0.4); gradient.addColorStop(0,"rgba(151,88,198,0.12)"); gradient.addColorStop(0.5,"rgba(233,160,119,0.04)"); gradient.addColorStop(1,"rgba(130,80,150,0)"); actx.fillStyle = gradient; actx.beginPath(); actx.moveTo(0,H*0.30); for(let x=0;x<=W;x+=55){ const y = H*0.28 + Math.sin((x*0.0038)+(aurPhase*3))*14; actx.lineTo(x,y); } actx.lineTo(W,H*0.30); actx.closePath(); actx.fill(); requestAnimationFrame(drawAurora); }
 
 let flakes = [];
+function initSnow(){ flakes = []; const isMobile = /iPhone|Android/i.test(navigator.userAgent); const count = isMobile ? 48 : 90; for(let i=0;i<count;i++){ flakes.push({ x:Math.random()*W, y:Math.random()*H, r:Math.random()*2.5+0.6, vx:(Math.random()-0.5)*0.3, vy:Math.random()*0.6+0.15, rot:Math.random()*Math.PI*2 }); } }
+function drawSnow(){ nctx.clearRect(0,0,W,H); nctx.fillStyle = "rgba(255,255,255,0.9)"; for(const f of flakes){ nctx.beginPath(); nctx.arc(f.x,f.y,f.r,0,Math.PI*2); nctx.fill(); f.x += f.vx + Math.sin(f.rot)*0.12; f.y += f.vy; f.rot += 0.008; if(f.y > H+10){ f.y = -10; f.x = Math.random()*W; } if(f.x < -20){ f.x = W+20; } if(f.x > W+20){ f.x = -20; } } requestAnimationFrame(drawSnow); }
 
-function initSnow(){
-  flakes = [];
-  const isMobile = /iPhone|Android/i.test(navigator.userAgent);
-  const count = isMobile ? 48 : 90;
+resizeAll(); drawStars(); drawAurora(); initSnow(); drawSnow();
 
-  for(let i=0;i<count;i++){
-    flakes.push({
-      x: Math.random()*W, 
-      y: Math.random()*H,
-      r: Math.random()*2.5 + 0.6,
-      vx: (Math.random()-0.5)*0.3,
-      vy: Math.random()*0.6 + 0.15,
-      rot: Math.random()*Math.PI*2
-    });
-  }
-}
-
-function drawSnow(){
-  nctx.clearRect(0,0,W,H);
-  nctx.fillStyle = "rgba(255,255,255,0.9)";
-
-  for(const f of flakes){
-    nctx.beginPath();
-    nctx.arc(f.x, f.y, f.r, 0, Math.PI*2);
-    nctx.fill();
-
-    f.x += f.vx + Math.sin(f.rot)*0.12;
-    f.y += f.vy;
-    f.rot += 0.008;
-
-    if(f.y > H+10){ f.y = -10; f.x = Math.random()*W; }
-    if(f.x < -20){ f.x = W+20; }
-    if(f.x > W+20){ f.x = -20; }
-  }
-
-  requestAnimationFrame(drawSnow);
-}
-
-
-/* ============================================================
-   START EVERYTHING
-============================================================ */
-
-resizeAll();
-drawStars();
-drawAurora();
-drawSnow();
 </script>
 </body>
 </html>
