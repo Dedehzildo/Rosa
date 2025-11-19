@@ -390,13 +390,15 @@ main.grid{
     gap: 20px;
   }
 
-  /* bloco que contém contador + player */
-  header > div:last-child {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
+  /* Força contador e player em coluna no mobile */
+header > div:last-child,
+header > div:last-child > div {
+  width: 100%;
+  display: flex;
+  flex-direction: column !important;
+  gap: 16px;
+}
+
 
   .controls {
     width: 100%;
