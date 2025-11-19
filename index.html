@@ -765,20 +765,15 @@ typeText(modalText, d.text_before || d.text, 22);
 
   passwordInput.value = "";
   hintBox.textContent = d.hint || "";
-// música extra para o dia
-if (dayExtraMusic[i]) {
-  extraMusicBox.style.display = "block";
-  document.getElementById("prevTrack").style.display = "block";
-  document.getElementById("nextTrack").style.display = "block";
-} else {
-  extraMusicBox.style.display = "none";
-  document.getElementById("prevTrack").style.display = "none";
-  document.getElementById("nextTrack").style.display = "none";
-  
-}
-document.getElementById("albumBox").style.display = dayExtraMusic[i] ? "block" : "none";
+
+// NÃO mostrar música extra antes do desbloqueio
+extraMusicBox.style.display = "none";
+document.getElementById("prevTrack").style.display = "none";
+document.getElementById("nextTrack").style.display = "none";
+document.getElementById("albumBox").style.display = "none";
 document.getElementById("albumArt").style.opacity = 0;
 document.getElementById("albumTitle").textContent = "";
+
 
 
 backToMainMusicBtn.style.display = "none";
@@ -948,6 +943,17 @@ function unlockDay(i){
   modalTitle.textContent = `${d.label} — Desbloqueado 💗`;
   const reveal = d.text_after || d.hint || d.text_before;
   modalText.textContent = reveal;
+// Se o dia tiver músicas extras, MOSTRAR agora que desbloqueou
+if (dayExtraMusic[i]) {
+  extraMusicBox.style.display = "block";
+  document.getElementById("prevTrack").style.display = "block";
+  document.getElementById("nextTrack").style.display = "block";
+
+  // mostrar capa vazia primeiro
+  document.getElementById("albumBox").style.display = "block";
+  document.getElementById("albumArt").style.opacity = 0;
+  document.getElementById("albumTitle").textContent = "";
+}
 
   passwordBox.style.display = "none";
   hintContainer.style.display = "none";
