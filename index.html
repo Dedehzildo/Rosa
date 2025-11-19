@@ -42,6 +42,32 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 .count{ background:var(--glass); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); font-size:13px; backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:flex-start; min-width:170px; }
 .count .num{ font-weight:700; color:var(--accent); margin-top:4px; }
 
+/* ===== ICON BUTTONS (fixa o estilo dos botões do player) ===== */
+.icon-btn{
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  padding:0;
+  transition:background .25s ease, border-color .25s ease;
+}
+
+.icon-btn:hover{
+  background:rgba(255,255,255,0.12);
+  border-color:rgba(255,255,255,0.16);
+}
+
+.icon-btn svg{
+  width:18px;
+  height:18px;
+  color:var(--muted);
+  pointer-events:none;
+}
 
 /* PLAYER CARD otimizado para iPhone 15 Pro Max */
 
@@ -188,11 +214,14 @@ main.grid{
 }
 
 .day.locked{
-  filter:grayscale(45%) brightness(0.60);
-  opacity:0.40;
-  transform:scale(0.95);
-  box-shadow:0 4px 12px rgba(0,0,0,0.55);
+  filter:grayscale(25%) brightness(0.88);
+  opacity:0.75;
+  transform:none;
+  box-shadow:0 6px 18px rgba(0,0,0,0.45);
+  cursor:default;
+  transition:opacity .25s ease, filter .25s ease;
 }
+
 
 .day.checked{
   box-shadow:0 14px 40px rgba(212,160,255,0.14);
@@ -599,32 +628,47 @@ function togglePlayerPlay(){
 }
 
 function updatePlayIcon(){
-  const svg = document.getElementById("playerPlayIcon");
   if(isPlaying){
-    // switch to pause icon
-    playerPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+    playerPlay.innerHTML = `
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="6" y="4" width="4" height="16"/>
+        <rect x="14" y="4" width="4" height="16"/>
+      </svg>`;
   } else {
-    playerPlay.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 3v18l15-9L5 3z"/></svg>';
+    playerPlay.innerHTML = `
+      <svg viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M5 3v18l15-9L5 3z"/>
+      </svg>`;
   }
 }
 
-/* next / prev */
+
+function applyTrackToPlayer(t, autoplay=true){
+  playerAudio.src = t.src;
+  if(autoplay){
+    playerAudio.play().catch(()=>{});
+    isPlaying = true;
+  }
+  updatePlayIcon();
+
+  playerCoverImg.src = t.cover || "";
+  playerCoverImg.style.opacity = t.cover ? 1 : 0;
+  playerTrackTitle.textContent = t.title || "Faixa";
+  playerTrackArtist.textContent = t.artist || ""; // opcional
+}
+
 function playerNextTrack(){
   if(!playerList) return;
   playerPos = (playerPos + 1) % playerList.length;
-  const t = playerList[playerPos];
-  playerAudio.src = t.src; playerAudio.play().catch(()=>{}); isPlaying = true; updatePlayIcon();
-  playerCoverImg.src = t.cover || ""; playerCoverImg.style.opacity = t.cover ? 1 : 0;
-  playerTrackTitle.textContent = t.title || "Faixa";
+  applyTrackToPlayer(playerList[playerPos], true);
 }
+
 function playerPrevTrack(){
   if(!playerList) return;
   playerPos = (playerPos - 1 + playerList.length) % playerList.length;
-  const t = playerList[playerPos];
-  playerAudio.src = t.src; playerAudio.play().catch(()=>{}); isPlaying = true; updatePlayIcon();
-  playerCoverImg.src = t.cover || ""; playerCoverImg.style.opacity = t.cover ? 1 : 0;
-  playerTrackTitle.textContent = t.title || "Faixa";
+  applyTrackToPlayer(playerList[playerPos], true);
 }
+
 
 /* keep UI synced when audio ends */
 playerAudio.addEventListener('ended', () => {
