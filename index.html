@@ -376,6 +376,11 @@ main.grid{
     ▶ Tocar música deste dia
   </button>
 </div>
+<div style="display:flex; gap:10px; margin-top:10px;">
+  <button id="prevTrack" class="btn ghost" style="flex:1; display:none;">⏮ Música anterior</button>
+  <button id="nextTrack" class="btn ghost" style="flex:1; display:none;">⏭ Próxima música</button>
+</div>
+
 <button id="backToMainMusic"
         class="btn ghost"
         style="width:100%; text-align:center; margin-top:10px; display:none;">
@@ -629,9 +634,14 @@ const MAIN_MUSIC = "body-on-fire.mp3";
 
 
 // mapa de músicas extras por dia
+// várias músicas por dia
 const dayExtraMusic = {
-  3: "sleep-token-mine.mp3"  // dia 19
+  3: [
+    "sleep-token-mine.mp3",
+    "body-on-fire.mp3"     // exemplo: você pode trocar
+  ]
 };
+
 
 
 const passwordBox = document.getElementById("passwordBox");
@@ -726,45 +736,103 @@ typeText(modalText, d.text_before || d.text, 22);
 
   passwordInput.value = "";
   hintBox.textContent = d.hint || "";
-  // música extra para o dia
+// música extra para o dia
 if (dayExtraMusic[i]) {
   extraMusicBox.style.display = "block";
+  document.getElementById("prevTrack").style.display = "block";
+  document.getElementById("nextTrack").style.display = "block";
 } else {
   extraMusicBox.style.display = "none";
+  document.getElementById("prevTrack").style.display = "none";
+  document.getElementById("nextTrack").style.display = "none";
 }
+
 backToMainMusicBtn.style.display = "none";
 playAltMusicBtn.textContent = "▶ Tocar música deste dia";
+
 
 
   showModal();
   setTimeout(() => passwordInput.focus(), 200);
 }
 
-playAltMusicBtn.addEventListener("click", () => {
-  const musicSrc = dayExtraMusic[currentIndex];
-  if (!musicSrc) return;
+let currentTrack = 0;  
 
-  // troca a música com fade-in suave
+function playTrack(list, index) {
+  if (!list || !list[index]) return;
+
+  const src = list[index];
   bgMusic.pause();
-  bgMusic.src = musicSrc;
+  bgMusic.src = src;
   bgMusic.volume = 0;
   bgMusic.play();
 
-  let vol = 0;
+  // fade-in
+  let v = 0;
   const fade = setInterval(() => {
-    vol += 0.03;
-    if (vol >= 0.55) {
+    v += 0.03;
+    if (v >= 0.55) {
       bgMusic.volume = 0.55;
       clearInterval(fade);
     } else {
-      bgMusic.volume = vol;
+      bgMusic.volume = v;
     }
   }, 60);
 
-  // feedback visual - aa
-  playAltMusicBtn.textContent = "🎵 Tocando música deste dia";
+  playAltMusicBtn.textContent = "🎵 Tocando trilha";
+}
+
+// BOTÃO — tocar música
+playAltMusicBtn.addEventListener("click", () => {
+  const list = dayExtraMusic[currentIndex];
+  if (!list) return;
+
+  currentTrack = 0;
+  playTrack(list, currentTrack);
+
   backToMainMusicBtn.style.display = "block";
 });
+
+// BOTÃO — voltar música principal
+backToMainMusicBtn.addEventListener("click", () => {
+  bgMusic.pause();
+  bgMusic.src = MAIN_MUSIC;
+  bgMusic.volume = 0;
+  bgMusic.play();
+
+  let v = 0;
+  const fade = setInterval(() => {
+    v += 0.03;
+    if (v >= 0.55) {
+      bgMusic.volume = 0.55;
+      clearInterval(fade);
+    } else {
+      bgMusic.volume = v;
+    }
+  }, 60);
+
+  playAltMusicBtn.textContent = "▶ Tocar trilha deste dia";
+  backToMainMusicBtn.style.display = "none";
+});
+
+// BOTÃO — próxima música
+document.getElementById("nextTrack").addEventListener("click", () => {
+  const list = dayExtraMusic[currentIndex];
+  if (!list) return;
+
+  currentTrack = (currentTrack + 1) % list.length;
+  playTrack(list, currentTrack);
+});
+
+// BOTÃO — música anterior
+document.getElementById("prevTrack").addEventListener("click", () => {
+  const list = dayExtraMusic[currentIndex];
+  if (!list) return;
+
+  currentTrack = (currentTrack - 1 + list.length) % list.length;
+  playTrack(list, currentTrack);
+});
+
 backToMainMusicBtn.addEventListener("click", () => {
   bgMusic.pause();
   bgMusic.src = MAIN_MUSIC;
