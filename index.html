@@ -532,7 +532,7 @@ const days = [
 
   "hint": "Grey — Cinza",
 
-  "text_after": "Começou a perceber como esse lugar funciona, né?\nAqui dentro, cada dia tem um ritmo: alguns vão exigir calma, outros atenção, outros só… sentir.\n\nQuero te mostrar todas as camadas da sua intensidade — e da minha.\nCada pequeno enigma, cada detalhe, cada escolha… é uma parte do que eu sinto por você.\n\nE, princesa…\neu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
+  "text_after": "Começou a perceber como esse lugar funciona, né?\nAqui dentro, cada dia tem um ritmo: alguns vão exigir calma, outros atenção, outros só… sentir.\n\nQuero te mostrar todas as camadas da sua intensidade\nCada pequeno enigma, cada detalhe, cada escolha… é uma parte do que eu sinto por você.\n\nE, princesa…\neu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
 },
 
   {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"p4","hint":"Luz em detalhes."},
@@ -653,6 +653,14 @@ const playAltMusicBtn = document.getElementById("playAltMusic");
 const backToMainMusicBtn = document.getElementById("backToMainMusic");
 const MAIN_MUSIC = "body-on-fire.mp3";
 
+// helper: retorna lista de músicas para o dia (usando days[i].index)
+function getDayMusicByArrayIndex(arrayIndex) {
+  if (arrayIndex === null || arrayIndex === undefined) return null;
+  const dayObj = days[arrayIndex];
+  if (!dayObj) return null;
+  const key = dayObj.index; // esse é o "index" que você colocou no objeto (1,2,3...)
+  return dayExtraMusic[key] || null;
+}
 
 // mapa de músicas extras por dia
 const dayExtraMusic = {
@@ -728,7 +736,6 @@ function closeModal(){
   hintContainer.style.display = "block";
   btnConfirm.style.display = "inline-block";
 }
-
 
 /* ============================================================
    MODAL — Conteúdo inicial
@@ -831,7 +838,7 @@ function playTrack(list, index) {
 
 // BOTÃO — tocar música
 playAltMusicBtn.addEventListener("click", () => {
-  const list = dayExtraMusic[currentIndex];
+  const list = getDayMusicByArrayIndex(currentIndex);
   if (!list) return;
 
   currentTrack = 0;
@@ -839,6 +846,7 @@ playAltMusicBtn.addEventListener("click", () => {
 
   backToMainMusicBtn.style.display = "block";
 });
+
 
 // BOTÃO — voltar música principal
 backToMainMusicBtn.addEventListener("click", () => {
@@ -864,7 +872,7 @@ backToMainMusicBtn.addEventListener("click", () => {
 
 // BOTÃO — próxima música
 document.getElementById("nextTrack").addEventListener("click", () => {
-  const list = dayExtraMusic[currentIndex];
+  const list = getDayMusicByArrayIndex(currentIndex);
   if (!list) return;
 
   currentTrack = (currentTrack + 1) % list.length;
@@ -873,12 +881,13 @@ document.getElementById("nextTrack").addEventListener("click", () => {
 
 // BOTÃO — música anterior
 document.getElementById("prevTrack").addEventListener("click", () => {
-  const list = dayExtraMusic[currentIndex];
+  const list = getDayMusicByArrayIndex(currentIndex);
   if (!list) return;
 
   currentTrack = (currentTrack - 1 + list.length) % list.length;
   playTrack(list, currentTrack);
 });
+
 
 backToMainMusicBtn.addEventListener("click", () => {
   bgMusic.pause();
@@ -944,16 +953,30 @@ function unlockDay(i){
   const reveal = d.text_after || d.hint || d.text_before;
   modalText.textContent = reveal;
 // Se o dia tiver músicas extras, MOSTRAR agora que desbloqueou
-if (dayExtraMusic[i]) {
+const list = getDayMusicByArrayIndex(i);
+if (list) {
   extraMusicBox.style.display = "block";
   document.getElementById("prevTrack").style.display = "block";
   document.getElementById("nextTrack").style.display = "block";
 
-  // mostrar capa vazia primeiro
-  document.getElementById("albumBox").style.display = "block";
-  document.getElementById("albumArt").style.opacity = 0;
-  document.getElementById("albumTitle").textContent = "";
+  const albumBox = document.getElementById("albumBox");
+  const albumArt = document.getElementById("albumArt");
+  const albumTitle = document.getElementById("albumTitle");
+
+  albumBox.style.display = "block";
+  albumArt.style.opacity = 0;
+
+  if (list[0]) {
+    albumArt.src = list[0].cover;
+    albumTitle.textContent = list[0].title;
+    requestAnimationFrame(() => {
+      albumArt.style.opacity = 1;
+    });
+  } else {
+    albumTitle.textContent = "";
+  }
 }
+
 
   passwordBox.style.display = "none";
   hintContainer.style.display = "none";
