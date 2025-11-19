@@ -42,28 +42,88 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 .count{ background:var(--glass); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); font-size:13px; backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:flex-start; min-width:170px; }
 .count .num{ font-weight:700; color:var(--accent); margin-top:4px; }
 
-/* PLAYER CARD (next to counter) - minimal luxury */
+
+/* PLAYER CARD otimizado para iPhone 15 Pro Max */
+
 .player{
-  display:flex; align-items:center; gap:12px;
-  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-  border:1px solid rgba(255,255,255,0.035);
-  padding:8px 10px; border-radius:12px; min-width:260px;
-  backdrop-filter: blur(6px); position:relative;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.05);
+  padding:10px 14px;
+  border-radius:14px;
+  min-width:300px;
+  max-width:380px;
+  backdrop-filter: blur(10px);
+  position:relative;
 }
-.player.locked{ filter:grayscale(.5) contrast(.85) brightness(.9); opacity:.9; }
+
 .player .cover{
-  width:48px; height:48px; border-radius:10px; overflow:hidden; flex:0 0 48px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(0,0,0,0.15)); display:flex; align-items:center; justify-content:center;
-  border:1px solid rgba(255,255,255,0.03);
+  width:56px;
+  height:56px;
+  border-radius:12px;
 }
-.player .cover img{ width:100%; height:100%; object-fit:cover; display:block; transform:scale(1); transition:transform .28s ease, opacity .28s; opacity:1; }
-.player .meta{ display:flex; flex-direction:column; gap:2px; min-width:0; }
-.player .title{ font-size:13px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-.player .sub{ font-size:12px; opacity:0.68; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:160px; }
-.player .controls-mini{ display:flex; gap:6px; align-items:center; margin-left:6px; }
-.icon-btn{ background:transparent; border:0; padding:8px; border-radius:8px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; color:var(--muted); }
-.icon-btn svg{ width:18px; height:18px; display:block; opacity:.98; }
-.icon-btn:focus{ outline:2px solid rgba(216,179,241,0.12); outline-offset:2px; }
+
+.player .cover img{
+  border-radius:12px;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.player .meta{
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+  flex-grow:1;
+  min-width:0;
+}
+
+.player .title{
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.player .sub{
+  font-size:12px;
+  opacity:0.75;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.controls-mini button{
+  padding:10px;
+}
+
+/* iPhone optimization */
+@media (max-width:480px){
+  .player{
+    min-width:92%;
+    max-width:92%;
+    padding:10px 12px;
+    gap:12px;
+  }
+  .player .cover{
+    width:54px;
+    height:54px;
+  }
+  .player .title{
+    max-width:140px;
+    font-size:13px;
+  }
+  .player .sub{
+    max-width:140px;
+    font-size:12px;
+  }
+  .controls-mini button{
+    padding:10px;
+  }
+}
 
 /* lock overlay */
 .player .lockBadge{
@@ -279,16 +339,116 @@ main.grid{
 <script>
 /* ========== Dados originais (dias) ========== */
 const days = [
-  {"index":1,"date":"2025-11-17","label":"17/11","text_before":"Toda história ...","password":"ligação","hint":"Pense na ação que começou tudo.","text_after":"Você foi o começo de tudo."},
-  {"index":2,"date":"2025-11-18","label":"18/11","text_before":"Ontem ...","password":"1805","hint":"Dia. Mês. Nós.","text_after":"Pressione play. O resto, eu te mostro no caminho."},
-  {"index":3,"date":"2025-11-19","label":"19/11","text_before":"35 de 72\n10ª frase\nPalavra 4","password":"mine","hint":"Grey — Cinza","text_after":"...eu amo você de um jeito..."},
-  {"index":4,"date":"2025-11-20","label":"20/11","text":"Cada gesto teu é uma estrela.","password":"p4","hint":"Luz em detalhes."},
-  {"index":5,"date":"2025-11-21","label":"21/11","text":"Às vezes o amor não grita — ele sussurra.","password":"p5","hint":"O silêncio fala."},
-  {"index":6,"date":"2025-11-22","label":"22/11","text":"Há lugares que só o amor conhece.","password":"p6","hint":"Memórias escondidas."},
-  {"index":7,"date":"2025-11-23","label":"23/11","text":"Sete dias, sete luzes.","password":"p7","hint":"O número sete."},
-  /* ... resto dos dias ... */
-  {"index":31,"date":"2025-12-17","label":"17/12","text":"Hoje o tempo se curva. Feliz aniversário, Rosa.","password":"vday","hint":"A data é a chave."}
+  {
+    index: 1,
+    date: "2025-11-17",
+    label: "17/11",
+    text_before:
+      "Toda história tem um ponto onde o destino respira mais fundo.\n" +
+      "O nosso… começou com um som simples.\n" +
+      "Uma coisa que atravessou o silêncio.\n" +
+      "Algo que despertou tudo.\n\n" +
+      "Se você lembrar desse primeiro gesto, deste primeiro “chamado”, a porta se abre.",
+    password: "ligação",
+    hint: "Pense na ação que começou tudo.",
+    text_after:
+      "17 de novembro.\n\n" +
+      "Existe um tipo de destino que não desce do céu nem se anuncia em grandezas.\n" +
+      "Ele simplesmente chama. Às vezes tarde da noite. Às vezes com uma voz que você nunca ouviu antes — e que, ainda assim, parece familiar.\n\n" +
+      "Naquela noite, você me ligou. E algo em mim… acordou de verdade.\n\n" +
+      "Foi o instante em que o mundo - o meu mundo — deixou de ser cinza...\n" +
+      "Foi quando o silêncio ganhou forma,\n" +
+      "quando o escuro deu passagem,\n" +
+      "quando eu soube, sem entender por quê,\n" +
+      "que aquela luz era diferente.\n\n" +
+      "“Obrigado por ter me ligado...”\n" +
+      "“Obrigada por me atender e não ir dormir...”\n\n" +
+      "Eu nunca esqueci.\n" +
+      "Nunca vou esquecer.\n\n" +
+      "Você foi o começo de tudo."
+  },
+
+  {
+    index: 2,
+    date: "2025-11-18",
+    label: "18/11",
+    text_before:
+      "Ontem o universo tropeçou — e me arrependo.\n" +
+      "Algumas coisas começam assim: fora do ritmo, fora da hora.\n" +
+      "Hoje, porém, ele se ajusta.\n\n" +
+      "Porque 18 nunca foi só um número.\n" +
+      "Foi uma porta, um marco, um jeito do tempo dizer: “aqui, algo muda”.\n\n" +
+      "Para abrir este dia, você precisa lembrar das três marcas que sempre foram nossas:\n" +
+      "o dia que virou ritual,\n" +
+      "o mês que virou memória,\n" +
+      "e o segredo silencioso que sempre nos acompanhou.\n\n" +
+      "A combinação que só existe quando é você e eu… abre o caminho.",
+    password: "1805",
+    hint: "Dia. Mês. Nós.",
+    text_after:
+      "18 sempre foi um lugar, não um número.\n" +
+      "Um ponto onde tudo se realinha — mesmo quando parecia fora do eixo.\n\n" +
+      "É por isso que hoje importa tanto.\n" +
+      "Porque hoje eu quis fazer do 18 aquilo que ele sempre foi pra gente:\n" +
+      "um começo limpo, intencional, cuidado.\n\n" +
+      "E quando você digitou 1805, não foi só uma senha.\n" +
+      "Foi uma lembrança — nossa forma discreta de dizer que sabemos quem somos, e de onde começamos.\n\n" +
+      "O 17 tropeçou.\n" +
+      "O 18 acerta o passo.\n\n" +
+      "E agora sim: começa o que realmente quero entregar pra você.\n" +
+      "Com calma.\n" +
+      "Com brilho.\n" +
+      "Com presença.\n\n" +
+      "Pressione play.\n" +
+      "O resto, eu te mostro no caminho."
+  },
+
+  {
+    index: 3,
+    date: "2025-11-19",
+    label: "19/11",
+    text_before: "35 de 72\n10ª frase\nPalavra 4",
+    password: "mine",
+    hint: "Grey — Cinza",
+    text_after:
+      "Começou a perceber como esse lugar funciona, né?\n" +
+      "Aqui dentro, cada dia tem um ritmo: alguns vão exigir calma, outros atenção, outros só… sentir.\n\n" +
+      "Quero te mostrar todas as camadas da sua intensidade\n" +
+      "Cada pequeno enigma, cada detalhe, cada escolha… é uma parte do que eu sinto por você.\n\n" +
+      "E, princesa…\n" +
+      "eu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
+  },
+  { index: 4,  date:"2025-11-20", label:"20/11", text_before:"...", password:"p4", hint:"...", text_after:"..." },
+  { index: 5,  date:"2025-11-21", label:"21/11", text_before:"...", password:"p5", hint:"...", text_after:"..." },
+  { index: 6,  date:"2025-11-22", label:"22/11", text_before:"...", password:"p6", hint:"...", text_after:"..." },
+  { index: 7,  date:"2025-11-23", label:"23/11", text_before:"...", password:"p7", hint:"...", text_after:"..." },
+  { index: 8,  date:"2025-11-24", label:"24/11", text_before:"...", password:"p8", hint:"...", text_after:"..." },
+  { index: 9,  date:"2025-11-25", label:"25/11", text_before:"...", password:"p9", hint:"...", text_after:"..." },
+  { index:10,  date:"2025-11-26", label:"26/11", text_before:"...", password:"p10", hint:"...", text_after:"..." },
+  { index:11,  date:"2025-11-27", label:"27/11", text_before:"...", password:"p11", hint:"...", text_after:"..." },
+  { index:12,  date:"2025-11-28", label:"28/11", text_before:"...", password:"p12", hint:"...", text_after:"..." },
+  { index:13,  date:"2025-11-29", label:"29/11", text_before:"...", password:"p13", hint:"...", text_after:"..." },
+  { index:14,  date:"2025-11-30", label:"30/11", text_before:"...", password:"p14", hint:"...", text_after:"..." },
+  { index:15,  date:"2025-12-01", label:"01/12", text_before:"...", password:"p15", hint:"...", text_after:"..." },
+  { index:16,  date:"2025-12-02", label:"02/12", text_before:"...", password:"p16", hint:"...", text_after:"..." },
+  { index:17,  date:"2025-12-03", label:"03/12", text_before:"...", password:"p17", hint:"...", text_after:"..." },
+  { index:18,  date:"2025-12-04", label:"04/12", text_before:"...", password:"p18", hint:"...", text_after:"..." },
+  { index:19,  date:"2025-12-05", label:"05/12", text_before:"...", password:"p19", hint:"...", text_after:"..." },
+  { index:20,  date:"2025-12-06", label:"06/12", text_before:"...", password:"p20", hint:"...", text_after:"..." },
+  { index:21,  date:"2025-12-07", label:"07/12", text_before:"...", password:"p21", hint:"...", text_after:"..." },
+  { index:22,  date:"2025-12-08", label:"08/12", text_before:"...", password:"p22", hint:"...", text_after:"..." },
+  { index:23,  date:"2025-12-09", label:"09/12", text_before:"...", password:"p23", hint:"...", text_after:"..." },
+  { index:24,  date:"2025-12-10", label:"10/12", text_before:"...", password:"p24", hint:"...", text_after:"..." },
+  { index:25,  date:"2025-12-11", label:"11/12", text_before:"...", password:"p25", hint:"...", text_after:"..." },
+  { index:26,  date:"2025-12-12", label:"12/12", text_before:"...", password:"p26", hint:"...", text_after:"..." },
+  { index:27,  date:"2025-12-13", label:"13/12", text_before:"...", password:"p27", hint:"...", text_after:"..." },
+  { index:28,  date:"2025-12-14", label:"14/12", text_before:"...", password:"p28", hint:"...", text_after:"..." },
+  { index:29,  date:"2025-12-15", label:"15/12", text_before:"...", password:"p29", hint:"...", text_after:"..." },
+  { index:30,  date:"2025-12-16", label:"16/12", text_before:"...", password:"p30", hint:"...", text_after:"..." },
+
+  { index:31, date:"2025-12-17", label:"17/12", text_before:"...", password:"vday", hint:"...", text_after:"..." }
 ];
+
 
 /* ========== dayExtraMusic: key = day.index ========== */
 const dayExtraMusic = {
