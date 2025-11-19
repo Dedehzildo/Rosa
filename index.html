@@ -56,8 +56,21 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 /* title */
 .title h1{ margin:0; font-size:22px; font-weight:600; }
 .subtitle{ margin-top:6px; font-size:13px; opacity:0.78; }
+.count{
+  padding:10px 12px;
+  border-radius:12px;
 
-.count{ background:var(--glass); padding:10px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04); font-size:13px; backdrop-filter:blur(4px); display:flex; flex-direction:column; align-items:flex-start; min-width:170px; }
+  /* mesmo fundo do GRID */
+  background: var(--glass);
+  border:1px solid rgba(255,255,255,0.05);
+
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+
+  box-shadow:0 10px 28px rgba(0,0,0,0.55);
+  font-size:13px;
+}
+
 .count .num{ font-weight:700; color:var(--accent); margin-top:4px; }
 
 /* ===== ICON BUTTONS — versão refinada ===== */
@@ -120,12 +133,27 @@ main.grid{
   display:grid;
   grid-template-columns:repeat(auto-fit, minmax(135px,1fr));
   gap:22px;
+
+  /* 🔥 Agora o mesmo fundo do player */
+  background: var(--glass);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 18px;
+  padding: 28px 24px;
+
+  backdrop-filter: blur(10px) saturate(160%);
+  -webkit-backdrop-filter: blur(10px) saturate(160%);
+
+  /* Glow suave para encaixar no tema */
+  box-shadow:
+    0 10px 28px rgba(0,0,0,0.55),
+    inset 0 0 25px rgba(255,255,255,0.03);
 }
+
 
 .day{
   aspect-ratio:1;
   border-radius:16px;
-  background:linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.018));
+
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -162,103 +190,74 @@ main.grid{
     0 14px 40px rgba(212,160,255,0.18),
     inset 0 3px 12px rgba(255,255,255,0.22);
 }
+/* ==========================================
+   BOTÃO — Vidro fosco + rosa bebê suave
+   ========================================== */
+.circle{
+  width:72px; 
+  height:72px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
+  /* Original restaurado — vidro profundo */
+  background:linear-gradient(
+    180deg,
+    rgba(20,12,30,0.95) 0%,
+    rgba(28,40,64,0.96) 100%
+  );
 
-/* --- DAY STATES (locked / unlocked) --- */
-.circle {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  font-size: 22px;
-  font-weight: 600;
-  color: rgba(255,255,255,0.95);
-
-  position: relative;
-  overflow: hidden;
-
-  /* VIDRO + LAVANDA SUAVE */
-  background:
-    radial-gradient(
-      circle at 50% 35%,
-      rgba(200,160,255,0.22),
-      rgba(150,110,220,0.12) 45%,
-      rgba(255,255,255,0.05) 90%
-    ),
-    rgba(255,255,255,0.05);
-
-  backdrop-filter: blur(20px) saturate(165%);
-  -webkit-backdrop-filter: blur(20px) saturate(165%);
-
-  border: 1px solid rgba(255,255,255,0.20);
-
+  /* Suavização leve e elegante */
   box-shadow:
-    0 6px 18px rgba(0,0,0,0.55);
-  
-  transition: all .25s ease;
-}
+    inset 0 2px 6px rgba(255,255,255,0.04),
+    inset 0 -3px 8px rgba(0,0,0,0.55),
+    0 6px 18px rgba(0,0,0,0.50);
 
-/* REFLEXO iOS */
-.circle::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0.55),
-    rgba(255,255,255,0.12) 40%,
-    transparent 80%
-  );
-  opacity: .65;
-  pointer-events: none;
-}
+  border:1px solid rgba(255,255,255,0.05);
 
-/* HALO LAVANDA — suave e elegante */
-.circle::after {
-  content: "";
-  position: absolute;
-  inset: -26px;
-  border-radius: inherit;
+  font-weight:700;
+  font-size:20px;
+  color:rgba(255,255,255,0.92);
 
-  background: radial-gradient(
-    circle,
-    rgba(200,160,255,0.20),
-    rgba(150,110,220,0.10) 40%,
-    transparent 75%
-  );
-  filter: blur(28px);
-  opacity: .55;
-  pointer-events: none;
-}
-
-/* Hover iOS */
-@media (hover:hover) {
-  .day:hover .circle {
-    transform: translateY(-3px) scale(1.03);
-    box-shadow:
-      0 10px 26px rgba(0,0,0,0.60),
-      inset 0 0 8px rgba(255,255,255,0.20);
-  }
+  transition:all .22s ease-out;
 }
 
 
-/* locked (mais translúcido, sem halo) */
+.day:hover .circle::after {
+  opacity: 0.55;
+  transform: scale(1.06);
+}
+
+/* Dias bloqueados — apagados e frios */
 .day.locked .circle {
-  opacity: 0.28;
-  filter: grayscale(85%) contrast(0.85);
-  box-shadow: none;          /* remove profundidade quando trancado */
+  opacity: 0.20;
+  filter: grayscale(100%) brightness(0.45);
+  box-shadow:
+    0 4px 10px rgba(0,0,0,0.50),
+    inset 0 0 6px rgba(255,255,255,0.02);
 }
 
-/* checked — mostrar esfera com brilho discreto */
-.day.checked .circle{
+/* ===== BLOQUEADO ===== */
+.day.locked .circle {
+  opacity: 0.25 !important;
+  filter: grayscale(85%) brightness(0.45) !important;
+
   box-shadow:
-    inset 0 3px 12px rgba(255,255,255,0.20),
-    inset 0 -6px 16px rgba(170,120,255,0.26),
-    0 14px 36px rgba(60,20,80,0.45);
+    0 4px 12px rgba(0,0,0,0.50),
+    inset 0 0 6px rgba(255,255,255,0.03),
+    inset 0 -4px 8px rgba(0,0,0,0.35) !important;
+
+  background: radial-gradient(circle at 50% 45%,
+    rgba(255, 210, 225, 0.08) 0%,
+    rgba(60, 50, 60, 0.12) 35%,
+    rgba(6, 5, 8, 0.92) 85%
+  ) !important;
+}
+.day.locked .circle::before,
+.day.locked .circle::after {
+  opacity: 0.10 !important;
+  filter: blur(18px) grayscale(100%);
 }
 
 /* label contraste */
@@ -280,14 +279,33 @@ main.grid{
   display:flex;
   align-items:center;
   justify-content:center;
-  background:rgba(246,215,166,0.9); /* gold soft */
-  color:#1a0f20;
+
+  /* 🌸 Rosa + textura de vidro */
+  background: linear-gradient(
+       180deg,
+       rgba(230,160,210,0.32) 0%,
+       rgba(190,120,180,0.28) 60%,
+       rgba(110,60,120,0.22) 100%
+  );
+  backdrop-filter: blur(6px) saturate(160%);
+  -webkit-backdrop-filter: blur(6px) saturate(160%);
+
+  /* borda suave */
+  border:1px solid rgba(255,255,255,0.10);
+
+  /* brilho suave */
+  box-shadow:
+    0 3px 10px rgba(0,0,0,0.45),
+    inset 0 1px 3px rgba(255,255,255,0.25);
+
+  color: rgba(255,230,255,0.95); /* check branco-rosado */
   font-weight:700;
   font-size:14px;
+
   transform:scale(0);
-  box-shadow:0 3px 12px rgba(0,0,0,.35);
   transition:transform .22s cubic-bezier(.2,.9,.2,1);
 }
+
 
 .day.checked .check{ transform:scale(1); }
 
