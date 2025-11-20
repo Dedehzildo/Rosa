@@ -385,7 +385,8 @@ header{
 
   box-shadow: 0 10px 28px rgba(0,0,0,0.55);
 
-  flex:0 1 360px;
+  width: 100%;
+  flex: 1 1 100%;
   min-width:0;
   position:relative;
   overflow:visible;
@@ -479,6 +480,32 @@ header{
     white-space: normal;   /* agora pode quebrar em 2 linhas */
     overflow: hidden;
     text-overflow: ellipsis;
+  }
+}
+/* ===== MOBILE — Player vai para linha debaixo ===== */
+@media (max-width: 720px) {
+
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+  }
+
+  .topControls {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .controls {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .player {
+    width: 100%;
+    flex: 1 1 auto;
   }
 }
 
