@@ -129,12 +129,15 @@ header{ display:flex; align-items:center; justify-content:space-between; gap:12p
 
 /* minimal responsive */
 main.grid{
-  margin-top:28px;
+  margin-top:20px;
   display:grid;
-  grid-template-columns:repeat(auto-fit, minmax(135px,1fr));
-  gap:22px;
 
-  /* 🔥 Agora o mesmo fundo do player */
+  /* MOBILE: 3 colunas */
+  grid-template-columns: repeat(3, 1fr);
+
+  gap:14px;
+  touch-action:manipulation;
+
   background: var(--glass);
   border: 1px solid rgba(255,255,255,0.05);
   border-radius: 18px;
@@ -143,30 +146,43 @@ main.grid{
   backdrop-filter: blur(10px) saturate(160%);
   -webkit-backdrop-filter: blur(10px) saturate(160%);
 
-  /* Glow suave para encaixar no tema */
   box-shadow:
     0 10px 28px rgba(0,0,0,0.55),
     inset 0 0 25px rgba(255,255,255,0.03);
 }
+/* Desktop já começa em 4 */
+@media (min-width: 700px){
+  main.grid{
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Desktop grande em 5 */
+@media (min-width: 1100px){
+  main.grid{
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+
 
 
 .day{
   aspect-ratio:1;
-  border-radius:16px;
-
+  border-radius:14px;
+  background:linear-gradient(180deg,var(--card-bg),rgba(255,255,255,0.02));
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
   cursor:pointer;
   position:relative;
-  overflow:hidden;
-    box-shadow:
-    0 8px 26px rgba(0,0,0,0.55),
-    inset 0 0 0 rgba(255,255,255,0.12);
-  transition:transform .25s cubic-bezier(.2,.9,.2,1), box-shadow .25s ease;
-  will-change: transform, box-shadow;
+  overflow:visible;
+  box-shadow:0 8px 28px rgba(0,0,0,0.55);
+  transform:translateY(22px) scale(.94);
+  opacity:0;
 }
+
 
 
 .day.enter{
@@ -194,34 +210,32 @@ main.grid{
    BOTÃO — Vidro fosco + rosa bebê suave
    ========================================== */
 .circle{
-  width:72px; 
-  height:72px;
+  width:56px;
+  height:56px;
   border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
 
-  /* Original restaurado — vidro profundo */
+  /* vidro profundo original */
   background:linear-gradient(
     180deg,
     rgba(20,12,30,0.95) 0%,
     rgba(28,40,64,0.96) 100%
   );
 
-  /* Suavização leve e elegante */
   box-shadow:
     inset 0 2px 6px rgba(255,255,255,0.04),
     inset 0 -3px 8px rgba(0,0,0,0.55),
     0 6px 18px rgba(0,0,0,0.50);
 
   border:1px solid rgba(255,255,255,0.05);
-
   font-weight:700;
-  font-size:20px;
+  font-size:17px;
   color:rgba(255,255,255,0.92);
-
   transition:all .22s ease-out;
 }
+
 
 
 .day:hover .circle::after {
@@ -323,6 +337,8 @@ main.grid{
     grid-template-columns:repeat(3,1fr);
     gap:14px;
     padding-bottom:40px;
+    max-width: 100%;
+    margin: 24px auto;
   }
   .circle{
     width:56px;
@@ -485,13 +501,6 @@ header{
 }
 
 /* ===== MOBILE FIX: player em 2 linhas, sem cortar nada ===== */
-@media (max-width: 720px) {
-  .player {
-    flex-wrap: wrap;
-    padding: 10px 12px;
-    gap: 10px 14px;
-    border-radius: 14px;
-  }
 
   .player .cover {
     flex: 0 0 auto;
@@ -507,13 +516,12 @@ header{
   }
 
   .player .title, 
-  .player .sub {
-    white-space: normal;   /* agora pode quebrar em 2 linhas */
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+.player .sub {
+    white-space: nowrap;
 }
-/* ===== MOBILE — Player vai para linha debaixo ===== */
+
+
+/* ===== MOBILE – iPhone 15 Pro Max ===== */
 @media (max-width: 720px) {
 
   header {
@@ -530,25 +538,142 @@ header{
   }
 
   .controls {
-  width: 100%;
-  flex-direction: column;     /* <-- ESSA LINHA é o fix REAL */
-  align-items: stretch;       /* garantir alinhamento bonito */
-  gap: 14px;                  /* espaço entre contador e player */
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 16px;
+  }
+
+  /* contador ocupa a linha inteira */
+  .count {
+    width: 100%;
+  }
+
+  /* capa menor e alinhada com os círculos */
+  .player .cover img {
+    width: 46px !important;
+    height: 46px !important;
+    border-radius: 10px;
+  }
+
+  /* texto mais compacto */
+  .player .meta {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  .player .title {
+    font-size: 15px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .player .sub {
+    font-size: 12px;
+    opacity: 0.7;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* botões menores (menos altura total) */
+  .controls-mini {
+    gap: 8px;
+  }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .icon-btn svg {
+    width: 14px;
+    height: 14px;
+  }
 }
 
+
+  
+
+  /* cards menos altos (evita deformar no iPhone) */
+  .day {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+  }
+
+  /* círculos como no original mobile */
+  .circle {
+    width: 54px;
+    height: 54px;
+    font-size: 16px;
+  }
+
+  .wrap {
+    padding: 22px 18px 90px;
+    width: 100%;
+  }
+/* ✅ MOBILE – PLAYER ALINHADO IGUAL AO CONTADOR */
+@media (max-width: 720px) {
+
+  .controls {
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    gap:16px;
+  }
+  /* grid com proporção melhor no celular */
+  main.grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    padding: 18px 14px;
+  }
+
+  .count,
+  .player {
+    width:100%;
+    max-width:100%;
+  }
 
   .player {
-    width: 100%;
-    flex: 1 1 auto;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    gap:10px;
+    padding:10px 14px;
+    border-radius:14px;
+  }
+
+  .player .cover img {
+    width:44px !important;
+    height:44px !important;
+  }
+
+  .player .meta {
+    flex:1;
+    min-width:0;
+  }
+
+  .player .title,
+  .player .sub {
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+
+  .controls-mini {
+    gap:6px;
+  }
+
+  .icon-btn {
+    width:30px;
+    height:30px;
   }
 }
-@media (max-width: 720px){
-  .wrap{
-    padding: 24px 18px 80px;
-    width: 100%;
-    max-width: 100%;
-  }
-}
+
 
 
 </style>
@@ -740,7 +865,20 @@ const days = [
       "E, princesa…\n" +
       "eu amo você de um jeito que nenhum código, palavra ou gesto consegue explicar por completo."
   },
-  { index: 4,  date:"2025-11-20", label:"20/11", text_before:"...", password:"p4", hint:"...", text_after:"..." },
+  {
+  "index": 4,
+  "date": "2025-11-20",
+  "label": "20/11",
+
+  "text_before": "Hoje eu queria que você olhasse pra nós como eu olho pro céu.\n\nEnigma do dia:\nSou luz que não faz barulho,\nnão nasço sozinha, mas vivo em constelações.\nNão sou sol, mas esquento seus dias.\nNão sou lua, mas acompanho suas fases.\nÀs vezes eu caio — e quando caio,\nvocê fecha os olhos e faz um pedido.\n\nDizem que algumas histórias já vêm **written in the stars**...\nMas só quem olha de verdade consegue ler.\n\nEscreve o meu nome em minúsculo.\nQuando acertar, eu te conto por quê.",
+
+  "password": "estrela",
+
+  "hint": "Não é lua. Não é sol. É o que fica espalhado pelo céu quando a noite chega.",
+
+  "text_after": "Cada gesto teu é uma estrela.\n\nTe juro: teve uma época em que o meu céu era quase vazio. Algumas luzes distantes, coisas boas perdidas no fundo da memória… mas nada que realmente desenhasse um lugar pra ficar.\n\nAí você chegou.\n\nE, de repente, tudo que você fazia começou a acender pontos novos no meu céu.\nO jeito que você ri de canto.\nO cuidado nas mensagens.\nAs piadas internas.\nOs áudios cansados antes de dormir.\nO carinho nas tuas preocupações.\n\nCada coisa pequena virou um brilho. E, quando eu percebi, já não eram só pontos soltos — era uma constelação inteira com o teu nome.\n\nTalvez certas histórias já nasçam **written in the stars**.\nMas a nossa… eu sei que não foi só escrita lá.\nA gente vem reescrevendo juntos, gesto por gesto, noite após noite.\n\nVocê é a estrela mais brilhante que eu já vi, mas o que mais me mata de amor é isso:\nmesmo nos dias em que você acha que está apagada, eu ainda enxergo luz em tudo que você faz.\n\nSe um dia você duvidar do seu brilho, lembra deste dia 20/11:\nno meu céu, cada gesto teu é uma estrela.\nE eu escolhi viver nele."
+}
+
   { index: 5,  date:"2025-11-21", label:"21/11", text_before:"...", password:"p5", hint:"...", text_after:"..." },
   { index: 6,  date:"2025-11-22", label:"22/11", text_before:"...", password:"p6", hint:"...", text_after:"..." },
   { index: 7,  date:"2025-11-23", label:"23/11", text_before:"...", password:"p7", hint:"...", text_after:"..." },
