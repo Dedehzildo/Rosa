@@ -674,6 +674,39 @@ header{
   }
 }
 
+/* ===== MODAL MELHORADO ===== */
+
+/* botão sempre visível no topo do modal */
+.modalClose{
+  position: sticky;
+  top: 0;
+  align-self: flex-end;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  font-size: 20px;
+  cursor: pointer;
+  z-index: 10;
+  padding: 4px 0;
+}
+
+/* modal com rolagem interna */
+.modal {
+  max-height: 85vh;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200,160,255,0.25) transparent;
+}
+
+/* scrollbar bonita (Chrome/Safari) */
+.modal::-webkit-scrollbar {
+  width: 6px;
+}
+
+.modal::-webkit-scrollbar-thumb {
+  background: rgba(200,160,255,0.25);
+  border-radius: 6px;
+}
 
 
 </style>
@@ -745,9 +778,12 @@ header{
 <!-- MODAL (mantive sua estrutura, ajustei para sempre mostrar música quando desbloqueado) -->
 <div class="modalBack" id="modalBack" aria-hidden="true" style="position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:linear-gradient(rgba(2,3,6,0.55),rgba(2,3,6,0.85));z-index:220;padding:18px;">
   <div class="modal" id="modal" role="dialog" aria-modal="true" style="width:100%;max-width:760px;border-radius:16px;padding:22px 20px;background:linear-gradient(180deg, rgba(10,8,18,0.86), rgba(20,12,30,0.97));border:1px solid rgba(255,255,255,0.04);backdrop-filter:blur(10px);box-shadow:0 28px 80px rgba(0,0,0,0.70);">
-    <button id="closeModal" style="float:right;background:none;border:0;color:var(--muted);font-size:20px;cursor:pointer">✕</button>
+
+
+    <button id="closeModal" class="modalClose">✕</button>
     <h2 id="modalTitle" style="margin:0 0 10px 0;color:var(--accent)">Dia</h2>
     <div id="modalBody"><p id="modalText" style="line-height:1.65;font-size:15px;white-space:pre-line;">carregando...</p></div>
+    
 
     <!-- CAPA DO ÁLBUM (modal) -->
     <div id="albumBox" style="display:none;margin-top:18px;text-align:center;">
@@ -1150,8 +1186,25 @@ function typeText(el, text, speed=22, done){
 }
 
 /* ========== Modal open/close ========== */
-function showModal(){ modalBack.style.display = "flex"; modalBack.setAttribute("aria-hidden","false"); }
-function closeModal(){ modalBack.style.display = "none"; modalBack.setAttribute("aria-hidden","true"); currentIndex = null; if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; } passwordBox.style.display = "block"; hintBox.style.display = "block"; btnConfirm.style.display = "inline-block"; albumBox.style.display = "none"; extraMusicBox.style.display = "none"; }
+function showModal(){
+  modalBack.style.display = "flex";
+  modalBack.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden"; // trava scroll do fundo
+}
+
+function closeModal(){
+  modalBack.style.display = "none";
+  modalBack.setAttribute("aria-hidden","true");
+  document.body.style.overflow = ""; // libera scroll do fundo
+
+  currentIndex = null;
+  if(typeTimer){ clearTimeout(typeTimer); typeTimer=null; }
+  passwordBox.style.display = "block";
+  hintBox.style.display = "block";
+  btnConfirm.style.display = "inline-block";
+  albumBox.style.display = "none";
+  extraMusicBox.style.display = "none";
+}
 
 function openModal(i){
   currentIndex = i;
