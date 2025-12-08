@@ -1323,7 +1323,9 @@ function createGrid(){
 // Dia especial: se for o 5, aplica classe exclusiva
 if(d.index === 5){
   el.classList.add("five");
-
+  }
+if(d.index === 19){
+  el.classList.add("nineteen");
 }
 
 
@@ -1333,14 +1335,6 @@ if(d.index === 5){
 }
 createGrid();
 
-if(d.index === 19){
-  el.classList.add("nineteen");
-
-}
-
-    grid.appendChild(el);
-    setTimeout(()=> el.style.opacity = 1, i*30);
-createGrid();
 /* ========== COUNTDOWN ========== */
 const cdText = document.getElementById("cdText");
 const target = parseLocalDateYMD("2025-12-17");
