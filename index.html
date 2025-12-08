@@ -1183,7 +1183,20 @@ const days = [
   "text_after": "Tem coisas que eu gosto tanto que nem sei explicar direito.\nMas o cheiro… o cheiro é uma das mais fortes.\n\nÉ aquele perfume doce, quente, que parece envolver tudo.\nBaunilha, caramelo… e algo que só existe nela.\nUm cheiro que não dá pra copiar, não dá pra achar igual.\n\nEu reconheço de longe.\nNo travesseiro.\nNa roupa.\nNo ar.\nNo abraço.\n\nÉ um cheiro que acalma.\nQue aproxima.\nQue faz o mundo ficar menor por um instante —\nmas no melhor sentido possível.\n\nE o mais bonito de tudo é isso:\nnão é só perfume.\nÉ presença.\nÉ memória boa.\nÉ casa.\n\nSe um dia você duvidar do quanto é marcante,\nlembra que o seu cheiro é uma das primeiras coisas\nque eu noto quando você chega.\nE uma das últimas que vão embora\ndepois que você sai.\n\nE eu amo isso.\nAmo esse detalhe tão simples\nque virou uma das minhas partes favoritas de você."
 },
 
-  { index:22,  date:"2025-12-08", label:"08/12", text_before:"...", password:"p22", hint:"...", text_after:"..." },
+  {
+  "index": 22,
+  "date": "2025-12-08",
+  "label": "08/12",
+
+  "text_before": "Hoje o dia é sobre uma história que te acompanhou por anos.\n\nEnigma do dia:\nEu apareço quando tudo parece escuro.\nBasta uma palavra, um sussurro, um desejo pequeno,\ne de repente eu ganho forma.\n\nSou encanto simples,\nmas nunca fraco.\nAbro caminho em corredores cheios de medo,\nrevelo o que estava escondido,\nafugento lembranças que pesam demais.\n\nJá brilhei nas mãos de um garoto com cicatrizes,\nna capa de um livro que você conhece de cor,\nna sua própria pele, na frase que você escolheu levar pra sempre.\n\nE do mesmo jeito que guiou Hogwarts em tantas noites,\neu também te guio agora,\ncalma e silenciosa,\nsempre que você precisa.\n\nQuem eu sou?",
+
+  "password": "lumos",
+
+  "hint": "É o feitiço que ilumina até as noites mais difíceis.",
+
+  "text_after": "Gosto muito da sua relação com Harry Potter.\n(desculpa esquecer o seu filme favorito aquele dia)\nNão só pela magia, nem pelos personagens \nmas pela força escondida nas entrelinhas.\n\nA frase que você carrega no corpo, *the boy who lived*,\nnunca foi só sobre ele.\nFoi sobre você.\nSobre continuar.\nSobre sobreviver a coisas que ninguém viu.\nSobre achar luz nos cantos mais improváveis.\n\nE quando eu penso nisso,\npenso no seu próprio feitiço de luz.\nNuma coisa que você acende sem perceber.\nAlgo que está ali mesmo quando você está cansada,\nmesmo quando duvida,\nmesmo quando acha que não tem mais tanta magia assim.\n\nMas tem.\nSempre teve.\nSeu brilho nunca dependeu de varinha.\nEle só existe.\n\nE agora que esse dia chegou,\neu queria te dizer uma coisa simples:\n\*eu quero fazer algo com você no próximo final de semana.\nAlgo especial, leve, só nosso.\nEu te conto os detalhes ao longo da semana.\n\nPor enquanto, só guarda isso:\neste capítulo está ficando lindo.\nE a magia — a sua — nunca foi pequena."
+},
+
   { index:23,  date:"2025-12-09", label:"09/12", text_before:"...", password:"p23", hint:"...", text_after:"..." },
   { index:24,  date:"2025-12-10", label:"10/12", text_before:"...", password:"p24", hint:"...", text_after:"..." },
   { index:25,  date:"2025-12-11", label:"11/12", text_before:"...", password:"p25", hint:"...", text_after:"..." },
@@ -1616,31 +1629,52 @@ function unlockDay(i){
   spawnSparklesAt(dayEl);
 }
 
-/* ========== Modal music controls should control the same global player ========= */
+/* ===== Modal controls (não trava o player global) ===== */
 modalPlay.addEventListener("click", ()=> {
-  // if modal corresponds to a day with music, set player to that day if not already
+
   if(currentIndex === null) return;
+
   const list = getDayMusicByArrayIndex(currentIndex);
-  if(!list){ showToast("Sem trilha para este dia."); return; }
-  // if player has different list loaded, load (but do not autoplay unless we want to start)
-  if(playerListDayIndex !== days[currentIndex].index){
-    loadPlayerList(list, days[currentIndex].index);
+
+  if(list){
+    // só troca a playlist se este dia REALMENTE tiver trilha
+    if(playerListDayIndex !== days[currentIndex].index){
+      loadPlayerList(list, days[currentIndex].index);
+    }
   }
-  // toggle play/pause
+
+  // se não tiver música nesse dia, não faz nada — só usa o player global
   togglePlayerPlay();
 });
+
 modalNext.addEventListener("click", ()=> {
   const list = getDayMusicByArrayIndex(currentIndex);
-  if(!list) return;
-  if(playerListDayIndex !== days[currentIndex].index) loadPlayerList(list, days[currentIndex].index);
-  playerNextTrack();
+
+  if(list){
+    if(playerListDayIndex !== days[currentIndex].index){
+      loadPlayerList(list, days[currentIndex].index);
+    }
+    playerNextTrack();
+  } else {
+    // navega na playlist global
+    playerNextTrack();
+  }
 });
+
 modalPrev.addEventListener("click", ()=> {
   const list = getDayMusicByArrayIndex(currentIndex);
-  if(!list) return;
-  if(playerListDayIndex !== days[currentIndex].index) loadPlayerList(list, days[currentIndex].index);
-  playerPrevTrack();
+
+  if(list){
+    if(playerListDayIndex !== days[currentIndex].index){
+      loadPlayerList(list, days[currentIndex].index);
+    }
+    playerPrevTrack();
+  } else {
+    // navega na playlist global
+    playerPrevTrack();
+  }
 });
+
 
 /* ========== Grid click behavior ========= */
 grid.addEventListener("click", ev => {
@@ -1703,17 +1737,22 @@ function spawnUnlockGlow(el){
 /* ========== Toast ========= */
 function showToast(msg="✔"){ toast.textContent = msg; toast.classList.add("show"); setTimeout(()=> toast.classList.remove("show"), 1600); }
 
-/* ========== Initialize state ========= */
-// keep player locked unless a day with music was previously loaded
-// If you previously unlocked a day with music and want it loaded on page load, detect that here:
-(function initFromStorage(){
-  // if any unlocked day has music, load the most recent unlocked with music (optional)
-  const unlockedArr = [...unlockedSet].map(Number).sort((a,b)=>a-b);
-  for(let k=unlockedArr.length-1;k>=0;k--){
-    const idx = unlockedArr[k];
-    const list = getDayMusicByArrayIndex(idx);
-    if(list){ loadPlayerList(list, days[idx].index); break; }
-  }
+(function initUnlockedMusic(){
+  const finalList = [];
+
+  // adicionar as músicas padrão SEMPRE
+  finalList.push(...tracks);
+
+  // adicionar músicas dos dias já desbloqueados
+  const unlockedArr = [...unlockedSet].map(Number);
+  
+  unlockedArr.forEach(idx => {
+    const extra = getDayMusicByArrayIndex(idx);
+    if(extra) finalList.push(...extra);
+  });
+
+  // carregar playlist final
+  loadPlayerList(finalList);
 })();
 
 /* ========== Simple stars/aurora/snow canvases (kept minimal) ========= */
